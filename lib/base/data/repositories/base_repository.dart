@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:skeleton/base/data/data_sources/error_exception.dart';
 
 abstract class BaseRepository {
   Future<http.Response> executeRequest(
@@ -10,11 +11,11 @@ abstract class BaseRepository {
       final response = await httpRequest();
       return response;
     } on http.ClientException {
-      throw Exception('Offline');
+      throw HttpException(status: 'offline', message: 'offline');
     } on SocketException {
-      throw Exception('Timeout');
+      throw HttpException(status: 'timeout', message: 'timeout');
     } catch (e) {
-      throw Exception('General Error');
+      throw HttpException(status: 'general_error', message: 'general error');
     }
   }
 
@@ -24,12 +25,14 @@ abstract class BaseRepository {
         // success. do nothing
         break;
       case 401:
-        throw Exception('Expired token. Need refresh token.');
+        throw HttpResponseException(
+            statusCode: response.statusCode, message: 'expired token');
       case 404:
-        throw Exception('Resource not found.');
+        throw HttpResponseException(
+            statusCode: response.statusCode, message: 'not found');
       default:
-        throw Exception(
-            'General error with status code: ${response.statusCode}');
+        throw HttpResponseException(
+            statusCode: response.statusCode, message: 'general error');
     }
   }
 

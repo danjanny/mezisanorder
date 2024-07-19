@@ -11,6 +11,7 @@ import '../../domain/repositories/i_login_repository.dart';
 import '../models/request/login_request.dart';
 import 'package:http/http.dart' as http;
 
+@injectable
 class LoginRepositoryImpl extends BaseRepository implements ILoginRepository {
   final ILoginService _loginService;
   final LoginMapper _loginMapper;

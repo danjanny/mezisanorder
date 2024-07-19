@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:injectable/injectable.dart';
 import 'package:skeleton/authentication/data/data_sources/abstraction/i_login_service.dart';
-import 'package:skeleton/authentication/data/data_sources/login_mapper.dart';
+import 'package:skeleton/authentication/data/data_sources/mapper/login_mapper.dart';
 import 'package:skeleton/authentication/data/data_sources/login_service_impl.dart';
 import 'package:skeleton/authentication/data/models/user_model.dart';
 import 'package:skeleton/authentication/domain/entities/user.dart';

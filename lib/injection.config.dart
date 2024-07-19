@@ -12,10 +12,10 @@ import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 import 'package:skeleton/authentication/data/data_sources/abstraction/i_login_service.dart'
     as _i4;
-import 'package:skeleton/authentication/data/data_sources/login_mapper.dart'
-    as _i3;
 import 'package:skeleton/authentication/data/data_sources/login_service_impl.dart'
     as _i5;
+import 'package:skeleton/authentication/data/data_sources/mapper/login_mapper.dart'
+    as _i3;
 import 'package:skeleton/authentication/data/repositories/login_repository_impl.dart'
     as _i6;
 

@@ -18,6 +18,10 @@ import 'package:skeleton/authentication/data/data_sources/mapper/login_mapper.da
     as _i3;
 import 'package:skeleton/authentication/data/repositories/login_repository_impl.dart'
     as _i6;
+import 'package:skeleton/authentication/domain/repositories/i_login_repository.dart'
+    as _i8;
+import 'package:skeleton/authentication/domain/use_cases/login_use_case.dart'
+    as _i7;
 
 extension GetItInjectableX on _i1.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -36,6 +40,8 @@ extension GetItInjectableX on _i1.GetIt {
           gh<_i4.ILoginService>(),
           gh<_i3.LoginMapper>(),
         ));
+    gh.factory<_i7.LoginUseCase>(
+        () => _i7.LoginUseCase(gh<_i8.ILoginRepository>()));
     return this;
   }
 }

@@ -36,14 +36,30 @@ class _MyHomePageState extends State<MyHomePage> {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is LoginLoadedState) {
                 return Center(
-                    child: Text(
-                  'LoginSuccess : ${state.user.toString()}',
-                  style: Theme.of(context).textTheme.headlineMedium,
+                    child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'LoginSuccess : ${state.user.toString()}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(
+                      height: 20.0,
+                    ),
+                    Text(
+                      'Name : ${state.user?.fullName}',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    Text(
+                      'Email : ${state.user?.email}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
                 ));
               } else if (state is LoginErrorState) {
                 return Text(
                   'Error: ${state.message}',
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 );
               } else {
                 return Container();

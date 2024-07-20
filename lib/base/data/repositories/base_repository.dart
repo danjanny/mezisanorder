@@ -11,11 +11,12 @@ abstract class BaseRepository {
       final response = await httpRequest();
       return response;
     } on http.ClientException {
-      throw HttpException(status: 'offline', message: 'offline');
+      throw HttpResponseException(status: 'offline', message: 'offline');
     } on SocketException {
-      throw HttpException(status: 'timeout', message: 'timeout');
+      throw HttpResponseException(status: 'timeout', message: 'timeout');
     } catch (e) {
-      throw HttpException(status: 'general_error', message: e.toString());
+      throw HttpResponseException(
+          status: 'general_error', message: 'General Error : $e');
     }
   }
 
@@ -26,13 +27,13 @@ abstract class BaseRepository {
         break;
       case 401:
         throw HttpResponseException(
-            statusCode: response.statusCode, message: 'expired token');
+            statusCode: response.statusCode, message: 'Expired Token');
       case 404:
         throw HttpResponseException(
-            statusCode: response.statusCode, message: 'not found');
+            statusCode: response.statusCode, message: 'Not Found');
       default:
         throw HttpResponseException(
-            statusCode: response.statusCode, message: 'general error');
+            statusCode: response.statusCode, message: 'General Error');
     }
   }
 

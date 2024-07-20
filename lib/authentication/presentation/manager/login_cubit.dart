@@ -9,25 +9,21 @@ import 'login_state.dart';
 
 @injectable
 class LoginCubit extends Cubit<LoginState> {
-  final LoginUseCase loginUseCase;
+  final LoginUseCase _loginUseCase;
 
-  LoginCubit(this.loginUseCase) : super(LoginInitialState());
+  LoginCubit(this._loginUseCase) : super(LoginInitialState());
 
   Future<void> login(String username, String password) async {
     emit(LoginLoadingState());
     try {
-      // Simulate a login process
-      User? result = await loginUseCase
+      User? result = await _loginUseCase
           .call(LoginRequest(username: username, password: password));
       emit(LoginLoadedState(user: result));
     } on HttpResponseException catch (e) {
       emit(LoginErrorState(
-          statusCode: e.statusCode.toString(), message: e.message));
-    } on HttpException catch (e) {
-      emit(LoginErrorState(statusCode: e.status, message: e.message));
+          statusCode: '${e.statusCode} ${e.status}', message: e.message));
     } catch (e) {
-      emit(LoginErrorState(
-          statusCode: 'general_error', message: 'general error'));
+      emit(LoginErrorState(message: 'General Error : $e'));
     }
   }
 }

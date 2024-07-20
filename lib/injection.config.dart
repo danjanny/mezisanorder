@@ -22,6 +22,8 @@ import 'package:skeleton/authentication/domain/repositories/i_login_repository.d
     as _i6;
 import 'package:skeleton/authentication/domain/use_cases/login_use_case.dart'
     as _i8;
+import 'package:skeleton/authentication/presentation/manager/login_cubit.dart'
+    as _i9;
 
 extension GetItInjectableX on _i1.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -42,6 +44,7 @@ extension GetItInjectableX on _i1.GetIt {
         ));
     gh.factory<_i8.LoginUseCase>(
         () => _i8.LoginUseCase(gh<_i6.ILoginRepository>()));
+    gh.factory<_i9.LoginCubit>(() => _i9.LoginCubit(gh<_i8.LoginUseCase>()));
     return this;
   }
 }

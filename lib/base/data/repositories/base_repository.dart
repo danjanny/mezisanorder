@@ -15,7 +15,7 @@ abstract class BaseRepository {
     } on SocketException {
       throw HttpException(status: 'timeout', message: 'timeout');
     } catch (e) {
-      throw HttpException(status: 'general_error', message: 'general error');
+      throw HttpException(status: 'general_error', message: e.toString());
     }
   }
 

@@ -1,5 +1,5 @@
 class GeneralResponse<T> {
-  final int responseCode;
+  final String responseCode;
   final String responseMessage;
   final T? data;
 

@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 abstract class BaseHttpService {
-  final String baseUrl = dotenv.env['BASE_URL'] ?? "http://www.google.com";
+  final String baseUrl = "https://run.mocky.io/v3";
 
   Future<http.Response> fetchGet(String path,
       {Map<String, dynamic>? queryParams}) async {

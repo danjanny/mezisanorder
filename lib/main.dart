@@ -4,9 +4,11 @@ import 'package:skeleton/authentication/domain/use_cases/login_use_case.dart';
 import 'package:skeleton/authentication/presentation/manager/login_cubit.dart';
 import 'authentication/presentation/pages/login_page.dart';
 import 'injection.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env"); // Load the .env file
   configureDependencies(); // Initialize dependencies
   runApp(MultiBlocProvider(
     providers: [

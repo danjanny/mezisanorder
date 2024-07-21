@@ -33,7 +33,9 @@ abstract class BaseRepository {
             statusCode: response.statusCode, message: 'Not Found');
       default:
         throw HttpResponseException(
-            statusCode: response.statusCode, message: 'General Error');
+            statusCode: response.statusCode,
+            message:
+                'General Error : ${response.statusCode}, ${response.body}, ${response.toString()}');
     }
   }
 

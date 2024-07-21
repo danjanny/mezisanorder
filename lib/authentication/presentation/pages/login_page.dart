@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:skeleton/authentication/data/models/request/login_request.dart';
 import 'package:skeleton/authentication/presentation/manager/login_cubit.dart';
 import 'package:skeleton/authentication/presentation/manager/login_state.dart';
+
+import '../../domain/params/login_request.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});

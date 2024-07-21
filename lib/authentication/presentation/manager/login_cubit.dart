@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:skeleton/authentication/data/models/request/login_request.dart';
 import 'package:skeleton/base/data/data_sources/error_exception.dart';
 
 import '../../domain/entities/user.dart';
+import '../../domain/params/login_request.dart';
 import '../../domain/use_cases/login_use_case.dart';
 import 'login_state.dart';
 

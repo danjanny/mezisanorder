@@ -1,4 +1,4 @@
-import 'package:skeleton/authentication/data/models/request/login_request.dart';
+import 'package:skeleton/authentication/domain/params/login_request.dart';
 
 import '../entities/user.dart';
 

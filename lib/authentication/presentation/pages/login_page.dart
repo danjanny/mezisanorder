@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:skeleton/authentication/data/models/request/login_request.dart';
 import 'package:skeleton/authentication/presentation/manager/login_cubit.dart';
 import 'package:skeleton/authentication/presentation/manager/login_state.dart';
 
@@ -17,7 +18,7 @@ class _MyHomePageState extends State<MyHomePage> {
     const username = 'exampleUser';
     const password = 'examplePass';
 
-    context.read<LoginCubit>().login(username, password);
+    context.read<LoginCubit>().login(LoginRequest(username: username, password: password));
   }
 
   @override

@@ -13,11 +13,11 @@ class LoginCubit extends Cubit<LoginState> {
 
   LoginCubit(this._loginUseCase) : super(LoginInitialState());
 
-  Future<void> login(String username, String password) async {
+  Future<void> login(LoginRequest loginRequest) async {
     emit(LoginLoadingState());
     try {
-      User? result = await _loginUseCase
-          .call(LoginRequest(username: username, password: password));
+      User? result = await _loginUseCase.call(LoginRequest(
+          username: loginRequest.username, password: loginRequest.password));
       emit(LoginLoadedState(user: result));
     } on HttpResponseException catch (e) {
       emit(LoginErrorState(

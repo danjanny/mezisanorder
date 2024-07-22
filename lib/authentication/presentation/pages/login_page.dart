@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qlevar_router/qlevar_router.dart';
 import 'package:skeleton/authentication/presentation/manager/login_cubit.dart';
 import 'package:skeleton/authentication/presentation/manager/login_state.dart';
+import 'package:skeleton/route/routes.dart';
 
 import '../../domain/params/login_request.dart';
 
@@ -44,7 +46,26 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            BlocBuilder<LoginCubit, LoginState>(builder: (context, state) {
+            BlocConsumer<LoginCubit, LoginState>(listener: (context, state) {
+              if (state is LoginLoadedState) {
+                var bottomSheetController = showBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return Container(
+                      color: Colors.blue[100],
+                      height: 200,
+                      child: const Center(
+                        child: Text('Data has successfully loaded'),
+                      ),
+                    );
+                  },
+                );
+                Future.delayed(const Duration(seconds: 2), () {
+                  bottomSheetController.close();
+                  QR.to(AppRoutes.homePath);
+                });
+              }
+            }, builder: (context, state) {
               if (state is LoginLoadingState) {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is LoginLoadedState) {

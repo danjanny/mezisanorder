@@ -41,7 +41,6 @@ class LoginCubit extends Cubit<LoginState> {
       emit(LoginErrorState(
           statusCode: '${e.statusCode} ${e.status}', message: e.message));
     } catch (e) {
-      print(e.toString());
       emit(LoginErrorState(message: 'General Error : $e'));
     }
   }

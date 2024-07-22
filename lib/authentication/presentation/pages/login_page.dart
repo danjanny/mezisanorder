@@ -6,6 +6,9 @@ import 'package:skeleton/authentication/presentation/manager/login_state.dart';
 import 'package:skeleton/route/routes.dart';
 
 import '../../domain/params/login_request.dart';
+import 'dart:js' as js;
+import 'package:js/js.dart';
+import 'js_bridge.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -125,12 +128,38 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        // onPressed: _fetchApi,
-        onPressed: _fetchResultApi,
-        tooltip: 'Fetch Api',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: Stack(
+        children: <Widget>[
+          Positioned(
+            bottom: 80.0,
+            right: 10.0,
+            child: FloatingActionButton(
+              onPressed: _fetchResultApi, // First FAB action
+              tooltip: 'Fetch API',
+              child: const Icon(Icons.refresh),
+            ),
+          ),
+          Positioned(
+            bottom: 10.0,
+            right: 10.0,
+            child: FloatingActionButton(
+              onPressed: _captureEntirePage, // Second FAB action
+              tooltip: 'Screen Capture',
+              child: const Icon(Icons.camera_alt),
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _captureEntirePage() {
+    final greeting = greet('Flutter Web App Developer');
+    print(greeting);
   }
 }

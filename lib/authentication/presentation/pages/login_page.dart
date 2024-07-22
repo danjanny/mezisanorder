@@ -19,7 +19,18 @@ class _MyHomePageState extends State<MyHomePage> {
     const username = 'exampleUser';
     const password = 'examplePass';
 
-    context.read<LoginCubit>().login(LoginRequest(username: username, password: password));
+    context
+        .read<LoginCubit>()
+        .login(LoginRequest(username: username, password: password));
+  }
+
+  void _fetchResultApi() {
+    const username = 'exampleUser';
+    const password = 'examplePass';
+
+    context
+        .read<LoginCubit>()
+        .loginResult(LoginRequest(username: username, password: password));
   }
 
   @override
@@ -39,23 +50,46 @@ class _MyHomePageState extends State<MyHomePage> {
               } else if (state is LoginLoadedState) {
                 return Center(
                     child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'LoginSuccess : ${state.user.toString()}',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    Text(
-                      'Name : ${state.user?.fullName}',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    Text(
-                      'Email : ${state.user?.email}',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
+                    if (state.user != null)
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'LoginSuccess : ${state.user.toString()}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                          const SizedBox(
+                            height: 20.0,
+                          ),
+                          Text(
+                            'Name : ${state.user?.fullName}',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                          Text(
+                            'Email : ${state.user?.email}',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    const SizedBox(height: 20.0),
+                    if (state.userResult != null &&
+                        state.userResult!.items != null)
+                      ...state.userResult!.items!.map((item) => Column(
+                            children: [
+                              Text(
+                                'Name : ${item.fullName}',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              Text(
+                                'Email : ${item.email}',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              const SizedBox(
+                                height: 20.0,
+                              ),
+                            ],
+                          )),
                   ],
                 ));
               } else if (state is LoginErrorState) {
@@ -71,7 +105,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _fetchApi,
+        // onPressed: _fetchApi,
+        onPressed: _fetchResultApi,
         tooltip: 'Fetch Api',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.

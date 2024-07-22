@@ -4,7 +4,7 @@ class User {
   final String? username;
   final String? email;
 
-  User(this.id, this.fullName, this.username, this.email);
+  User({this.id, this.fullName, this.username, this.email});
 
   @override
   String toString() {

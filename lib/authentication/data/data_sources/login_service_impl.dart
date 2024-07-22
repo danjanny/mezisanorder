@@ -12,4 +12,11 @@ class LoginServiceImpl extends BaseHttpService implements ILoginService {
     return await fetchPost('/ede9a136-25dd-4fe6-a76c-6a4167c3494c',
         body: userData);
   }
+
+  @override
+  Future<http.Response> fetchUser(LoginRequest loginRequest) async {
+    var userData = loginRequest.toJson();
+    return await fetchGet('/93faebd2-e953-4ccc-a239-033132c576ae',
+        queryParams: userData);
+  }
 }

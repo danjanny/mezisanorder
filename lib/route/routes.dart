@@ -15,8 +15,8 @@ class AppRoutes {
       builder: () =>
           login_page.MyHomePage(title: 'Skeleton Code Clean Flutter'),
       middleware: [
-        RootMiddleware(),
         DeferredLoader(login_page.loadLibrary),
+        RootMiddleware(),
       ],
     ),
     QRoute(

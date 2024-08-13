@@ -1,165 +1,128 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qlevar_router/qlevar_router.dart';
-import 'package:skeleton/authentication/presentation/manager/login_cubit.dart';
-import 'package:skeleton/authentication/presentation/manager/login_state.dart';
-import 'package:skeleton/route/routes.dart';
 
 import '../../domain/params/login_request.dart';
-import 'dart:js' as js;
-import 'package:js/js.dart';
-import 'js_bridge.dart';
+import '../manager/login_cubit.dart';
+import '../manager/login_state.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class LoginPage extends StatelessWidget {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  void _fetchApi() {
-    const username = 'exampleUser';
-    const password = 'examplePass';
-
-    context
-        .read<LoginCubit>()
-        .login(LoginRequest(username: username, password: password));
-  }
-
-  void _fetchResultApi() {
-    const username = 'exampleUser';
-    const password = 'examplePass';
-
-    context
-        .read<LoginCubit>()
-        .loginResult(LoginRequest(username: username, password: password));
-  }
+  LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            BlocConsumer<LoginCubit, LoginState>(listener: (context, state) {
-              if (state is LoginLoadedState) {
-                var bottomSheetController = showBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return Container(
-                      color: Colors.blue[100],
-                      height: 200,
-                      child: const Center(
-                        child: Text('Data has successfully loaded'),
+      body: BlocConsumer<LoginCubit, LoginState>(
+        listener: (context, state) {
+          if (state is LoginErrorState) {
+            _usernameController.clear();
+            _passwordController.clear();
+
+            showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return Container(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(state.message ?? 'General Error'),
+                      SizedBox(height: 16.0),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.blue,
+                            minimumSize: Size(double.infinity,
+                                50), // full width and height 50
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('OK'),
+                        ),
                       ),
-                    );
-                  },
+                    ],
+                  ),
                 );
-                Future.delayed(const Duration(seconds: 2), () {
-                  bottomSheetController.close();
-                  QR.to(AppRoutes.homePath);
-                });
-              }
-            }, builder: (context, state) {
-              if (state is LoginLoadingState) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is LoginLoadedState) {
-                return Center(
-                    child: Column(
+              },
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is LoginLoadingState) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          return Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (state.user != null)
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'LoginSuccess : ${state.user.toString()}',
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          const SizedBox(
-                            height: 20.0,
-                          ),
-                          Text(
-                            'Name : ${state.user?.fullName}',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          Text(
-                            'Email : ${state.user?.email}',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
+                    Text('Username'),
+                    TextFormField(
+                      controller: _usernameController,
+                      decoration: InputDecoration(
+                        hintText: 'Enter your username',
                       ),
-                    const SizedBox(height: 20.0),
-                    if (state.userResult != null &&
-                        state.userResult!.items != null)
-                      ...state.userResult!.items!.map((item) => Column(
-                            children: [
-                              Text(
-                                'Name : ${item.fullName}',
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                              Text(
-                                'Email : ${item.email}',
-                                style: Theme.of(context).textTheme.bodyMedium,
-                              ),
-                              const SizedBox(
-                                height: 20.0,
-                              ),
-                            ],
-                          )),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your username';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 16.0),
+                    Text('Password'),
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        hintText: 'Enter your password',
+                      ),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your password';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 16.0),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.blue, // text color
+                          minimumSize: Size(
+                              double.infinity, 50), // full width and height 50
+                        ),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            final loginRequest = LoginRequest(
+                              username: _usernameController.text,
+                              password: _passwordController.text,
+                            );
+                            context.read<LoginCubit>().login(loginRequest);
+                          }
+                        },
+                        child: const Text('Submit'),
+                      ),
+                    ),
                   ],
-                ));
-              } else if (state is LoginErrorState) {
-                return Text(
-                  'Error: ${state.message}',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                );
-              } else {
-                return Container();
-              }
-            }),
-          ],
-        ),
-      ),
-      floatingActionButton: Stack(
-        children: <Widget>[
-          Positioned(
-            bottom: 80.0,
-            right: 10.0,
-            child: FloatingActionButton(
-              onPressed: _fetchResultApi, // First FAB action
-              tooltip: 'Fetch API',
-              child: const Icon(Icons.refresh),
+                ),
+              ),
             ),
-          ),
-          Positioned(
-            bottom: 10.0,
-            right: 10.0,
-            child: FloatingActionButton(
-              onPressed: _captureEntirePage, // Second FAB action
-              tooltip: 'Screen Capture',
-              child: const Icon(Icons.camera_alt),
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void _captureEntirePage() {
-    final greeting = greet('Flutter Web App Developer');
-    print(greeting);
   }
 }

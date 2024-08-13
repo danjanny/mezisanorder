@@ -22,6 +22,7 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       User? result = await _loginUseCase.call(LoginRequest(
           username: loginRequest.username, password: loginRequest.password));
+      print(result.toString());
       emit(LoginLoadedState(user: result));
     } on HttpResponseException catch (e) {
       emit(LoginErrorState(

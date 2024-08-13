@@ -1,6 +1,6 @@
+import 'package:flutter/animation.dart';
 import 'package:qlevar_router/qlevar_router.dart';
-import 'package:skeleton/route/root_middleware.dart';
-import '../authentication/presentation/pages/login_page.dart'
+import 'package:skeleton/authentication/presentation/pages/login_page.dart'
     deferred as login_page;
 import '../home/presentation/pages/home_page.dart' deferred as home_page;
 import 'deferred_loader.dart';
@@ -10,18 +10,21 @@ class AppRoutes {
   static const homePath = "/home-dashboard";
 
   static final routes = [
+    // root as login page
     QRoute(
       path: rootPath,
-      builder: () =>
-          login_page.MyHomePage(title: 'Skeleton Code Clean Flutter'),
+      builder: () => login_page.LoginPage(),
       middleware: [
         DeferredLoader(login_page.loadLibrary),
-        RootMiddleware(),
       ],
     ),
     QRoute(
       path: homePath,
       builder: () => home_page.HomePage(),
+      pageType: const QSlidePage(
+        transitionDuration: Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      ),
       middleware: [
         DeferredLoader(home_page.loadLibrary),
       ],

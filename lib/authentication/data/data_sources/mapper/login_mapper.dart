@@ -7,25 +7,23 @@ import '../../../domain/entities/user_result.dart';
 
 @Injectable()
 class LoginMapper {
-  User fromUserModelToUser(UserModel userModel) {
+  User fromUserModelToUser(UserResponseModel userModel) {
     return User(
-      id: userModel.id,
-      fullName: userModel.fullName,
-      username: userModel.username,
-      email: userModel.email,
+      id: userModel.data?.id,
+      fullName: userModel.data?.fullName,
+      username: userModel.data?.username,
+      email: userModel.data?.email,
     );
   }
 
   UserResult mapUserResultModelToUserResult(UserResultModel model) {
-
     List<User>? users = model.items!
-        .map((userModel) =>
-        User(
-          id: userModel.id,
-          fullName: userModel.fullName,
-          username: userModel.username,
-          email: userModel.email,
-        ))
+        .map((userModel) => User(
+              id: userModel.id,
+              fullName: userModel.fullName,
+              username: userModel.username,
+              email: userModel.email,
+            ))
         .toList();
 
     return UserResult(items: users);

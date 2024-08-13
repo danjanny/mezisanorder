@@ -21,7 +21,7 @@ class LoginRepositoryImpl extends BaseRepository implements ILoginRepository {
     final response =
         await executeRequest(() => _loginService.submitLogin(loginRequest));
     handleResponse(response);
-    final userModel = UserModel.fromJson(decodeResponseBody(response));
+    final userModel = UserResponseModel.fromJson(decodeResponseBody(response));
     final user = _loginMapper.fromUserModelToUser(userModel);
     return user;
   }

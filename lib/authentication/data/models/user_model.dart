@@ -1,28 +1,24 @@
 import '../../../base/data/models/general_response_model.dart';
+import '../../domain/entities/user.dart';
 
-class UserModel extends GeneralResponse {
-  final String id;
-  final String fullName;
-  final String username;
-  final String email;
+class UserResponseModel extends GeneralResponse {
+  final User? data;
 
-  UserModel({
-    required super.responseCode,
-    required super.responseMessage,
-    required this.id,
-    required this.fullName,
-    required this.username,
-    required this.email,
-  });
+  UserResponseModel(
+      {required super.responseCode,
+      required super.responseMessage,
+      required this.data});
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
+  factory UserResponseModel.fromJson(Map<String, dynamic> json) {
+    return UserResponseModel(
       responseCode: json['responseCode'],
       responseMessage: json['responseMessage'],
-      id: json['data']['id'],
-      fullName: json['data']['fullName'],
-      username: json['data']['username'],
-      email: json['data']['email'],
+      data: json['data'] != null ? User.fromJson(json['data']) : null,
     );
+  }
+
+  @override
+  String toString() {
+    return 'UserResponse{responseCode: $responseCode, responseMessage: $responseMessage, data: $data}';
   }
 }

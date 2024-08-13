@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:skeleton/base/data/data_sources/error_exception.dart';
+import 'package:skeleton/base/data/models/general_response_model.dart';
 
 abstract class BaseRepository {
   Future<http.Response> executeRequest(
@@ -21,6 +22,7 @@ abstract class BaseRepository {
   }
 
   void handleResponse(http.Response response) {
+    var generalResponse = GeneralResponse.toJson(jsonDecode(response.body));
     switch (response.statusCode) {
       case 200:
         // success. do nothing
@@ -30,12 +32,12 @@ abstract class BaseRepository {
             statusCode: response.statusCode, message: 'Expired Token');
       case 404:
         throw HttpResponseException(
-            statusCode: response.statusCode, message: 'Not Found');
+            statusCode: response.statusCode,
+            message: generalResponse.responseMessage);
       default:
         throw HttpResponseException(
             statusCode: response.statusCode,
-            message:
-                'General Error : ${response.statusCode}, ${response.body}, ${response.toString()}');
+            message: generalResponse.responseMessage);
     }
   }
 

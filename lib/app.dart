@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
+import 'base/presentation/styles/text_form_field_style.dart';
+import 'base/presentation/styles/text_styles.dart';
 import 'route/routes.dart';
 
 class App extends StatelessWidget {
@@ -11,18 +13,17 @@ class App extends StatelessWidget {
       builder: (context, constraints) {
         return Container(
           alignment: Alignment.topCenter,
-          child: Container(
+          child: SizedBox(
             width: constraints.maxWidth > 1024 ? 430 : constraints.maxWidth,
             child: MaterialApp.router(
               theme: ThemeData(
                 primarySwatch: Colors.blue,
-                textTheme: const TextTheme(
-                  bodyMedium: TextStyle(fontSize: 16.0, color: Colors.black),
-                  bodyLarge: TextStyle(fontSize: 14.0, color: Colors.black54),
+                textTheme: TextTheme(
+                  bodyMedium: TextStyles.body12Medium,
+                  bodyLarge: TextStyles.body12Regular,
                 ),
-                inputDecorationTheme: const InputDecorationTheme(
-                  border: OutlineInputBorder(),
-                ),
+                inputDecorationTheme:
+                    TextFormFieldStyle.getDefaultInputDecorationTheme(),
                 buttonTheme: const ButtonThemeData(
                   buttonColor: Colors.blue,
                   textTheme: ButtonTextTheme.primary,

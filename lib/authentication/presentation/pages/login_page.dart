@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import '../../../base/presentation/styles/text_form_field_style.dart';
+import '../../../base/presentation/styles/text_styles.dart';
 import '../../domain/params/login_request.dart';
 import '../manager/login_cubit.dart';
 import '../manager/login_state.dart';
@@ -66,11 +67,13 @@ class LoginPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Username'),
+                    Text('Username', style: TextStyles.body12Medium),
+                    SizedBox(height: 10),
                     TextFormField(
                       controller: _usernameController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your username',
+                      decoration: TextFormFieldStyle.getDecoration(
+                        TextFormFieldStatus.defaultStatus,
+                        'Enter your username',
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -79,12 +82,14 @@ class LoginPage extends StatelessWidget {
                         return null;
                       },
                     ),
-                    SizedBox(height: 16.0),
-                    Text('Password'),
+                    const SizedBox(height: 16.0),
+                    Text('Password', style: TextStyles.body12Medium),
+                    SizedBox(height: 10),
                     TextFormField(
                       controller: _passwordController,
-                      decoration: InputDecoration(
-                        hintText: 'Enter your password',
+                      decoration: TextFormFieldStyle.getDecoration(
+                        TextFormFieldStatus.defaultStatus,
+                        'Enter your password',
                       ),
                       obscureText: true,
                       validator: (value) {

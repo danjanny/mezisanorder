@@ -11,7 +11,30 @@ class LoginServiceImpl extends BaseHttpService implements ILoginService {
     var userData = loginRequest.toJson();
     // 2ba147d2-babc-47f1-bc3c-5b3a71e8dafc : 400
     // 7c7cf5d8-fa72-40f2-bba6-3ab3c8b6a1b0 : 200
-    return await fetchPost('/2ba147d2-babc-47f1-bc3c-5b3a71e8dafc',
+
+    // final dummyErrorResponse = http.Response(
+    //   '{"responseCode": "400", "responseMessage": "Error 400", "data": {}}',
+    //   400,
+    // );
+
+//     final dummySuccessResponse = http.Response(
+//       '''{
+//   "responseCode": "200",
+//   "responseMessage": "success",
+//   "data": {
+//     "id": "1",
+//     "fullName": "Ridha Danjanny",
+//     "username": "rdanjanny",
+//     "email": "ridhadanjanny.mail@gmail.com"
+//   }
+// }
+// ''',
+//       200,
+//     );
+
+    // return dummySuccessResponse;
+
+    return await fetchPost('/7c7cf5d8-fa72-40f2-bba6-3ab3c8b6a1b0',
         body: userData);
   }
 

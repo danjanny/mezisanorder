@@ -28,6 +28,9 @@ class TextFormFieldStyle {
         getDecoration(TextFormFieldStatus.defaultStatus, '');
     InputDecoration errorDecoration =
         getDecoration(TextFormFieldStatus.danger, '');
+    InputDecoration disabledDecoration = getDecoration(
+        TextFormFieldStatus.disabled, ''); // Added for disabled status
+
     return InputDecorationTheme(
       hintStyle: defaultDecoration.hintStyle,
       filled: defaultDecoration.filled!,
@@ -37,6 +40,8 @@ class TextFormFieldStyle {
       errorBorder: errorDecoration.errorBorder,
       focusedErrorBorder: errorDecoration.focusedErrorBorder,
       errorStyle: errorDecoration.errorStyle,
+      disabledBorder:
+          disabledDecoration.disabledBorder, // Added for disabled status
     );
   }
 

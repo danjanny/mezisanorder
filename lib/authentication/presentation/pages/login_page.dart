@@ -72,7 +72,7 @@ class LoginPage extends StatelessWidget {
                     TextFormField(
                       controller: _usernameController,
                       decoration: TextFormFieldStyle.getDecoration(
-                        TextFormFieldStatus.defaultStatus,
+                        TextFormFieldStatus.disabled,
                         'Enter your username',
                       ),
                       validator: (value) {

@@ -45,6 +45,7 @@ dependencies:
   google_fonts: ^6.2.1
   sms_receiver: ^0.4.2
   flutter_sms: ^2.3.3
+  workmanager: ^0.5.2
 
 dev_dependencies:
   flutter_test:

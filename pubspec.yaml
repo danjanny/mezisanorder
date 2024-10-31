@@ -46,6 +46,7 @@ dependencies:
   sms_receiver: ^0.4.2
   flutter_sms: ^2.3.3
   workmanager: ^0.5.2
+  hive_flutter: ^1.1.0
 
 dev_dependencies:
   flutter_test:

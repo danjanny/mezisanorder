@@ -3,7 +3,7 @@ class PasscodeRequest {
 
   PasscodeRequest({required this.passcode});
 
-  Map<String, dynamic> toJson() {
+  Map<String, String> toJson() {
     return {
       'passcode': passcode,
     };

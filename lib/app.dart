@@ -1,3 +1,4 @@
+import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 import 'base/presentation/styles/text_form_field_style.dart';
@@ -16,23 +17,23 @@ class App extends StatelessWidget {
           child: SizedBox(
             width: constraints.maxWidth > 1024 ? 430 : constraints.maxWidth,
             child: MaterialApp.router(
-              theme: ThemeData(
-                primarySwatch: Colors.blue,
-                textTheme: TextTheme(
-                  bodyMedium: TextStyles.body12Medium,
-                  bodyLarge: TextStyles.body12Regular,
+                theme: ThemeData(
+                  primarySwatch: Colors.blue,
+                  textTheme: TextTheme(
+                    bodyMedium: TextStyles.body12Medium,
+                    bodyLarge: TextStyles.body12Regular,
+                  ),
+                  inputDecorationTheme:
+                      TextFormFieldStyle.getDefaultInputDecorationTheme(),
+                  buttonTheme: const ButtonThemeData(
+                    buttonColor: Colors.blue,
+                    textTheme: ButtonTextTheme.primary,
+                  ),
+                  // Add other custom component themes here
                 ),
-                inputDecorationTheme:
-                    TextFormFieldStyle.getDefaultInputDecorationTheme(),
-                buttonTheme: const ButtonThemeData(
-                  buttonColor: Colors.blue,
-                  textTheme: ButtonTextTheme.primary,
-                ),
-                // Add other custom component themes here
-              ),
-              routeInformationParser: const QRouteInformationParser(),
-              routerDelegate: QRouterDelegate(AppRoutes.routes),
-            ),
+                routeInformationParser: const QRouteInformationParser(),
+                routerDelegate: QRouterDelegate(AppRoutes.routes,
+                    observers: [ChuckerFlutter.navigatorObserver])),
           ),
         );
       },

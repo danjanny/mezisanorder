@@ -94,7 +94,11 @@ class _TwalletBankTransferConfirmPageState
                     const SizedBox(
                       height: 4,
                     ),
-                    SvgPicture.asset(''),
+                    SvgPicture.asset(
+                      IconAsset.companyLogo,
+                      width: 200,
+                      height: 35,
+                    ),
                   ],
                 ))
           ],

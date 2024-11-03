@@ -70,4 +70,8 @@ class AppColors {
   static const Color backgroundTransparentBlur = Color(0x80FFFFFF);
   static const Color backgroundTransparentInfo = Color(0x26479CFF);
 
+
+  static const Color grey2 = Color(0xFFAEAEB2);
+  static const Color grey = Color(0xFF8E8E93);
+
 }

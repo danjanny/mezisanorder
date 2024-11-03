@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:skeleton/base/presentation/appbar/quickcount_app_bar.dart';
+import 'package:skeleton/base/presentation/appbar/quickcount_home_app_bar.dart';
 import 'package:skeleton/base/presentation/icons/icon_asset.dart';
 import 'package:skeleton/base/presentation/styles/text_styles.dart';
 
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       return Scaffold(
-        appBar: const QuickcountAppBar(),
+        appBar: const QuickcountHomeAppBar(),
         body: Stack(
           children: [
             Container(
@@ -43,10 +44,13 @@ class _HomePageState extends State<HomePage> {
                         child: Column(
                           children: [
                             // Menu Utama
-                            Text(
-                              'Menu Utama',
-                              style: TextStyles.heading24Bold.copyWith(
-                                color: Colors.black,
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Menu Utama',
+                                style: TextStyles.heading24Bold.copyWith(
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                             const SizedBox(height: 10),
@@ -138,16 +142,18 @@ class MenuCardItem extends StatelessWidget {
             const SizedBox(
               width: 10,
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(title ?? '',
-                    style: TextStyles.body16Bold.copyWith(color: Colors.black)),
-                const SizedBox(height: 2),
-                Text(subtitle ?? '',
-                    style: TextStyles.body14Regular
-                        .copyWith(color: AppColors.grey)),
-              ],
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title ?? '',
+                      style: TextStyles.body16Bold.copyWith(color: Colors.black)),
+                  const SizedBox(height: 2),
+                  Text(subtitle ?? '',
+                      style: TextStyles.body14Regular
+                          .copyWith(color: AppColors.grey)),
+                ],
+              ),
             )
           ],
         ),

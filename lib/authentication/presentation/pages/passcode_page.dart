@@ -26,8 +26,10 @@ class _PasscodePageState extends State<PasscodePage> {
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
+        print(state.toString());
         if (state is PasscodeLoadedState) {
-          QR.to(AppRoutes.passcodePath);
+          // QR.to(AppRoutes.passcodePath);
+          QR.navigator.popUntilOrPush(AppRoutes.homePath);
         } else if (state is LoginErrorState) {
           showModalBottomSheet(
             context: context,

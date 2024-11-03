@@ -4,6 +4,7 @@ import 'package:qlevar_router/qlevar_router.dart';
 import '../../../base/presentation/styles/text_form_field_style.dart';
 import '../../../base/presentation/styles/text_styles.dart';
 import '../../../base/presentation/button/quickcount_custom_button.dart';
+import '../../../base/presentation/textformfield/app_colors.dart';
 import '../../../base/presentation/textformfield/quickcount_text_form_field.dart';
 import '../manager/home_cubit.dart';
 import '../manager/home_state.dart';
@@ -75,10 +76,41 @@ class EditProfilePage extends StatelessWidget {
         helperText: "Helper text for No Handphone 2",
       ),
     ];
-
-    return BlocConsumer<HomeCubit, HomeState>(
+    return BlocProvider(
+      create: (_) => HomeCubit(),
+      child: BlocConsumer<HomeCubit, HomeState>(
       listener: (context, state) {
-        // TODO: Handle state change
+        if  (state is HomeComingSoonState || state is HomeErrorState) {
+          showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return Container(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text((state is HomeComingSoonState) ? state.message ?? 'Fitur ini akan segera hadir' : (state is HomeErrorState) ? state.message ?? 'General Error' : 'General Error'),
+                    const SizedBox(height: 16.0),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          backgroundColor: AppColors.primaryColor,
+                          minimumSize: const Size(double.infinity, 50),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        }
       },
       builder: (context, state) {
         return Scaffold(
@@ -144,7 +176,7 @@ class EditProfilePage extends StatelessWidget {
                     text: 'Simpan',
                     state: QuickcountButtonState.enabled,
                     onPressed: () {
-                      // TODO: Handle save profile
+                      context.read<HomeCubit>().onSave();
                     },
                   ),
                 ),
@@ -155,6 +187,6 @@ class EditProfilePage extends StatelessWidget {
           backgroundColor: Colors.white,
         );
       },
-    );
+    ));
   }
 }

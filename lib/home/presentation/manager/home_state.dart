@@ -8,9 +8,14 @@ class HomeLoadingState extends HomeState {}
 class HomeLoadedState extends HomeState {
 }
 
-class LoginErrorState extends HomeState {
+class HomeComingSoonState extends HomeState {
+  final String? message;
+
+  HomeComingSoonState(String s, {this.message});
+}
+class HomeErrorState extends HomeState {
   final String? statusCode;
   final String? message;
 
-  LoginErrorState({this.statusCode, this.message});
+  HomeErrorState({this.statusCode, this.message});
 }

@@ -23,6 +23,7 @@ enum PrefixType { number }
 enum FormType { textarea, defaults }
 
 class QuickcountTextFormField extends StatefulWidget {
+  final String? defaultValue;
   final bool enabled;
   final FieldState state;
   final PrefixType prefix;
@@ -47,7 +48,9 @@ class QuickcountTextFormField extends StatefulWidget {
   final String? Function(String?)? validator;
   final bool clearable;
   final TextEditingController? controller;
+  // obsecureText is to show/hide password
   final bool obscureText;
+  // isObsecured is to show/hide password icon
   final bool isObsecured;
   final AutovalidateMode autovalidateMode;
   final FocusNode? focusNode;
@@ -63,6 +66,7 @@ class QuickcountTextFormField extends StatefulWidget {
 
   const QuickcountTextFormField({
     super.key,
+    this.defaultValue,
     this.enabled = true,
     this.state = FieldState.defaultState,
     this.prefix = PrefixType.number,
@@ -115,10 +119,9 @@ class _QuickcountTextFormFieldState extends State<QuickcountTextFormField> {
   @override
   void initState() {
     super.initState();
-    _internalController = widget.controller ?? TextEditingController();
     _obscureText = widget.obscureText;
     _internalFocusNode = widget.focusNode ?? FocusNode();
-
+    _internalController = widget.controller ?? TextEditingController(text: widget.defaultValue);
     _internalController.addListener(() {
       setState(() {});
     });

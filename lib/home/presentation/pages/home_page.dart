@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:qlevar_router/qlevar_router.dart';
 import 'package:skeleton/base/presentation/appbar/quickcount_app_bar.dart';
 import 'package:skeleton/base/presentation/appbar/quickcount_home_app_bar.dart';
 import 'package:skeleton/base/presentation/icons/icon_asset.dart';
 import 'package:skeleton/base/presentation/styles/text_styles.dart';
 
 import '../../../base/presentation/textformfield/app_colors.dart';
+import '../../../route/routes.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -33,7 +35,7 @@ class _HomePageState extends State<HomePage> {
         body: Stack(
           children: [
             Container(
-              color: AppColors.backgroundSolidDefault,
+              color: Colors.white,
               padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
               child: Column(
                 children: [
@@ -54,10 +56,13 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            const MenuCardItem(
+                            MenuCardItem(
                               iconPath: IconAsset.inputHasilPilkadaIcon,
                               title: 'Input Hasil Pilkada',
                               subtitle: 'Kirim hasil perhitungan cepat',
+                              onTap: () {
+                                QR.to(AppRoutes.inputResultPath);
+                              },
                             ),
                             const SizedBox(height: 19),
                             const MenuCardItem(
@@ -66,11 +71,14 @@ class _HomePageState extends State<HomePage> {
                               subtitle: 'Kirim foto formulir C1',
                             ),
                             const SizedBox(height: 19),
-                            const MenuCardItem(
+                            MenuCardItem(
                               iconPath: IconAsset.editProfileIcon,
                               title: 'Edit Profil',
                               subtitle:
                                   'Perbaharui data anda atau ubah jika terdapat kesalahan',
+                              onTap: () {
+                                QR.to(AppRoutes.editProfilePath);
+                              }
                             ),
                           ],
                         ),
@@ -96,15 +104,16 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(
                       height: 4,
                     ),
-                    SvgPicture.asset(
-                      IconAsset.companyLogo,
-                      width: 200,
-                      height: 35,
-                    ),
+                    Image.asset(
+                        IconAsset.companyLogo,
+                        width: 200,
+                        height: 35,
+                    )
                   ],
                 ))
           ],
         ),
+        backgroundColor: Colors.white,
       );
     });
   }

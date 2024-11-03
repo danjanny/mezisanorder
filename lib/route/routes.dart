@@ -1,6 +1,4 @@
 import 'package:qlevar_router/qlevar_router.dart';
-import 'package:skeleton/authentication/presentation/pages/login_page.dart'
-    deferred as login_page;
 import 'package:skeleton/home/presentation/pages/home_page.dart' as home_page;
 import 'package:skeleton/authentication/presentation/pages/onboarding_page.dart'
     deferred as onboarding_page;
@@ -10,17 +8,26 @@ import 'package:skeleton/authentication/presentation/pages/register_page.dart'
     deferred as register_page;
 import 'package:skeleton/home/presentation/pages/input_result_page.dart'
     deferred as input_result_page;
+import 'package:skeleton/home/presentation/pages/edit_profile_page.dart'
+    deferred as edit_profile_page;
 import 'deferred_loader.dart';
 
 class AppRoutes {
   static const rootPath = "/";
   static const passcodePath = "/passcode";
   static const registerPath = "/register";
+  static const editProfilePath = "/edit-profile";
   static const inputResultPath = "/input-result";
-  static const loginPath = "/login";
   static const homePath = "/home-dashboard";
 
   static final routes = [
+    QRoute(
+      path: editProfilePath,
+      builder: () => edit_profile_page.EditProfilePage(),
+      middleware: [
+        DeferredLoader(edit_profile_page.loadLibrary),
+      ],
+    ),
     QRoute(
       path: inputResultPath,
       builder: () => input_result_page.InputResultPage(),
@@ -47,13 +54,6 @@ class AppRoutes {
       builder: () => onboarding_page.OnboardingPage(),
       middleware: [
         DeferredLoader(onboarding_page.loadLibrary),
-      ],
-    ),
-    QRoute(
-      path: loginPath,
-      builder: () => login_page.LoginPage(),
-      middleware: [
-        DeferredLoader(login_page.loadLibrary),
       ],
     ),
     QRoute(

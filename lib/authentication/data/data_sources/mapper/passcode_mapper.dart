@@ -12,6 +12,7 @@ class PasscodeMapper {
   Passcode fromPasscodeModelToPasscode(PasscodeResponseModel passcodeModel  ) {
     return Passcode(
       message: passcodeModel.responseMessage,
+      status: passcodeModel.responseCode,
     );
   }
 }

@@ -20,7 +20,7 @@ class QuickcountHomeAppBar extends StatelessWidget
       this.title,
       this.leadingIconButton,
       this.titleColor = const Color(0xFF181C21),
-      this.backgroundColor = AppColors.backgroundSolidDefault,
+      this.backgroundColor = AppColors.neutral10,
       this.customWidget,
       this.actions = const []}); // Initialize customWidget
 

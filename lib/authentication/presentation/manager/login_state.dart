@@ -1,3 +1,4 @@
+import '../../domain/entities/init_result.dart';
 import '../../domain/entities/passcode.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/entities/user_result.dart';
@@ -16,6 +17,12 @@ class LoginLoadedState extends LoginState {
 }
 
 class PasscodeLoadedState extends LoginState {
+}
+
+class InitVolunteerLoadedState extends LoginState {
+  final InitResult? initResult;
+
+  InitVolunteerLoadedState({this.initResult});
 }
 
 class LoginErrorState extends LoginState {

@@ -1,3 +1,4 @@
+import '../../domain/entities/passcode.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/entities/user_result.dart';
 
@@ -12,6 +13,9 @@ class LoginLoadedState extends LoginState {
   final UserResult? userResult;
 
   LoginLoadedState({this.user, this.userResult});
+}
+
+class PasscodeLoadedState extends LoginState {
 }
 
 class LoginErrorState extends LoginState {

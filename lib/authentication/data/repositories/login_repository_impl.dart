@@ -1,10 +1,14 @@
 import 'package:injectable/injectable.dart';
 import 'package:skeleton/authentication/data/data_sources/abstraction/i_login_service.dart';
 import 'package:skeleton/authentication/data/data_sources/mapper/login_mapper.dart';
+import 'package:skeleton/authentication/data/data_sources/mapper/passcode_mapper.dart';
+import 'package:skeleton/authentication/data/models/passcode_model.dart';
 import 'package:skeleton/authentication/data/models/user_model.dart';
 import 'package:skeleton/authentication/data/models/user_result_model.dart';
+import 'package:skeleton/authentication/domain/entities/passcode.dart';
 import 'package:skeleton/authentication/domain/entities/user.dart';
 import 'package:skeleton/authentication/domain/entities/user_result.dart';
+import 'package:skeleton/authentication/domain/params/passcode_request.dart';
 import 'package:skeleton/base/data/repositories/base_repository.dart';
 import '../../domain/params/login_request.dart';
 import '../../domain/repositories/i_login_repository.dart';
@@ -13,8 +17,9 @@ import '../../domain/repositories/i_login_repository.dart';
 class LoginRepositoryImpl extends BaseRepository implements ILoginRepository {
   final ILoginService _loginService;
   final LoginMapper _loginMapper;
+  final PasscodeMapper _passcodeMapper;
 
-  LoginRepositoryImpl(this._loginService, this._loginMapper);
+  LoginRepositoryImpl(this._loginService, this._loginMapper, this._passcodeMapper);
 
   @override
   Future<User?> submitLogin(LoginRequest loginRequest) async {
@@ -36,5 +41,18 @@ class LoginRepositoryImpl extends BaseRepository implements ILoginRepository {
     final userResult =
         _loginMapper.mapUserResultModelToUserResult(userResultModel);
     return userResult;
+  }
+
+  @override
+  Future<Passcode?> submitPasscode(PasscodeRequest request) async {
+    print("submitPasscode + ${request.passcode}");
+    final response =  await executeRequest(() =>  _loginService.submitPasscode(request));
+    handleResponse(response);
+    final passcode = PasscodeResponseModel.fromJson(decodeResponseBody(response));
+    print("handle response: $passcode");
+
+    final passcodeResult = _passcodeMapper.fromPasscodeModelToPasscode(passcode);
+    print("handle response: $passcodeResult");
+    return passcodeResult;
   }
 }

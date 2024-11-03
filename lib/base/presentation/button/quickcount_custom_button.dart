@@ -16,7 +16,7 @@ class QuickcountButton extends StatelessWidget {
       {super.key,
       this.text = 'Text Button',
       this.textColor = Colors.white,
-      this.enabledBackgroundColor = AppColors.backgroundSolidsRed,
+      this.enabledBackgroundColor = AppColors.primaryColor,
       this.state = QuickcountButtonState.enabled,
       this.onPressed});
 

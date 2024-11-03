@@ -8,49 +8,60 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:get_it/get_it.dart' as _i1;
-import 'package:injectable/injectable.dart' as _i2;
+import 'package:get_it/get_it.dart' as _i174;
+import 'package:injectable/injectable.dart' as _i526;
 import 'package:skeleton/authentication/data/data_sources/abstraction/i_login_service.dart'
-    as _i4;
+    as _i1032;
 import 'package:skeleton/authentication/data/data_sources/login_service_impl.dart'
-    as _i5;
+    as _i991;
 import 'package:skeleton/authentication/data/data_sources/mapper/login_mapper.dart'
-    as _i3;
+    as _i710;
+import 'package:skeleton/authentication/data/data_sources/mapper/passcode_mapper.dart'
+    as _i276;
 import 'package:skeleton/authentication/data/repositories/login_repository_impl.dart'
-    as _i7;
+    as _i819;
 import 'package:skeleton/authentication/domain/repositories/i_login_repository.dart'
-    as _i6;
+    as _i652;
 import 'package:skeleton/authentication/domain/use_cases/login_result_use_case.dart'
-    as _i9;
+    as _i392;
 import 'package:skeleton/authentication/domain/use_cases/login_use_case.dart'
-    as _i8;
+    as _i756;
+import 'package:skeleton/authentication/domain/use_cases/passcode_use_case.dart'
+    as _i1055;
 import 'package:skeleton/authentication/presentation/manager/login_cubit.dart'
-    as _i10;
+    as _i212;
+import 'package:skeleton/home/presentation/manager/home_cubit.dart' as _i993;
 
-extension GetItInjectableX on _i1.GetIt {
+extension GetItInjectableX on _i174.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
-  _i1.GetIt init({
+  _i174.GetIt init({
     String? environment,
-    _i2.EnvironmentFilter? environmentFilter,
+    _i526.EnvironmentFilter? environmentFilter,
   }) {
-    final gh = _i2.GetItHelper(
+    final gh = _i526.GetItHelper(
       this,
       environment,
       environmentFilter,
     );
-    gh.factory<_i3.LoginMapper>(() => _i3.LoginMapper());
-    gh.factory<_i4.ILoginService>(() => _i5.LoginServiceImpl());
-    gh.factory<_i6.ILoginRepository>(() => _i7.LoginRepositoryImpl(
-          gh<_i4.ILoginService>(),
-          gh<_i3.LoginMapper>(),
+    gh.factory<_i993.HomeCubit>(() => _i993.HomeCubit());
+    gh.factory<_i276.PasscodeMapper>(() => _i276.PasscodeMapper());
+    gh.factory<_i710.LoginMapper>(() => _i710.LoginMapper());
+    gh.factory<_i1032.ILoginService>(() => _i991.LoginServiceImpl());
+    gh.factory<_i652.ILoginRepository>(() => _i819.LoginRepositoryImpl(
+          gh<_i1032.ILoginService>(),
+          gh<_i710.LoginMapper>(),
+          gh<_i276.PasscodeMapper>(),
         ));
-    gh.factory<_i8.LoginUseCase>(
-        () => _i8.LoginUseCase(gh<_i6.ILoginRepository>()));
-    gh.factory<_i9.LoginResultUseCase>(
-        () => _i9.LoginResultUseCase(gh<_i6.ILoginRepository>()));
-    gh.factory<_i10.LoginCubit>(() => _i10.LoginCubit(
-          gh<_i8.LoginUseCase>(),
-          gh<_i9.LoginResultUseCase>(),
+    gh.factory<_i1055.PasscodeUseCase>(
+        () => _i1055.PasscodeUseCase(gh<_i652.ILoginRepository>()));
+    gh.factory<_i756.LoginUseCase>(
+        () => _i756.LoginUseCase(gh<_i652.ILoginRepository>()));
+    gh.factory<_i392.LoginResultUseCase>(
+        () => _i392.LoginResultUseCase(gh<_i652.ILoginRepository>()));
+    gh.factory<_i212.LoginCubit>(() => _i212.LoginCubit(
+          gh<_i756.LoginUseCase>(),
+          gh<_i392.LoginResultUseCase>(),
+          gh<_i1055.PasscodeUseCase>(),
         ));
     return this;
   }

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 import 'package:skeleton/app.dart';
+import 'package:skeleton/authentication/data/repositories/login_repository_impl.dart';
+import 'package:skeleton/authentication/domain/use_cases/login_use_case.dart';
 import 'package:skeleton/authentication/presentation/manager/login_cubit.dart';
 import 'base/core/my_http_overrides.dart';
 import 'injection.dart';
@@ -19,7 +21,7 @@ void main() async {
   ChuckerFlutter.showOnRelease = true;
 
   QR.setUrlStrategy();
-  QR.settings.enableLog = false;
+  QR.settings.enableLog = true;
   await dotenv.load(fileName: ".env"); // Load the .env file
   configureDependencies(); // Initialize dependencies
   runApp(MultiBlocProvider(

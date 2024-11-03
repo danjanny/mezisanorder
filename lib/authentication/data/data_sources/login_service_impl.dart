@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:skeleton/authentication/data/data_sources/abstraction/i_login_service.dart';
 import '../../../base/data/data_sources/base_http_service.dart';
 import '../../domain/params/login_request.dart';
+import '../../domain/params/passcode_request.dart';
 
 @Injectable(as: ILoginService)
 class LoginServiceImpl extends BaseHttpService implements ILoginService {
@@ -43,5 +44,11 @@ class LoginServiceImpl extends BaseHttpService implements ILoginService {
     var userData = loginRequest.toJson();
     return await fetchGet('/93faebd2-e953-4ccc-a239-033132c576ae',
         queryParams: userData);
+  }
+
+  @override
+  Future<http.Response> submitPasscode(PasscodeRequest passcodeRequest) async {
+    var request = passcodeRequest.toJson();
+    return await fetchPost('/cek_passcode', body: request);
   }
 }

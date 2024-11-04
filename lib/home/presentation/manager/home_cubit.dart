@@ -1,6 +1,9 @@
+import 'package:background_sms/background_sms.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_sms/flutter_sms.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:injectable/injectable.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:skeleton/home/domain/params/input_result_param.dart';
 import 'package:skeleton/home/domain/use_cases/input_result_use_case.dart';
 import 'package:sms_advanced/sms_advanced.dart';
@@ -17,6 +20,61 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> onSave() async {
     emit(HomeComingSoonState('Fitur ini akan segera hadir'));
   }
+
+  // Future<void> sendSmsHasilPilkada(InputResultParam inputParam) async {
+  //   var box = Hive.box('settings');
+  //   String? idTypeRelawan = await box.get('idTypeRelawan',
+  //       defaultValue: "1"); // default is Enumerator (1)
+  //   String idTypeRelawanCode = (idTypeRelawan == "1")
+  //       ? "Q"
+  //       : (idTypeRelawan == "2")
+  //           ? "S"
+  //           : "1";
+  //
+  //   String formattedMessage = inputParam.toSmsFormattedString(
+  //       idTypeRelawanCode); // convert inputParam into sms formatted string
+  //
+  //   print(formattedMessage);
+  //
+  //   String recipientPhoneNumber = '96999';
+  //
+  //   SmsSender sender = SmsSender();
+  //   SmsMessage message = SmsMessage(recipientPhoneNumber, formattedMessage);
+  //   sender.sendSms(message);
+  // }
+
+  // Future<void> sendSmsHasilPilkada(InputResultParam inputParam) async {
+  //   var box = Hive.box('settings');
+  //   String? idTypeRelawan = await box.get('idTypeRelawan',
+  //       defaultValue: "1"); // default is Enumerator (1)
+  //   String idTypeRelawanCode = (idTypeRelawan == "1")
+  //       ? "Q"
+  //       : (idTypeRelawan == "2")
+  //           ? "S"
+  //           : "1";
+  //
+  //   String formattedMessage = inputParam.toSmsFormattedString(
+  //       idTypeRelawanCode); // convert inputParam into sms formatted string
+  //
+  //   print(formattedMessage);
+  //
+  //   String recipientPhoneNumber = '96999';
+  //
+  //   // Request SMS permission
+  //   if (await Permission.sms.request().isGranted) {
+  //     try {
+  //       String result = await sendSMS(
+  //         message: formattedMessage,
+  //         recipients: [recipientPhoneNumber],
+  //       );
+  //       print(result);
+  //     } catch (error) {
+  //       print("Failed to send SMS: $error");
+  //     }
+  //   } else {
+  //     print("SMS permission not granted");
+  //   }
+  // }
 
   Future<void> sendSmsHasilPilkada(InputResultParam inputParam) async {
     var box = Hive.box('settings');
@@ -35,9 +93,24 @@ class HomeCubit extends Cubit<HomeState> {
 
     String recipientPhoneNumber = '96999';
 
-    SmsSender sender = SmsSender();
-    SmsMessage message = SmsMessage(recipientPhoneNumber, formattedMessage);
-    sender.sendSms(message);
+    // Request SMS permission
+    if (await Permission.sms.request().isGranted) {
+      try {
+        SmsStatus result = await BackgroundSms.sendMessage(
+          phoneNumber: recipientPhoneNumber,
+          message: formattedMessage,
+        );
+        if (result == SmsStatus.sent) {
+          print("Sent");
+        } else {
+          print("Failed");
+        }
+      } catch (error) {
+        print("Failed to send SMS: $error");
+      }
+    } else {
+      print("SMS permission not granted");
+    }
   }
 
   Future<void> inputResult(InputResultParam inputParam) async {

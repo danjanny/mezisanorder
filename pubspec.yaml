@@ -53,6 +53,7 @@ dependencies:
   device_info_plus: ^11.1.0
   sms_advanced: ^1.1.0
   permission_handler: ^11.3.1
+  flutter_sms: ^2.3.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

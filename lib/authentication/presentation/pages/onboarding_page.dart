@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qlevar_router/qlevar_router.dart';
-import '../../../base/presentation/styles/text_form_field_style.dart';
-import '../../../base/presentation/styles/text_styles.dart';
 import '../../../base/presentation/button/quickcount_custom_button.dart';
-import '../../domain/params/login_request.dart';
 import '../manager/login_cubit.dart';
 import '../manager/login_state.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:skeleton/route/routes.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-class OnboardingPage extends StatelessWidget {
+class OnboardingPage extends StatefulWidget {
   const OnboardingPage({Key? key}) : super(key: key);
+
+  @override
+  State<OnboardingPage> createState() => _OnboardingPageState();
+}
+
+class _OnboardingPageState extends State<OnboardingPage> {
+  var box = Hive.box('settings');
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +78,8 @@ class OnboardingPage extends StatelessWidget {
                   text: 'Mulai',
                   state: QuickcountButtonState.enabled,
                   onPressed: () {
-                    QR.to(AppRoutes.passcodePath);
+                    box.get('isPasscodeFilled', defaultValue: false) ? QR.to(AppRoutes.registerPath) : QR.to(AppRoutes.passcodePath);
+
                   },
                 ),
                 const SizedBox(height: 36),

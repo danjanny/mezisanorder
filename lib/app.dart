@@ -43,10 +43,7 @@ class _AppState extends State<App> {
                 routerDelegate: QRouterDelegate(
                     AppRoutes.routes,
                     initPath: box.get('isInitVolunteerSuccess', defaultValue: false)
-                        ? AppRoutes.homePath
-                        : box.get('isPasscodeFilled', defaultValue: false)
-                            ? AppRoutes.registerPath
-                            : AppRoutes.rootPath,
+                        ? AppRoutes.homePath : AppRoutes.rootPath,
                     observers: [ChuckerFlutter.navigatorObserver])),
           ),
         );

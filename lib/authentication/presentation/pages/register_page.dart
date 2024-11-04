@@ -169,12 +169,12 @@ class _RegisterPageState extends State<RegisterPage> {
       FormFieldData(
         titleLabel: "Kode Lokasi 1",
         inputLabel: "Masukkan Kode Lokasi 1",
-        helperText: "Helper text for Kode Lokasi 1",
+        helperText: "Periksa kembali kode lokasi yang diberikan.",
       ),
       FormFieldData(
         titleLabel: "Kode Lokasi 2",
         inputLabel: "Masukkan Kode Lokasi 2",
-        helperText: "Helper text for Kode Lokasi 2",
+        helperText: "Periksa kembali kode lokasi yang diberikan.",
       ),
       FormFieldData(
         titleLabel: "Nama",
@@ -184,12 +184,12 @@ class _RegisterPageState extends State<RegisterPage> {
       FormFieldData(
         titleLabel: "No Handphone 1",
         inputLabel: "Masukkan No Handphone 1",
-        helperText: "Helper text for No Handphone 1",
+        helperText: "Nomor handphone adalah nomor aktif yang dapat dihubungi",
       ),
       FormFieldData(
         titleLabel: "No Handphone 2",
         inputLabel: "Masukkan No Handphone 2",
-        helperText: "Helper text for No Handphone 2",
+        helperText: "Nomor handphone adalah nomor aktif yang dapat dihubungi",
       ),
     ];
 

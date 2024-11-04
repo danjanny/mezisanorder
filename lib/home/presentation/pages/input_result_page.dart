@@ -251,6 +251,33 @@ class _InputResultPageState extends State<InputResultPage> {
                         onPressed: () {
                           // TODO: Implement SMS sending
 
+                          String? dpt = formFields[formFields.length - 1].value;
+                          String? suaraTidakSah = formFields[formFields.length - 2].value;
+
+                          int totalVotes = int.tryParse(suaraTidakSah ?? '0') ?? 0;
+
+                          for (int i = 0; i < (listCalon?.length ?? 0); i++) {
+                            final calonResult = int.tryParse(formFields[i + 1].value ?? '0') ?? 0;
+                            totalVotes += (calonResult);
+                          }
+
+                          // Convert DPT to integer for comparison
+                          int dptValue = int.tryParse(dpt ?? '0') ?? 0;
+
+                          // Validate that DPT is not less than total votes
+                          print('Jumlah DPT: $dptValue');
+                          print('Jumlah Vote: $totalVotes');
+                          if (dptValue < totalVotes) {
+                            // Show an error message if DPT is smaller
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Jumlah DPT tidak boleh lebih kecil dari total suara lain"),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+
                           InputResultParam inputResultParam = InputResultParam(
                             idInisiasi: box.get('idInisiasi', defaultValue: '').toString(),
                             kodeLokasi: formFields[0].selectedDropdownItem,

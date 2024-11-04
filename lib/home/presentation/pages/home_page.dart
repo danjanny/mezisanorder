@@ -137,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
-                        backgroundColor: AppColors.warningMain,
+                        backgroundColor: AppColors.dangerMain,
                         minimumSize: const Size(double.infinity, 50),
                       ),
                       onPressed: () {

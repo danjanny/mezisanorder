@@ -1,5 +1,4 @@
 import '../../../base/data/models/general_response_model.dart';
-import '../../domain/entities/passcode.dart';
 
 class PasscodeResponseModel extends GeneralResponse {
   PasscodeResponseModel(

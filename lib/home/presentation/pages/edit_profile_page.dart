@@ -6,6 +6,7 @@ import '../../../base/presentation/styles/text_styles.dart';
 import '../../../base/presentation/button/quickcount_custom_button.dart';
 import '../../../base/presentation/textformfield/app_colors.dart';
 import '../../../base/presentation/textformfield/quickcount_text_form_field.dart';
+import '../../../injection.dart';
 import '../manager/home_cubit.dart';
 import '../manager/home_state.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -77,7 +78,7 @@ class EditProfilePage extends StatelessWidget {
       ),
     ];
     return BlocProvider(
-      create: (_) => HomeCubit(),
+      create: (_) => getIt<HomeCubit>(),
       child: BlocConsumer<HomeCubit, HomeState>(
       listener: (context, state) {
         if  (state is HomeComingSoonState || state is HomeErrorState) {

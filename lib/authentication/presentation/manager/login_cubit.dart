@@ -64,12 +64,28 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       InitResult? result = await _initVolunteerUseCase.call(initVolunteerRequestParams);
       if (result?.status?.toLowerCase() == "ok") {
-        // TODO: Fix result hive initData
+        List<Map<String, dynamic>> dataCalon = [];
+        for (var item in result?.data?.calon ?? []) {
+          dataCalon.add({
+            'no_urut': item.noUrut,
+            'pasangan': item.pasangan,
+          });
+        }
         var box = Hive.box('settings');
         await box.put('isInitVolunteerSuccess', true);
         await box.put('locationCode1', initVolunteerRequestParams.kodeLokasi1);
         await box.put('locationCode2', initVolunteerRequestParams.kodeLokasi2);
-        await box.put('initResult', result?.data);
+        await box.putAll({
+          'idWilayah': result?.data?.idWilayah,
+          'idInisiasi': result?.data?.idInisiasi,
+          'kodeLokasi1': initVolunteerRequestParams.kodeLokasi1,
+          'kodeLokasi2': initVolunteerRequestParams.kodeLokasi2,
+          'jumlahCalon': result?.data?.calon?.length,
+          'arrayNamaCalon': result?.data?.calon?.map((e) => e.pasangan).toList(),
+        });
+        await box.put('dataCalon', dataCalon);
+        int totalCalon = result?.data?.calon?.length ?? 0;
+        print('Response Calon + $totalCalon');
         emit(InitVolunteerLoadedState(initResult: result));
       } else {
         emit(LoginErrorState(message: result?.message));

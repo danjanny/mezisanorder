@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:qlevar_router/qlevar_router.dart';
-import 'package:skeleton/base/presentation/appbar/quickcount_app_bar.dart';
 import 'package:skeleton/base/presentation/appbar/quickcount_home_app_bar.dart';
 import 'package:skeleton/base/presentation/icons/icon_asset.dart';
 import 'package:skeleton/base/presentation/styles/text_styles.dart';
-
 import '../../../base/presentation/textformfield/app_colors.dart';
 import '../../../route/routes.dart';
 
@@ -45,7 +44,6 @@ class _HomePageState extends State<HomePage> {
                         width: double.infinity,
                         child: Column(
                           children: [
-                            // Menu Utama
                             Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
@@ -74,48 +72,104 @@ class _HomePageState extends State<HomePage> {
                             MenuCardItem(
                               iconPath: IconAsset.editProfileIcon,
                               title: 'Edit Profil',
-                              subtitle:
-                                  'Perbaharui data anda atau ubah jika terdapat kesalahan',
+                              subtitle: 'Perbaharui data anda atau ubah jika terdapat kesalahan',
                               onTap: () {
                                 QR.to(AppRoutes.editProfilePath);
-                              }
+                              },
                             ),
+                            const SizedBox(height: 19),
+                            MenuCardItem(
+                              iconPath: IconAsset.logoutIcon,
+                              title: 'Logout',
+                              subtitle: 'Keluar ke menu awal',
+                              onTap: () {
+                                logout(context);
+                              },
+                            )
                           ],
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 80,
-                  )
+                  const SizedBox(height: 80),
                 ],
               ),
             ),
-            // logo indikator
             Positioned(
-                bottom: 16,
-                left: 16,
-                right: 16,
-                child: Column(
-                  children: [
-                    Text('powered by',
-                        style: TextStyles.body16Regular
-                            .copyWith(height: 20 / 16, color: AppColors.grey)),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    Image.asset(
-                        IconAsset.companyLogo,
-                        width: 200,
-                        height: 35,
-                    )
-                  ],
-                ))
+              bottom: 16,
+              left: 16,
+              right: 16,
+              child: Column(
+                children: [
+                  Text('powered by',
+                      style: TextStyles.body16Regular
+                          .copyWith(height: 20 / 16, color: AppColors.grey)),
+                  const SizedBox(height: 4),
+                  Image.asset(
+                    IconAsset.companyLogo,
+                    width: 200,
+                    height: 35,
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
         backgroundColor: Colors.white,
       );
     });
+  }
+
+  void logout(BuildContext context) async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Yakin keluar kembali ke halaman awal?'),
+              const SizedBox(height: 16.0),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.warningMain,
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 8), // Added spacing between buttons
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.primaryColor,
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      onPressed: () async {
+                        var box = Hive.box('settings');
+                        await box.put('isInitVolunteerSuccess', false);
+                        await box.put('isPasscodeFilled', false);
+                        QR.to(AppRoutes.rootPath);
+                      },
+                      child: const Text('Yakin'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -125,8 +179,7 @@ class MenuCardItem extends StatelessWidget {
   final String? subtitle;
   final VoidCallback? onTap;
 
-  const MenuCardItem(
-      {super.key, this.iconPath, this.title, this.subtitle, this.onTap});
+  const MenuCardItem({super.key, this.iconPath, this.title, this.subtitle, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -148,22 +201,23 @@ class MenuCardItem extends StatelessWidget {
               width: 50,
               height: 50,
             ),
-            const SizedBox(
-              width: 10,
-            ),
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title ?? '',
-                      style: TextStyles.body16Bold.copyWith(color: Colors.black)),
+                  Text(
+                    title ?? '',
+                    style: TextStyles.body16Bold.copyWith(color: Colors.black),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle ?? '',
-                      style: TextStyles.body14Regular
-                          .copyWith(color: AppColors.grey)),
+                  Text(
+                    subtitle ?? '',
+                    style: TextStyles.body14Regular.copyWith(color: AppColors.grey),
+                  ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -6,6 +6,7 @@ import '../../../base/presentation/button/quickcount_custom_button.dart';
 import '../../../base/presentation/textformfield/quickcount_text_form_field.dart';
 import '../manager/home_cubit.dart';
 import '../manager/home_state.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class FormFieldData {
   final String titleLabel;
@@ -31,26 +32,39 @@ class InputResultPage extends StatefulWidget {
 }
 
 class _InputResultPageState extends State<InputResultPage> {
-  var box = Hive.box('settings');
-  InitData? initData;
+  final Box box = Hive.box('settings');
+  List<CalonData>? listCalon;
 
   List<String> dropdownItems = [];
 
   @override
   void initState() {
     super.initState();
+    _initializeData();
+  }
 
-    // TODO: Fix result hive initData
+  void _initializeData() {
+    List<dynamic> retrievedData = box.get('dataCalon', defaultValue: []);
+    List<Map<String, dynamic>> dataCalon = List<Map<String, dynamic>>.from(retrievedData);
+
     setState(() {
-      dropdownItems = [];
-      dropdownItems.add(box.get('locationCode1', defaultValue: ''));
-      dropdownItems.add(box.get('locationCode2', defaultValue: ''));
-      initData = box.get('initResult') as InitData?;
-      InitData? _initData = box.get('initResult') as InitData?;
-      String? calon = _initData?.calon?.first.pasangan ?? '';
-      print('Check initResult: $calon');
-    });
+      listCalon = dataCalon.map((item) {
+        return CalonData(
+          noUrut: item['no_urut'] as String?,
+          pasangan: item['pasangan'] as String?,
+          id: '',
+          idWilayah: ''
+        );
+      }).toList();
 
+      dropdownItems = [];
+      dropdownItems = [
+        box.get('locationCode1', defaultValue: ''),
+        box.get('locationCode2', defaultValue: ''),
+      ];
+      int? totalCalon = box.get('jumlahCalon', defaultValue: '');
+      print('Check initResult: $totalCalon');
+    });
   }
 
   @override
@@ -62,25 +76,22 @@ class _InputResultPageState extends State<InputResultPage> {
           // TODO: Handle state change
         },
         builder: (context, state) {
+          // Define the initial form fields
           final List<FormFieldData> formFields = [
             FormFieldData(
               titleLabel: "Kode Lokasi",
               inputLabel: "Pilih Kode Lokasi",
               dropdownItems: dropdownItems,
-              selectedDropdownItem: dropdownItems.first,
+              selectedDropdownItem: dropdownItems.isNotEmpty ? dropdownItems.first : null,
               helperText: null,
             ),
-            FormFieldData(
-              titleLabel: initData?.calon?.first.pasangan ?? "Pasangan 1",
-              inputLabel: "Masukkan perolehan pasangan 1",
+            // Add form fields for each calon
+            ...?listCalon?.map((calon) => FormFieldData(
+              titleLabel: calon.pasangan ?? "Pasangan",
+              inputLabel: "Masukkan perolehan ${calon.pasangan ?? "Pasangan"}",
               dropdownItems: [],
               helperText: "Periksa kembali hasil perolehan",
-            ),FormFieldData(
-              titleLabel: "Perolehan pasangan 2",
-              inputLabel: "Masukkan perolehan pasangan 2",
-              dropdownItems: [],
-              helperText: "Periksa kembali hasil perolehan",
-            ),
+            )),
             FormFieldData(
               titleLabel: "Suara tidak sah",
               inputLabel: "Masukkan jumlah suara tidak sah",
@@ -132,7 +143,7 @@ class _InputResultPageState extends State<InputResultPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       itemCount: formFields.length,
                       itemBuilder: (context, index) {
                         final fieldData = formFields[index];
@@ -172,4 +183,5 @@ class _InputResultPageState extends State<InputResultPage> {
       ),
     );
   }
+
 }

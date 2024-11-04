@@ -12,22 +12,42 @@ class InitResult {
       data: json['data'] != null ? InitData.fromJson(json['data']) : null,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'status': status,
+      'message': message,
+      'data': data?.toJson(),
+    };
+  }
 }
 
 class InitData {
-  final String? idInisiasi;
+  final int? idInisiasi;
   final String? idWilayah;
   final List<CalonData>? calon;
 
   InitData({this.idInisiasi, this.idWilayah, this.calon});
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id_inisiasi': idInisiasi,
+      'id_wilayah': idWilayah,
+      'calon': calon?.map((e) => e.toJson()).toList(),
+    };
+  }
+
   factory InitData.fromJson(Map<String, dynamic> json) {
     return InitData(
-      idInisiasi: json['id_inisiasi'],
-      idWilayah: json['id_wilayah'],
-      calon: json['calon'] != null ? (json['calon'] as List).map((i) => CalonData.fromJson(i)).toList() : null,
+      idInisiasi: json['id_inisiasi'] ?? 0,
+      idWilayah: json['id_wilayah'] ?? '',
+      calon: json['calon'] != null
+          ? List<CalonData>.from(
+          json['calon'].map((e) => CalonData.fromJson(e)).toList())
+          : [],
     );
   }
+
 }
 
 class CalonData {
@@ -45,5 +65,14 @@ class CalonData {
       noUrut: json['no_urut'],
       pasangan: json['pasangan'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'id_wilayah': idWilayah,
+      'no_urut': noUrut,
+      'pasangan': pasangan,
+    };
   }
 }

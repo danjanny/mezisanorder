@@ -4,9 +4,17 @@ import 'package:qlevar_router/qlevar_router.dart';
 import 'base/presentation/styles/text_form_field_style.dart';
 import 'base/presentation/styles/text_styles.dart';
 import 'route/routes.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   const App({super.key});
+
+  @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  var box = Hive.box('settings');
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +40,13 @@ class App extends StatelessWidget {
                   // Add other custom component themes here
                 ),
                 routeInformationParser: const QRouteInformationParser(),
-                routerDelegate: QRouterDelegate(AppRoutes.routes,
+                routerDelegate: QRouterDelegate(
+                    AppRoutes.routes,
+                    initPath: box.get('isInitVolunteerSuccess', defaultValue: false)
+                        ? AppRoutes.homePath
+                        : box.get('isPasscodeFilled', defaultValue: false)
+                            ? AppRoutes.registerPath
+                            : AppRoutes.rootPath,
                     observers: [ChuckerFlutter.navigatorObserver])),
           ),
         );

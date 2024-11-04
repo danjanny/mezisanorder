@@ -7,7 +7,9 @@ class WilayahResult {
 
   factory WilayahResult.fromJson(Map<String, dynamic> json) {
     return WilayahResult(
-      wilayah: List<Wilayah>.from(json['data'].map((x) => Wilayah.fromJson(x))),
+      wilayah: List<Wilayah>.from(
+          json['data'].map((item) => Wilayah.fromJson(item as Map<String, dynamic>))
+      ),
     );
   }
 }

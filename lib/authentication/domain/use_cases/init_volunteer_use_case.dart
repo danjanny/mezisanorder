@@ -1,10 +1,8 @@
 import 'package:injectable/injectable.dart';
 import 'package:skeleton/authentication/domain/entities/init_result.dart';
-import 'package:skeleton/authentication/domain/entities/passcode.dart';
 import 'package:skeleton/authentication/domain/params/init_volunteer_request.dart';
 import 'package:skeleton/authentication/domain/repositories/i_login_repository.dart';
 import '../../../base/domain/use_cases/use_case.dart';
-import '../params/passcode_request.dart';
 
 @injectable
 class InitVolunteerUseCase extends UseCase<InitResult?, InitVolunteerRequestParams> {

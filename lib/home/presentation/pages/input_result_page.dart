@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qlevar_router/qlevar_router.dart';
-import '../../../base/presentation/styles/text_form_field_style.dart';
-import '../../../base/presentation/styles/text_styles.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import '../../../authentication/domain/entities/init_result.dart';
 import '../../../base/presentation/button/quickcount_custom_button.dart';
 import '../../../base/presentation/textformfield/quickcount_text_form_field.dart';
 import '../manager/home_cubit.dart';
 import '../manager/home_state.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:skeleton/route/routes.dart';
 
 class FormFieldData {
   final String titleLabel;
@@ -26,8 +23,35 @@ class FormFieldData {
   });
 }
 
-class InputResultPage extends StatelessWidget {
+class InputResultPage extends StatefulWidget {
   const InputResultPage({Key? key}) : super(key: key);
+
+  @override
+  State<InputResultPage> createState() => _InputResultPageState();
+}
+
+class _InputResultPageState extends State<InputResultPage> {
+  var box = Hive.box('settings');
+  InitData? initData;
+
+  List<String> dropdownItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    // TODO: Fix result hive initData
+    setState(() {
+      dropdownItems = [];
+      dropdownItems.add(box.get('locationCode1', defaultValue: ''));
+      dropdownItems.add(box.get('locationCode2', defaultValue: ''));
+      initData = box.get('initResult') as InitData?;
+      InitData? _initData = box.get('initResult') as InitData?;
+      String? calon = _initData?.calon?.first.pasangan ?? '';
+      print('Check initResult: $calon');
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +66,12 @@ class InputResultPage extends StatelessWidget {
             FormFieldData(
               titleLabel: "Kode Lokasi",
               inputLabel: "Pilih Kode Lokasi",
-              dropdownItems: ["Wilayah A", "Wilayah B", "Wilayah C"],
+              dropdownItems: dropdownItems,
+              selectedDropdownItem: dropdownItems.first,
               helperText: null,
             ),
             FormFieldData(
-              titleLabel: "Perolehan pasangan 1",
+              titleLabel: initData?.calon?.first.pasangan ?? "Pasangan 1",
               inputLabel: "Masukkan perolehan pasangan 1",
               dropdownItems: [],
               helperText: "Periksa kembali hasil perolehan",

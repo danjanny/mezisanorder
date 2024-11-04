@@ -1,25 +1,62 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
-import 'package:skeleton/authentication/domain/entities/user_result.dart';
 import 'package:skeleton/authentication/domain/params/passcode_request.dart';
+import 'package:skeleton/authentication/domain/use_cases/volunteer_use_case.dart';
+import 'package:skeleton/authentication/domain/use_cases/wilayah_use_case.dart';
 import 'package:skeleton/base/data/data_sources/error_exception.dart';
-
 import '../../domain/entities/init_result.dart';
 import '../../domain/entities/passcode.dart';
-import '../../domain/entities/user.dart';
+import '../../domain/entities/volunteer_result.dart';
+import '../../domain/entities/wilayah_result.dart';
 import '../../domain/params/init_volunteer_request.dart';
-import '../../domain/params/login_request.dart';
 import '../../domain/use_cases/init_volunteer_use_case.dart';
 import '../../domain/use_cases/passcode_use_case.dart';
 import 'login_state.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 @injectable
 class LoginCubit extends Cubit<LoginState> {
   final PasscodeUseCase _passcodeUseCase;
   final InitVolunteerUseCase _initVolunteerUseCase;
+  final WilayahUseCase _wilayahUseCase;
+  final VolunteerUseCase _volunteerUseCase;
 
-  LoginCubit(this._passcodeUseCase, this._initVolunteerUseCase)
+  LoginCubit(this._passcodeUseCase, this._initVolunteerUseCase, this._wilayahUseCase, this._volunteerUseCase)
       : super(LoginInitialState());
+
+  Future<void> getVolunteer() async {
+    emit(LoginLoadingState());
+    try {
+      VolunteerResult? result = await _volunteerUseCase.call(null);
+      if (result?.volunteer.isNotEmpty ?? false) {
+        emit(VolunteerLoadedState(volunteerResult: result));
+      } else {
+        emit(LoginErrorState(message: 'Gagal mendapatkan data volunteer'));
+      }
+    } on HttpResponseException catch (e) {
+      emit(LoginErrorState(
+          statusCode: '${e.statusCode} ${e.status}', message: e.message));
+    } catch (e) {
+      emit(LoginErrorState(message: 'General Error : $e'));
+    }
+  }
+
+  Future<void> getWilayah() async {
+    emit(LoginLoadingState());
+    try {
+      WilayahResult? result = await _wilayahUseCase.call(null);
+      if (result?.wilayah.isNotEmpty ?? false) {
+        emit(WilayahLoadedState(wilayahResult: result));
+      } else {
+        emit(LoginErrorState(message: 'Gagal mendapatkan data wilayah'));
+      }
+    } on HttpResponseException catch (e) {
+      emit(LoginErrorState(
+          statusCode: '${e.statusCode} ${e.status}', message: e.message));
+    } catch (e) {
+      emit(LoginErrorState(message: 'General Error : $e'));
+    }
+  }
 
   Future<void> initVolunteer(InitVolunteerRequestParams initVolunteerRequestParams) async {
     print('Check params: ${initVolunteerRequestParams.toJson()}');
@@ -27,6 +64,12 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       InitResult? result = await _initVolunteerUseCase.call(initVolunteerRequestParams);
       if (result?.status?.toLowerCase() == "ok") {
+        // TODO: Fix result hive initData
+        var box = Hive.box('settings');
+        await box.put('isInitVolunteerSuccess', true);
+        await box.put('locationCode1', initVolunteerRequestParams.kodeLokasi1);
+        await box.put('locationCode2', initVolunteerRequestParams.kodeLokasi2);
+        await box.put('initResult', result?.data);
         emit(InitVolunteerLoadedState(initResult: result));
       } else {
         emit(LoginErrorState(message: result?.message));
@@ -47,6 +90,8 @@ class LoginCubit extends Cubit<LoginState> {
       Passcode? result = await _passcodeUseCase.call(PasscodeRequest(passcode: passcodeRequest.passcode));
       if (result?.status?.toLowerCase() == "ok") {
         emit(PasscodeLoadedState());
+        var box = Hive.box('settings');
+        await box.put('isPasscodeFilled', true);
       } else {
         emit(LoginErrorState(message: result?.message));
       }

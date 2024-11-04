@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:qlevar_router/qlevar_router.dart';
 import 'package:skeleton/home/domain/params/input_result_param.dart';
+import 'package:skeleton/route/routes.dart';
 import '../../../authentication/domain/entities/init_result.dart';
 import '../../../base/presentation/button/quickcount_custom_button.dart';
 import '../../../base/presentation/textformfield/app_colors.dart';
@@ -134,6 +136,7 @@ class _InputResultPageState extends State<InputResultPage> {
                           ),
                           onPressed: () {
                             Navigator.pop(context);
+                            QR.popUntilOrPush(AppRoutes.homePath);
                           },
                           child: const Text('OK'),
                         ),
@@ -176,7 +179,6 @@ class _InputResultPageState extends State<InputResultPage> {
             ),
           ];
 
-
           return Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.white,
@@ -189,95 +191,97 @@ class _InputResultPageState extends State<InputResultPage> {
               toolbarHeight: 80,
             ),
             body: Stack(
-              children: [
-                SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      color: const Color(0xFFE5E5E5),
-                      height: 8,
-                    ),
-                    const SizedBox(height: 24),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        'Hasil Pilkada',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: formFields.length,
-                        itemBuilder: (context, index) {
-                          final fieldData = formFields[index];
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16.0),
-                            child: QuickcountTextFormField(
-                              showDropdown: fieldData.dropdownItems.isNotEmpty,
-                              onDropdownChanged: (String? value) {
-                                formFields[index].selectedDropdownItem = value;
-                                formFields[index].value = value;
-                              },
-                              defaultValue: formFields[index].value,
-                              dropdownItems: fieldData.dropdownItems,
-                              selectedDropdownItem: fieldData.selectedDropdownItem,
-                              showHelper: fieldData.helperText != null,
-                              helperLabel: fieldData.helperText ?? '',
-                              titleLabel: fieldData.titleLabel,
-                              inputLabel: fieldData.inputLabel,
-                              onChange: (val) {
-                                formFields[index].value = val;
+                children: [
+                  SingleChildScrollView(
+                    child: Form(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            color: const Color(0xFFE5E5E5),
+                            height: 8,
+                          ),
+                          const SizedBox(height: 24),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(
+                              'Hasil Pilkada',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: formFields.length,
+                              itemBuilder: (context, index) {
+                                final fieldData = formFields[index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16.0),
+                                  child: QuickcountTextFormField(
+                                    showDropdown: fieldData.dropdownItems.isNotEmpty,
+                                    onDropdownChanged: (String? value) {
+                                      formFields[index].selectedDropdownItem = value;
+                                      formFields[index].value = value;
+                                    },
+                                    defaultValue: formFields[index].value,
+                                    dropdownItems: fieldData.dropdownItems,
+                                    selectedDropdownItem: fieldData.selectedDropdownItem,
+                                    showHelper: fieldData.helperText != null,
+                                    helperLabel: fieldData.helperText ?? '',
+                                    titleLabel: fieldData.titleLabel,
+                                    inputLabel: fieldData.inputLabel,
+                                    onChange: (val) {
+                                      formFields[index].value = val;
+                                    },
+                                  ),
+                                );
                               },
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: QuickcountButton(
-                        text: 'Kirim Hasil',
-                        state: QuickcountButtonState.enabled,
-                        onPressed: () {
-                          // TODO: Implement SMS sending
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: QuickcountButton(
+                              text: 'Kirim Hasil',
+                              state: QuickcountButtonState.enabled,
+                              onPressed: () {
+                                // TODO: Implement SMS sending
 
-                          InputResultParam inputResultParam = InputResultParam(
-                            idInisiasi: box.get('idInisiasi', defaultValue: '').toString(),
-                            kodeLokasi: formFields[0].selectedDropdownItem,
-                            suaraTidakSah: formFields[formFields.length - 1].value,
-                            dpt: formFields[formFields.length - 1].value,
-                          );
+                                InputResultParam inputResultParam = InputResultParam(
+                                  idInisiasi: box.get('idInisiasi', defaultValue: '').toString(),
+                                  kodeLokasi: formFields[0].selectedDropdownItem,
+                                  suaraTidakSah: formFields[formFields.length - 2].value,
+                                  dpt: formFields[formFields.length - 1].value,
+                                );
 
-                          for (int i = 0; i < (listCalon?.length ?? 0); i++) {
-                            final calonResult = formFields[i + 1].value;
-                            inputResultParam.addCalonResult(i + 1, calonResult ?? '');
-                          }
-                          context.read<HomeCubit>().inputResult(inputResultParam);
-                        },
+                                for (int i = 0; i < (listCalon?.length ?? 0); i++) {
+                                  final calonResult = formFields[i + 1].value;
+                                  inputResultParam.addCalonResult(i + 1, calonResult ?? '');
+                                }
+                                context.read<HomeCubit>().inputResult(inputResultParam);
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 36),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 36),
-                  ],
-                ),
-              ),
-                if (state is HomeLoadingState)
-                  Container(
-                    color: Colors.white.withOpacity(0.5),
-                    child: const Center(
-                      child: CircularProgressIndicator(),
                     ),
                   ),
-              ]
+                  if (state is HomeLoadingState)
+                    Container(
+                      color: Colors.white.withOpacity(0.5),
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                ]
             ),
             backgroundColor: Colors.white,
           );

@@ -14,6 +14,6 @@ class InputResultUseCase extends UseCase<InputResult?, InputResultParam> {
 
   @override
   Future<InputResult?> call(InputResultParam params) async {
-    return _homeRepository.initResult(params);
+    return await _homeRepository.initResult(params);
   }
 }

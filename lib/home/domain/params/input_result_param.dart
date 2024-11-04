@@ -18,11 +18,17 @@ class InputResultParam {
 
   Map<String, dynamic> toJson() {
     return {
-      'id_inisiasi' : idInisiasi,
+      'id_inisiasi': idInisiasi,
       'kode_lokasi': kodeLokasi,
       'suara_tidak_sah': suaraTidakSah,
       'dpt': dpt,
       ...calonData,
     };
+  }
+
+  String toSmsFormattedString(String idTypeRelawanCode) {
+    String calonDataString = calonData.values.join('#');
+    print(calonDataString);
+    return 'INDI $idTypeRelawanCode#$kodeLokasi#$calonDataString#$suaraTidakSah#$dpt';
   }
 }

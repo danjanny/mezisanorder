@@ -230,6 +230,8 @@ class _RegisterPageState extends State<RegisterPage> {
           QR.navigator.popUntilOrPush(AppRoutes.homePath);
         } else if (state is LoginErrorState) {
           showModalBottomSheet(
+            isDismissible: false,
+            enableDrag: false,
             context: context,
             builder: (context) {
               return Container(

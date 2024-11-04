@@ -21,7 +21,8 @@ class LoginCubit extends Cubit<LoginState> {
   final WilayahUseCase _wilayahUseCase;
   final VolunteerUseCase _volunteerUseCase;
 
-  LoginCubit(this._passcodeUseCase, this._initVolunteerUseCase, this._wilayahUseCase, this._volunteerUseCase)
+  LoginCubit(this._passcodeUseCase, this._initVolunteerUseCase,
+      this._wilayahUseCase, this._volunteerUseCase)
       : super(LoginInitialState());
 
   Future<void> getVolunteer() async {
@@ -58,11 +59,13 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  Future<void> initVolunteer(InitVolunteerRequestParams initVolunteerRequestParams) async {
+  Future<void> initVolunteer(
+      InitVolunteerRequestParams initVolunteerRequestParams) async {
     print('Check params: ${initVolunteerRequestParams.toJson()}');
     emit(LoginLoadingState());
     try {
-      InitResult? result = await _initVolunteerUseCase.call(initVolunteerRequestParams);
+      InitResult? result =
+          await _initVolunteerUseCase.call(initVolunteerRequestParams);
       if (result?.status?.toLowerCase() == "ok") {
         List<Map<String, dynamic>> dataCalon = [];
         for (var item in result?.data?.calon ?? []) {
@@ -75,13 +78,19 @@ class LoginCubit extends Cubit<LoginState> {
         await box.put('isInitVolunteerSuccess', true);
         await box.put('locationCode1', initVolunteerRequestParams.kodeLokasi1);
         await box.put('locationCode2', initVolunteerRequestParams.kodeLokasi2);
+
+        // store jenis relawan. 1 = enumerator, 2 = spotchecker
+        await box.put(
+            'idTypeRelawan', initVolunteerRequestParams.idTypeRelawan);
+
         await box.putAll({
           'idWilayah': result?.data?.idWilayah,
           'idInisiasi': result?.data?.idInisiasi,
           'kodeLokasi1': initVolunteerRequestParams.kodeLokasi1,
           'kodeLokasi2': initVolunteerRequestParams.kodeLokasi2,
           'jumlahCalon': result?.data?.calon?.length,
-          'arrayNamaCalon': result?.data?.calon?.map((e) => e.pasangan).toList(),
+          'arrayNamaCalon':
+              result?.data?.calon?.map((e) => e.pasangan).toList(),
         });
         await box.put('dataCalon', dataCalon);
         int totalCalon = result?.data?.calon?.length ?? 0;
@@ -103,7 +112,8 @@ class LoginCubit extends Cubit<LoginState> {
     print("request: ${passcodeRequest.passcode}");
     try {
       emit(LoginLoadingState());
-      Passcode? result = await _passcodeUseCase.call(PasscodeRequest(passcode: passcodeRequest.passcode));
+      Passcode? result = await _passcodeUseCase
+          .call(PasscodeRequest(passcode: passcodeRequest.passcode));
       if (result?.status?.toLowerCase() == "ok") {
         emit(PasscodeLoadedState());
         var box = Hive.box('settings');

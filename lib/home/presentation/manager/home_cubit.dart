@@ -74,6 +74,31 @@ class HomeCubit extends Cubit<HomeState> {
   //   }
   // }
 
+  Future<void> sendSmsCustomHasilPilkada(String message) async {
+    var box = Hive.box('settings');
+    print(message);
+
+    String recipientPhoneNumber = '96999';
+    if (await Permission.sms.request().isGranted) {
+      try {
+        SmsStatus result = await BackgroundSms.sendMessage(
+          phoneNumber: recipientPhoneNumber,
+          message: message,
+        );
+        if (result == SmsStatus.sent) {
+          print("Sent");
+        } else {
+          print("Failed");
+        }
+      } catch (error) {
+        print("Failed to send SMS: $error");
+      }
+    } else {
+      print("SMS permission not granted");
+    }
+  }
+
+
   Future<void> sendSmsHasilPilkada(InputResultParam inputParam) async {
     var box = Hive.box('settings');
     String? idTypeRelawan = await box.get('idTypeRelawan',

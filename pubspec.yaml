@@ -43,11 +43,10 @@ dependencies:
   qlevar_router: ^1.10.3
   flutter_dotenv: ^5.1.0
   google_fonts: ^6.2.1
-  sms_receiver: ^0.4.2
   background_sms: ^0.0.4
   workmanager: ^0.5.2
   hive_flutter: ^1.1.0
-
+  readsms: ^0.2.0+4
   flutter_svg: ^2.0.10+1
   chucker_flutter: ^1.8.1
   device_info_plus: ^11.1.0

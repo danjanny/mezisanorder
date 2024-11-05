@@ -1,7 +1,10 @@
+import 'package:background_sms/background_sms.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:qlevar_router/qlevar_router.dart';
+import 'package:readsms/readsms.dart';
 import 'package:skeleton/home/domain/params/input_result_param.dart';
 import 'package:skeleton/route/routes.dart';
 import '../../../authentication/domain/entities/init_result.dart';
@@ -11,7 +14,6 @@ import '../../../base/presentation/textformfield/quickcount_text_form_field.dart
 import '../../../injection.dart';
 import '../manager/home_cubit.dart';
 import '../manager/home_state.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 class FormFieldData {
   final String titleLabel;
@@ -41,18 +43,93 @@ class _InputResultPageState extends State<InputResultPage> {
   final Box box = Hive.box('settings');
   List<CalonData>? listCalon;
 
+  final _plugin = Readsms();
+
   List<String> dropdownItems = [];
 
   @override
   void initState() {
     super.initState();
     _initializeData();
+    _requestSmsPermission();
+    _readSms();
+  }
+
+  _readSms() {
+    getPermission().then((value) {
+      if (value) {
+        _plugin.read();
+        _plugin.smsStream.listen((event) {
+          setState(() {
+            // Check if the message contains 'OK' or 'OKE'
+            String message = event.body;
+            String sender = event.sender;
+            print('Check result $message');
+            if (sender == '96999' &&
+                (message.contains('OK') || message.contains('OKE'))) {
+              String replyMessage = message.contains('OKE') ? 'OKE' : 'OK';
+
+              sendSmsCustomHasilPilkada(replyMessage);
+            }
+          });
+        });
+      }
+    });
+  }
+
+  Future<void> sendSmsCustomHasilPilkada(String message) async {
+    var box = Hive.box('settings');
+    print(message);
+
+    String recipientPhoneNumber = '96999';
+    if (await Permission.sms.request().isGranted) {
+      try {
+        SmsStatus result = await BackgroundSms.sendMessage(
+          phoneNumber: recipientPhoneNumber,
+          message: message,
+        );
+        if (result == SmsStatus.sent) {
+          print("Sent");
+        } else {
+          print("Failed");
+        }
+      } catch (error) {
+        print("Failed to send SMS: $error");
+      }
+    } else {
+      print("SMS permission not granted");
+    }
+  }
+
+  Future<bool> getPermission() async {
+    if (await Permission.sms.status == PermissionStatus.granted) {
+      return true;
+    } else {
+      if (await Permission.sms.request() == PermissionStatus.granted) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  void _requestSmsPermission() async {
+    if (await Permission.sms.request().isGranted) {
+      print('SMS Granted');
+    } else {
+      print('SMS Not Granted');
+    }
+  }
+
+  void onTimeout() {
+    setState(() {
+      print('Timeout nih...');
+    });
   }
 
   void _initializeData() {
     List<dynamic> retrievedData = box.get('dataCalon', defaultValue: []);
 
-    // Ensure we cast each item in the retrieved data to a Map<String, dynamic>
     List<Map<String, dynamic>> dataCalon = List<Map<String, dynamic>>.from(
         retrievedData.map((item) => Map<String, dynamic>.from(item)));
 
@@ -66,10 +143,17 @@ class _InputResultPageState extends State<InputResultPage> {
         );
       }).toList();
 
+      listCalon?.sort((a, b) {
+        final noUrutA = int.tryParse(a.noUrut ?? '0') ?? 0;
+        final noUrutB = int.tryParse(b.noUrut ?? '0') ?? 0;
+        return noUrutA.compareTo(noUrutB);
+      });
+
       dropdownItems = [
         box.get('locationCode1', defaultValue: '') ?? '',
         box.get('locationCode2', defaultValue: '') ?? '',
       ];
+      dropdownItems = dropdownItems.toSet().toList();
       int? totalCalon =
           box.get('jumlahCalon', defaultValue: 0); // Adjust default type
       print('Check initResult: $totalCalon');
@@ -166,7 +250,7 @@ class _InputResultPageState extends State<InputResultPage> {
             ...?listCalon?.map((calon) => FormFieldData(
                   titleLabel: calon.pasangan ?? "Pasangan",
                   inputLabel:
-                      "Masukkan perolehan ${calon.pasangan ?? "Pasangan"}",
+                      "Masukkan perolehan pasangan no urut ${calon.noUrut ?? ""}",
                   dropdownItems: [],
                   helperText: "Periksa kembali hasil perolehan",
                 )),

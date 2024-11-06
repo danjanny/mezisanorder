@@ -7,4 +7,5 @@ abstract class ILoginService {
   Future<http.Response> submitPasscode(PasscodeRequest passcodeRequest);
   Future<http.Response> getWilayah();
   Future<http.Response> getVolunteer();
+  Future<http.Response> cekUser(String deviceId);
 }

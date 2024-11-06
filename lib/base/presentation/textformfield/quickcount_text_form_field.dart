@@ -230,10 +230,11 @@ class _QuickcountTextFormFieldState extends State<QuickcountTextFormField> {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
-                      value,
-                      style: QuickCountTextStyles.body12Regular.copyWith(
-                        color: AppColors.textPrimary,
-                        height: 18 / 12,)
+                    value,
+                    style: QuickCountTextStyles.body12Regular.copyWith(
+                      color: AppColors.textPrimary,
+                      height: 18 / 12,
+                    ),
                   ),
                 );
               }).toList(),

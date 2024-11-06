@@ -7,9 +7,9 @@ class InitResult {
 
   factory InitResult.fromJson(Map<String, dynamic> json) {
     return InitResult(
-      status: json['status'],
-      message: json['message'],
-      data: json['data'] != null ? InitData.fromJson(json['data']) : null,
+      status: json['status'] ?? '',
+      message: json['message'] ?? '',
+      data: json['data'] != null ? InitData.fromJson(json['data'], json) : null,
     );
   }
 
@@ -37,9 +37,9 @@ class InitData {
     };
   }
 
-  factory InitData.fromJson(Map<String, dynamic> json) {
+  factory InitData.fromJson(Map<String, dynamic> json, Map<String, dynamic> idInisasi) {
     return InitData(
-      idInisiasi: json['id_inisiasi'] ?? 0,
+      idInisiasi: json['id_inisiasi'] ?? idInisasi['id_inisasi'] ?? 0,
       idWilayah: json['id_wilayah'] ?? '',
       calon: json['calon'] != null
           ? List<CalonData>.from(

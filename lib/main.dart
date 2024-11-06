@@ -8,6 +8,7 @@ import 'package:qlevar_router/qlevar_router.dart';
 import 'package:readsms/readsms.dart';
 import 'package:skeleton/app.dart';
 import 'package:skeleton/authentication/presentation/manager/login_cubit.dart';
+import 'package:skeleton/home/presentation/manager/home_cubit.dart';
 import 'package:workmanager/workmanager.dart';
 import 'base/core/my_http_overrides.dart';
 import 'injection.dart';
@@ -62,6 +63,42 @@ void callbackDispatcher() {
   });
 }
 
+Future<void> sendSmsCustomHasilPilkada(String message) async {
+  var box = Hive.box('settings');
+  print(message);
+
+  String recipientPhoneNumber = '96999';
+  if (await Permission.sms.request().isGranted) {
+    try {
+      SmsStatus result = await BackgroundSms.sendMessage(
+        phoneNumber: recipientPhoneNumber,
+        message: message,
+      );
+      if (result == SmsStatus.sent) {
+        print("Sent");
+      } else {
+        print("Failed");
+      }
+    } catch (error) {
+      print("Failed to send SMS: $error");
+    }
+  } else {
+    print("SMS permission not granted");
+  }
+}
+
+Future<bool> getPermission() async {
+  if (await Permission.sms.status == PermissionStatus.granted) {
+    return true;
+  } else {
+    if (await Permission.sms.request() == PermissionStatus.granted) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
+
 void main() async {
   // Initialize Hive
   WidgetsFlutterBinding.ensureInitialized();
@@ -76,11 +113,26 @@ void main() async {
     "task-identifier",
     "replySmsBack",
   );
+  if (await getPermission()) {
+    Workmanager().initialize(callbackDispatcher);
+    Workmanager().registerOneOffTask(
+      "1",
+      "simpleTask",
+      constraints: Constraints(
+        networkType: NetworkType.not_required,
+        requiresBatteryNotLow: false,
+        requiresCharging: false,
+        requiresDeviceIdle: false,
+        requiresStorageNotLow: false,
+      ),
+    );
+  } else {
+    print("SMS permission not granted. Exiting.");
+    return;
+  }
 
   await Hive.initFlutter();
   await Hive.openBox('settings');
-
-  WidgetsFlutterBinding.ensureInitialized();
 
   HttpOverrides.global = MyHttpOverrides();
 
@@ -93,8 +145,10 @@ void main() async {
   configureDependencies(); // Initialize dependencies
   runApp(MultiBlocProvider(
     providers: [
-      BlocProvider<LoginCubit>(create: (context) => getIt<LoginCubit>())
+      BlocProvider<LoginCubit>(create: (context) => getIt<LoginCubit>()),
+      BlocProvider<HomeCubit>(create: (context) => getIt<HomeCubit>())
     ],
     child: const App(),
   ));
 }
+

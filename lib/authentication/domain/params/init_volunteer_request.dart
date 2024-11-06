@@ -7,6 +7,11 @@ class InitVolunteerRequestParams {
   final String noHandphone1;
   final String noHandphone2;
   final String deviceId;
+  final String brand;
+  final String model;
+  final String verSdkInt;
+  final String fingerprint;
+  final String serialnumber;
 
   InitVolunteerRequestParams({
     required this.idWilayah,
@@ -17,7 +22,31 @@ class InitVolunteerRequestParams {
     required this.noHandphone1,
     required this.noHandphone2,
     required this.deviceId,
+    required this.brand,
+    required this.model,
+    required this.verSdkInt,
+    required this.fingerprint,
+    required this.serialnumber,
   });
+
+  // Convert from a JSON map to an InitVolunteerRequestParams instance
+  factory InitVolunteerRequestParams.fromJson(Map<String, dynamic> json) {
+    return InitVolunteerRequestParams(
+      idWilayah: json['id_wilayah'] ?? '',
+      idTypeRelawan: json['id_type_relawan'] ?? '',
+      kodeLokasi1: json['kode_lokasi1'] ?? '',
+      kodeLokasi2: json['kode_lokasi2'] ?? '',
+      nama: json['nama'] ?? '',
+      noHandphone1: json['no_handphone1'] ?? '',
+      noHandphone2: json['no_handphone2'] ?? '',
+      deviceId: json['device_id'] ?? '',
+      brand: json['brand'] ?? '',
+      model: json['model'] ?? '',
+      verSdkInt: json['ver_sdk_int'] ?? '',
+      fingerprint: json['fingerprint'] ?? '',
+      serialnumber: json['serialnumber'] ?? '',
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -29,6 +58,11 @@ class InitVolunteerRequestParams {
       'no_handphone1': noHandphone1,
       'no_handphone2': noHandphone2,
       'device_id': deviceId,
+      'brand': brand,
+      'model': model,
+      'ver_sdk_int': verSdkInt,
+      'fingerprint': fingerprint,
+      'serialnumber': serialnumber,
     };
   }
 
@@ -41,6 +75,11 @@ class InitVolunteerRequestParams {
     String? noHandphone1,
     String? noHandphone2,
     String? deviceId,
+    String? brand,
+    String? model,
+    String? verSdkInt,
+    String? fingerprint,
+    String? serialnumber,
   }) {
     return InitVolunteerRequestParams(
       idWilayah: idWilayah ?? this.idWilayah,
@@ -51,7 +90,11 @@ class InitVolunteerRequestParams {
       noHandphone1: noHandphone1 ?? this.noHandphone1,
       noHandphone2: noHandphone2 ?? this.noHandphone2,
       deviceId: deviceId ?? this.deviceId,
+      brand: brand ?? this.brand,
+      model: model ?? this.model,
+      verSdkInt: verSdkInt ?? this.verSdkInt,
+      fingerprint: fingerprint ?? this.fingerprint,
+      serialnumber: serialnumber ?? this.serialnumber,
     );
   }
-
 }

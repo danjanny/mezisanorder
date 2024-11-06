@@ -3,9 +3,11 @@ class InputResultParam {
   String? kodeLokasi;
   String? suaraTidakSah;
   String? dpt;
+  String? riilLatihan;
   Map<String, String> calonData = {};
 
   InputResultParam({
+    this.riilLatihan,
     this.idInisiasi,
     this.kodeLokasi,
     this.suaraTidakSah,
@@ -18,6 +20,7 @@ class InputResultParam {
 
   Map<String, dynamic> toJson() {
     return {
+      'riil_lat': riilLatihan,
       'id_inisiasi': idInisiasi,
       'kode_lokasi': kodeLokasi,
       'suara_tidak_sah': suaraTidakSah,
@@ -29,6 +32,6 @@ class InputResultParam {
   String toSmsFormattedString(String idTypeRelawanCode) {
     String calonDataString = calonData.values.join('#');
     print(calonDataString);
-    return 'INDI $idTypeRelawanCode#$kodeLokasi#$calonDataString#$suaraTidakSah#$dpt';
+    return 'INDI $idTypeRelawanCode$riilLatihan#$kodeLokasi#$calonDataString#$suaraTidakSah#$dpt';
   }
 }

@@ -47,7 +47,7 @@ void callbackDispatcher() {
 }
 
 void backgroundMessageHandler(SmsMessage message) async {
-  if ((message.body!.contains('OK') || message.body!.contains('OK'))) {
+  if ((message.body!.contains('OK') || message.body!.contains('OKE'))) {
     String replyMessage = message.body!.contains('OKE') ? 'OKE' : 'OK';
     bsms.SmsStatus result = await bsms.BackgroundSms.sendMessage(
       phoneNumber: '96999',

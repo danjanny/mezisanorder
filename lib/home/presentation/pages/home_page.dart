@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:qlevar_router/qlevar_router.dart';
@@ -16,6 +17,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _historyStackLength = 0;
+
   @override
   void initState() {
     super.initState();
@@ -29,93 +32,106 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      return Scaffold(
-        appBar: const QuickcountHomeAppBar(),
-        body: Stack(
-          children: [
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: Column(
-                          children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Menu Utama',
-                                style: TextStyles.heading24Bold.copyWith(
-                                  color: Colors.black,
+      return PopScope(
+        onPopInvokedWithResult: (_, __) {
+          if (_historyStackLength > 0) {
+            setState(() {
+              _historyStackLength = 0;
+              QR.history.clear(); // Clear the QR history
+            });
+          } else {
+            SystemNavigator.pop();
+          }
+        },
+        child: Scaffold(
+          appBar: const QuickcountHomeAppBar(),
+          body: Stack(
+            children: [
+              Container(
+                color: Colors.white,
+                padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: Column(
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Menu Utama',
+                                  style: TextStyles.heading24Bold.copyWith(
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            MenuCardItem(
-                              iconPath: IconAsset.inputHasilPilkadaIcon,
-                              title: 'Input Hasil Pilkada',
-                              subtitle: 'Kirim hasil perhitungan cepat',
-                              onTap: () {
-                                QR.to(AppRoutes.inputResultPath);
-                              },
-                            ),
-                            const SizedBox(height: 19),
-                            const MenuCardItem(
-                              iconPath: IconAsset.uploadC1Icon,
-                              title: 'Upload Formulir C1',
-                              subtitle: 'Kirim foto formulir C1',
-                            ),
-                            const SizedBox(height: 19),
-                            MenuCardItem(
-                              iconPath: IconAsset.editProfileIcon,
-                              title: 'Edit Profil',
-                              subtitle: 'Perbaharui data anda atau ubah jika terdapat kesalahan',
-                              onTap: () {
-                                QR.to(AppRoutes.editProfilePath);
-                              },
-                            ),
-                            const SizedBox(height: 19),
-                            MenuCardItem(
-                              iconPath: IconAsset.logoutIcon,
-                              title: 'Logout',
-                              subtitle: 'Keluar ke menu awal',
-                              onTap: () {
-                                logout(context);
-                              },
-                            )
-                          ],
+                              const SizedBox(height: 10),
+                              MenuCardItem(
+                                iconPath: IconAsset.inputHasilPilkadaIcon,
+                                title: 'Input Hasil Pilkada',
+                                subtitle: 'Kirim hasil perhitungan cepat',
+                                onTap: () {
+                                  QR.to(AppRoutes.inputResultPath);
+                                },
+                              ),
+                              const SizedBox(height: 19),
+                              const MenuCardItem(
+                                iconPath: IconAsset.uploadC1Icon,
+                                title: 'Upload Formulir C1',
+                                subtitle: 'Kirim foto formulir C1',
+                              ),
+                              const SizedBox(height: 19),
+                              MenuCardItem(
+                                iconPath: IconAsset.editProfileIcon,
+                                title: 'Edit Profil',
+                                subtitle:
+                                    'Perbaharui data anda atau ubah jika terdapat kesalahan',
+                                onTap: () {
+                                  QR.to(AppRoutes.editProfilePath);
+                                },
+                              ),
+                              const SizedBox(height: 19),
+                              MenuCardItem(
+                                iconPath: IconAsset.logoutIcon,
+                                title: 'Logout',
+                                subtitle: 'Keluar ke menu awal',
+                                onTap: () {
+                                  logout(context);
+                                },
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 80),
-                ],
+                    const SizedBox(height: 80),
+                  ],
+                ),
               ),
-            ),
-            Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
-              child: Column(
-                children: [
-                  Text('powered by',
-                      style: TextStyles.body16Regular
-                          .copyWith(height: 20 / 16, color: AppColors.grey)),
-                  const SizedBox(height: 4),
-                  Image.asset(
-                    IconAsset.companyLogo,
-                    width: 200,
-                    height: 35,
-                  ),
-                ],
+              Positioned(
+                bottom: 16,
+                left: 16,
+                right: 16,
+                child: Column(
+                  children: [
+                    Text('powered by',
+                        style: TextStyles.body16Regular
+                            .copyWith(height: 20 / 16, color: AppColors.grey)),
+                    const SizedBox(height: 4),
+                    Image.asset(
+                      IconAsset.companyLogo,
+                      width: 200,
+                      height: 35,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+          backgroundColor: Colors.white,
         ),
-        backgroundColor: Colors.white,
       );
     });
   }
@@ -179,7 +195,8 @@ class MenuCardItem extends StatelessWidget {
   final String? subtitle;
   final VoidCallback? onTap;
 
-  const MenuCardItem({super.key, this.iconPath, this.title, this.subtitle, this.onTap});
+  const MenuCardItem(
+      {super.key, this.iconPath, this.title, this.subtitle, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -213,7 +230,8 @@ class MenuCardItem extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle ?? '',
-                    style: TextStyles.body14Regular.copyWith(color: AppColors.grey),
+                    style: TextStyles.body14Regular
+                        .copyWith(color: AppColors.grey),
                   ),
                 ],
               ),

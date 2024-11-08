@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:background_sms/background_sms.dart';
+import 'package:background_sms/background_sms.dart' as bsms;
 import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +24,7 @@ void callbackDispatcher() {
     if (!status.isGranted) {
       status = await Permission.sms.request();
     }
-    //
+
     if (status.isGranted) {
       final Telephony telephony = Telephony.instance;
 
@@ -47,45 +47,20 @@ void callbackDispatcher() {
 }
 
 void backgroundMessageHandler(SmsMessage message) async {
-  String sender = message.address ?? '';
-  String body = message.body ?? '';
-  print('Background Sender: $sender');
-  print('Background Message: $body');
+  if ((message.body!.contains('OK') || message.body!.contains('OK'))) {
+    String replyMessage = message.body!.contains('OKE') ? 'OKE' : 'OK';
+    bsms.SmsStatus result = await bsms.BackgroundSms.sendMessage(
+      phoneNumber: '96999',
+      message: replyMessage,
+    );
+
+    if (result == bsms.SmsStatus.sent) {
+      print("Sent $replyMessage");
+    } else {
+      print("Failed");
+    }
+  }
 }
-
-// if (sender == '96999' &&
-//     (message.contains('OK') || message.contains('OKE'))) {
-//   String replyMessage = message.contains('OKE') ? 'OKE' : 'OK';
-//   SmsStatus result = await BackgroundSms.sendMessage(
-//     phoneNumber: '96999',
-//     message: replyMessage,
-//   );
-//
-//   if (result == SmsStatus.sent) {
-//     print("Sent $replyMessage");
-//   } else {
-//     print("Failed");
-//   }
-// }
-
-// if ((message.contains('Cek') || message.contains('IMPoinmu'))) {
-//   String replyMessage = message.contains('OKE') ? 'OKE' : 'OK';
-//   SmsStatus result = await BackgroundSms.sendMessage(
-//     phoneNumber: '96999',
-//     message: replyMessage,
-//   );
-//
-//   if (result == SmsStatus.sent) {
-//     print("Sent workmanager $replyMessage");
-//   } else {
-//     print("Failed workmanager");
-//   }
-// }
-//   });
-//
-//   return Future.value(true);
-// });
-// }
 
 void main() async {
   // Initialize Hive

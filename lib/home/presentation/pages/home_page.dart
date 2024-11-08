@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:qlevar_router/qlevar_router.dart';
@@ -30,7 +31,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       return PopScope(
-        canPop: false,
+        onPopInvokedWithResult: (_, __) {
+          SystemNavigator.pop();
+        },
         child: Scaffold(
           appBar: const QuickcountHomeAppBar(),
           body: Stack(
@@ -68,7 +71,8 @@ class _HomePageState extends State<HomePage> {
                               MenuCardItem(
                                 iconPath: IconAsset.editProfileIcon,
                                 title: 'Edit Profil',
-                                subtitle: 'Perbaharui data anda atau ubah jika terdapat kesalahan',
+                                subtitle:
+                                    'Perbaharui data anda atau ubah jika terdapat kesalahan',
                                 onTap: () {
                                   QR.to(AppRoutes.editProfilePath);
                                 },
@@ -176,7 +180,8 @@ class MenuCardItem extends StatelessWidget {
   final String? subtitle;
   final VoidCallback? onTap;
 
-  const MenuCardItem({super.key, this.iconPath, this.title, this.subtitle, this.onTap});
+  const MenuCardItem(
+      {super.key, this.iconPath, this.title, this.subtitle, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +215,8 @@ class MenuCardItem extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle ?? '',
-                    style: TextStyles.body14Regular.copyWith(color: AppColors.grey),
+                    style: TextStyles.body14Regular
+                        .copyWith(color: AppColors.grey),
                   ),
                 ],
               ),

@@ -25,6 +25,7 @@ class FormFieldData {
   final String? helperText;
   String? value;
   String? formType;
+  bool? isNeedValidation;
 
   FormFieldData(
       {required this.titleLabel,
@@ -33,7 +34,8 @@ class FormFieldData {
       this.selectedDropdownItem,
       this.helperText,
       this.value,
-      this.formType});
+      this.formType,
+      this.isNeedValidation = false});
 }
 
 class InputResultPage extends StatefulWidget {
@@ -271,7 +273,7 @@ class _InputResultPageState extends State<InputResultPage> {
             FormFieldData(
               titleLabel: "Riil / Latihan",
               inputLabel: "Riil / Latihan",
-              dropdownItems: ['Riil' , 'Latihan'],
+              dropdownItems: ['Riil', 'Latihan'],
               selectedDropdownItem: 'Riil',
               helperText: null,
             ),
@@ -290,20 +292,23 @@ class _InputResultPageState extends State<InputResultPage> {
                     "Masukkan perolehan pasangan no urut ${calon.noUrut ?? ""}",
                 dropdownItems: [],
                 helperText: "Periksa kembali hasil perolehan",
-                formType: "number")),
+                formType: "number",
+                isNeedValidation: true)),
             FormFieldData(
                 titleLabel: "Suara tidak sah",
                 inputLabel: "Masukkan jumlah suara tidak sah",
                 dropdownItems: [],
                 helperText: null,
-                formType: "number"),
+                formType: "number",
+                isNeedValidation: true),
             FormFieldData(
                 titleLabel: "DPT (Daftar Pemilih Tetap)",
                 inputLabel: "Masukkan jumlah DPT",
                 dropdownItems: [],
                 helperText:
                     "DPT tidak boleh lebih kecil dari keseluruhan jumlah suara",
-                formType: "number"),
+                formType: "number",
+                isNeedValidation: true),
           ];
 
           return Scaffold(
@@ -320,6 +325,7 @@ class _InputResultPageState extends State<InputResultPage> {
             body: Stack(children: [
               SingleChildScrollView(
                 child: Form(
+                  key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -349,12 +355,15 @@ class _InputResultPageState extends State<InputResultPage> {
                           itemCount: formFields.length,
                           itemBuilder: (context, index) {
                             final fieldData = formFields[index];
+                            final isNeedValidation = fieldData.isNeedValidation;
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 16.0),
                               child: QuickcountTextFormField(
-                                keyboardType: fieldData.dropdownItems.isEmpty ? TextInputType.number : TextInputType.text,
+                                keyboardType: fieldData.dropdownItems.isEmpty
+                                    ? TextInputType.number
+                                    : TextInputType.text,
                                 showDropdown:
-                                fieldData.dropdownItems.isNotEmpty,
+                                    fieldData.dropdownItems.isNotEmpty,
                                 onDropdownChanged: (String? value) {
                                   formFields[index].selectedDropdownItem =
                                       value;
@@ -363,7 +372,7 @@ class _InputResultPageState extends State<InputResultPage> {
                                 defaultValue: formFields[index].value,
                                 dropdownItems: fieldData.dropdownItems,
                                 selectedDropdownItem:
-                                fieldData.selectedDropdownItem,
+                                    fieldData.selectedDropdownItem,
                                 showHelper: fieldData.helperText != null,
                                 helperLabel: fieldData.helperText ?? '',
                                 titleLabel: fieldData.titleLabel,
@@ -371,6 +380,16 @@ class _InputResultPageState extends State<InputResultPage> {
                                 onChange: (val) {
                                   formFields[index].value = val;
                                 },
+                                validator: isNeedValidation == true
+                                    ? (String? value) {
+                                        if (value == null || value == "") {
+                                          return "Harus diisi";
+                                        }
+
+                                        return null;
+                                      }
+                                    : null,
+                                // validator: isNeedValidation == true ? () {} : null,
                               ),
                             );
                           },
@@ -379,98 +398,112 @@ class _InputResultPageState extends State<InputResultPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: QuickcountButton(
-                          text: 'Kirim Hasil',
-                          state: QuickcountButtonState.enabled,
-                          onPressed: () {
-                            // TODO: Implement SMS sending
-                            String? riilLat =
-                                formFields[0].selectedDropdownItem;
-                            String? dpt =
-                                formFields[formFields.length - 1].value;
-                            String? suaraTidakSah =
-                                formFields[formFields.length - 2].value;
+                            text: 'Kirim Hasil',
+                            state: QuickcountButtonState.enabled,
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                // TODO: Implement SMS sending
+                                String? riilLat =
+                                    formFields[0].selectedDropdownItem;
+                                String? dpt =
+                                    formFields[formFields.length - 1].value;
+                                String? suaraTidakSah =
+                                    formFields[formFields.length - 2].value;
 
-                            int totalVotes =
-                                int.tryParse(suaraTidakSah ?? '0') ?? 0;
+                                int totalVotes =
+                                    int.tryParse(suaraTidakSah ?? '0') ?? 0;
 
-                            for (int i = 0; i < (listCalon?.length ?? 0); i++) {
-                              final calonResult = int.tryParse(
-                                  formFields[i + 2].value ?? '0') ??
-                                  0;
-                              totalVotes += (calonResult);
-                            }
+                                for (int i = 0;
+                                    i < (listCalon?.length ?? 0);
+                                    i++) {
+                                  final calonResult = int.tryParse(
+                                          formFields[i + 2].value ?? '0') ??
+                                      0;
+                                  totalVotes += (calonResult);
+                                }
 
-                            // Convert DPT to integer for comparison
-                            int dptValue = int.tryParse(dpt ?? '0') ?? 0;
-                            if (dptValue < totalVotes) {
-                              // Show an error message if DPT is smaller
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      "Jumlah DPT tidak boleh lebih kecil dari total suara lain"),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                              return;
-                            }
-
-                            if (dptValue == 0) {
-                              // Show an error message if DPT is smaller
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      "Jumlah DPT tidak boleh lebih kecil dari total suara lain"),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                              return;
-                            }
-
-                            String? jenisInput = riilLat?.toLowerCase() == 'riil' ? 'R' : 'L';
-
-                            // Validate DPT
-                            if (dptValue < totalVotes || dptValue == 0) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Jumlah DPT tidak boleh lebih kecil dari total suara lain",
-                                  ),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                              return;
-                            }
-
-                            // Send data
-                            InputResultParam inputResultParam = InputResultParam(
-                              riilLatihan: jenisInput,
-                              idInisiasi: box.get('idInisiasi', defaultValue: '').toString(),
-                              kodeLokasi: formFields[1].selectedDropdownItem,
-                              suaraTidakSah: suaraTidakSah,
-                              dpt: dpt,
-                            );
-
-                            for (int i = 0; i < (listCalon?.length ?? 0); i++) {
-                              final calonResult = formFields[i + 2].value;
-                              if (calonResult == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "Mohon isi perolehan suara calon",
+                                // Convert DPT to integer for comparison
+                                int dptValue = int.tryParse(dpt ?? '0') ?? 0;
+                                if (dptValue < totalVotes) {
+                                  // Show an error message if DPT is smaller
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          "Jumlah DPT tidak boleh lebih kecil dari total suara lain"),
+                                      backgroundColor: Colors.red,
                                     ),
-                                    backgroundColor: Colors.red,
-                                  ),
+                                  );
+                                  return;
+                                }
+
+                                if (dptValue == 0) {
+                                  // Show an error message if DPT is smaller
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                          "Jumlah DPT tidak boleh lebih kecil dari total suara lain"),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                String? jenisInput =
+                                    riilLat?.toLowerCase() == 'riil'
+                                        ? 'R'
+                                        : 'L';
+
+                                // Validate DPT
+                                if (dptValue < totalVotes || dptValue == 0) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        "Jumlah DPT tidak boleh lebih kecil dari total suara lain",
+                                      ),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+
+                                // Send data
+                                InputResultParam inputResultParam =
+                                    InputResultParam(
+                                  riilLatihan: jenisInput,
+                                  idInisiasi: box
+                                      .get('idInisiasi', defaultValue: '')
+                                      .toString(),
+                                  kodeLokasi:
+                                      formFields[1].selectedDropdownItem,
+                                  suaraTidakSah: suaraTidakSah,
+                                  dpt: dpt,
                                 );
-                                return;
+
+                                for (int i = 0;
+                                    i < (listCalon?.length ?? 0);
+                                    i++) {
+                                  final calonResult = formFields[i + 2].value;
+                                  if (calonResult == null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          "Mohon isi perolehan suara calon",
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  inputResultParam.addCalonResult(
+                                      i + 1, calonResult ?? '');
+                                }
+
+                                // Trigger the result input
+                                context
+                                    .read<HomeCubit>()
+                                    .inputResult(inputResultParam);
                               }
-                              inputResultParam.addCalonResult(i + 1, calonResult ?? '');
-                            }
-
-                            // Trigger the result input
-                            context.read<HomeCubit>().inputResult(inputResultParam);
-
-                          },
-                        ),
+                            }),
                       ),
                       const SizedBox(height: 36),
                     ],

@@ -29,6 +29,7 @@ class _PasscodePageState extends State<PasscodePage> {
   String _deviceId = '';
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   final Box box = Hive.box('settings');
+
   @override
   void initState() {
     super.initState();
@@ -41,10 +42,10 @@ class _PasscodePageState extends State<PasscodePage> {
     try {
       deviceData = switch (defaultTargetPlatform) {
         TargetPlatform.android =>
-            _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
+          _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
         TargetPlatform.iOS =>
-            _readIosDeviceInfo(await deviceInfoPlugin.iosInfo),
-      // Not implemented yet
+          _readIosDeviceInfo(await deviceInfoPlugin.iosInfo),
+        // Not implemented yet
         TargetPlatform.fuchsia => throw UnimplementedError(),
         TargetPlatform.linux => throw UnimplementedError(),
         TargetPlatform.macOS => throw UnimplementedError(),
@@ -113,7 +114,6 @@ class _PasscodePageState extends State<PasscodePage> {
     };
   }
 
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit, LoginState>(
@@ -154,12 +154,12 @@ class _PasscodePageState extends State<PasscodePage> {
           if (state.initResult == null) {
             QR.navigator.popUntilOrPush(AppRoutes.registerPath);
           } else {
-            if ((box.get('locationCode1', defaultValue: '') ?? '') == '' || (box.get('locationCode1', defaultValue: '') ?? '') == null) {
+            if ((box.get('locationCode1', defaultValue: '') ?? '') == '' ||
+                (box.get('locationCode1', defaultValue: '') ?? '') == null) {
               QR.navigator.popUntilOrPush(AppRoutes.registerPath);
             } else {
               QR.navigator.popUntilOrPush(AppRoutes.homePath);
             }
-
           }
         }
       },
@@ -175,9 +175,8 @@ class _PasscodePageState extends State<PasscodePage> {
             centerTitle: true,
             toolbarHeight: 80,
           ),
-          body: Stack(
-            children: [
-              Column(
+          body: Stack(children: [
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
@@ -236,10 +235,10 @@ class _PasscodePageState extends State<PasscodePage> {
                     state: QuickcountButtonState.enabled,
                     onPressed: () {
                       context.read<LoginCubit>().passcode(
-                        PasscodeRequest(
-                          passcode: passcode,
-                        ),
-                      );
+                            PasscodeRequest(
+                              passcode: passcode,
+                            ),
+                          );
                     },
                   ),
                 ),
@@ -253,8 +252,7 @@ class _PasscodePageState extends State<PasscodePage> {
                   child: CircularProgressIndicator(),
                 ),
               ),
-            ]
-          ),
+          ]),
           backgroundColor: Colors.white,
         );
       },

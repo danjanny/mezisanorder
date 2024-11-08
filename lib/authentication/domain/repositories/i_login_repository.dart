@@ -10,4 +10,5 @@ abstract class ILoginRepository {
   Future<Passcode?> submitPasscode(PasscodeRequest request);
   Future<WilayahResult?> getWilayah();
   Future<VolunteerResult?> getVolunteer();
+  Future<InitResult?>  cekUser(String deviceId);
 }

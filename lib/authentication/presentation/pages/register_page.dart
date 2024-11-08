@@ -49,14 +49,20 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   InitVolunteerRequestParams paramRequest = InitVolunteerRequestParams(
-      idWilayah: '',
-      idTypeRelawan: '',
-      kodeLokasi1: '',
-      kodeLokasi2: '',
-      nama: '',
-      noHandphone1: '',
-      noHandphone2: '',
-      deviceId: '');
+    idWilayah: '',
+    idTypeRelawan: '',
+    kodeLokasi1: '',
+    kodeLokasi2: '',
+    nama: '',
+    noHandphone1: '',
+    noHandphone2: '',
+    deviceId: '',
+    model: '',
+    brand: '',
+    verSdkInt: '',
+    fingerprint: '',
+    serialnumber: ''
+  );
   String _deviceId = '';
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
@@ -102,6 +108,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
     setState(() {
       _deviceId = deviceData['id'] ?? '';
+      paramRequest = paramRequest.copyWith(deviceId: deviceData['id'] ?? '');
+      paramRequest = paramRequest.copyWith(brand: deviceData['brand'] ?? '');
+      paramRequest = paramRequest.copyWith(model: deviceData['model'] ?? '');
+      paramRequest = paramRequest.copyWith(verSdkInt: deviceData['version.sdkInt'] ?? '');
+      paramRequest = paramRequest.copyWith(fingerprint: deviceData['fingerprint'] ?? '');
+      paramRequest = paramRequest.copyWith(serialnumber: deviceData['serialNumber'] ?? '');
     });
   }
 
@@ -234,7 +246,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is InitVolunteerLoadedState) {
-          QR.navigator.popUntilOrPush(AppRoutes.homePath);
+          QR.rootNavigator.popUntilOrPush(AppRoutes.homePath);
         } else if (state is LoginErrorState) {
           showModalBottomSheet(
             isDismissible: false,

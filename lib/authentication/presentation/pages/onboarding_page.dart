@@ -78,8 +78,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   text: 'Mulai',
                   state: QuickcountButtonState.enabled,
                   onPressed: () {
-                    box.get('isPasscodeFilled', defaultValue: false) ? QR.to(AppRoutes.registerPath) : QR.to(AppRoutes.passcodePath);
-
+                    box.get('isPasscodeFilled', defaultValue: false) ? box.get('isInitVolunteerSuccess', defaultValue: false) ? QR.rootNavigator.popUntilOrPush(AppRoutes.homePath) : QR.push(AppRoutes.registerPath) : QR.push(AppRoutes.passcodePath);
                   },
                 ),
                 const SizedBox(height: 36),

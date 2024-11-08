@@ -63,4 +63,13 @@ class LoginRepositoryImpl extends BaseRepository implements ILoginRepository {
     final volunteerResult = _voulnteerMapper.fromVolunteerResponseModelToVolunteerResult(volunteer);
     return volunteerResult;
   }
+
+  @override
+  Future<InitResult?> cekUser(String deviceId) async {
+    final response = await executeRequest(() => _loginService.cekUser(deviceId));
+    handleResponse(response);
+    final initVolunteerResponse = InitVolunteerResponseModel.fromJson(decodeResponseBody(response));
+    final initResult = _initResultMapper.fromInitResultModelToInitResult(initVolunteerResponse);
+    return initResult;
+  }
 }

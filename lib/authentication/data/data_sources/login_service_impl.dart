@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 import 'package:skeleton/authentication/data/data_sources/abstraction/i_login_service.dart';
@@ -28,5 +30,11 @@ class LoginServiceImpl extends BaseHttpService implements ILoginService {
   @override
   Future<http.Response> getVolunteer() {
     return fetchGet('/get_type');
+  }
+
+  @override
+  Future<http.Response> cekUser(String deviceId) {
+    var request = {'device_id': deviceId};
+    return fetchPost('/cek_user', body: request);
   }
 }

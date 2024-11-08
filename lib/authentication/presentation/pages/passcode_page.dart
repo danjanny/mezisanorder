@@ -1,5 +1,9 @@
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 import '../../../base/presentation/styles/text_form_field_style.dart';
 import '../../../base/presentation/styles/text_styles.dart';
@@ -22,13 +26,100 @@ class PasscodePage extends StatefulWidget {
 
 class _PasscodePageState extends State<PasscodePage> {
   String passcode = '';
+  String _deviceId = '';
+  static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+  final Box box = Hive.box('settings');
+  @override
+  void initState() {
+    super.initState();
+    _initPlatformState();
+  }
+
+  Future<void> _initPlatformState() async {
+    var deviceData = <String, dynamic>{};
+
+    try {
+      deviceData = switch (defaultTargetPlatform) {
+        TargetPlatform.android =>
+            _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
+        TargetPlatform.iOS =>
+            _readIosDeviceInfo(await deviceInfoPlugin.iosInfo),
+      // Not implemented yet
+        TargetPlatform.fuchsia => throw UnimplementedError(),
+        TargetPlatform.linux => throw UnimplementedError(),
+        TargetPlatform.macOS => throw UnimplementedError(),
+        TargetPlatform.windows => throw UnimplementedError(),
+      };
+    } on PlatformException {
+      deviceData = <String, dynamic>{
+        'Error:': 'Failed to get platform version.'
+      };
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _deviceId = deviceData['id'] ?? '';
+    });
+  }
+
+  Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {
+    return <String, dynamic>{
+      'name': data.name,
+      'systemName': data.systemName,
+      'systemVersion': data.systemVersion,
+      'model': data.model,
+      'localizedModel': data.localizedModel,
+      'identifierForVendor': data.identifierForVendor,
+      'isPhysicalDevice': data.isPhysicalDevice,
+      'utsname.sysname:': data.utsname.sysname,
+      'utsname.nodename:': data.utsname.nodename,
+      'utsname.release:': data.utsname.release,
+      'utsname.version:': data.utsname.version,
+      'utsname.machine:': data.utsname.machine,
+    };
+  }
+
+  Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
+    return <String, dynamic>{
+      'version.securityPatch': build.version.securityPatch,
+      'version.sdkInt': build.version.sdkInt,
+      'version.release': build.version.release,
+      'version.previewSdkInt': build.version.previewSdkInt,
+      'version.incremental': build.version.incremental,
+      'version.codename': build.version.codename,
+      'version.baseOS': build.version.baseOS,
+      'board': build.board,
+      'bootloader': build.bootloader,
+      'brand': build.brand,
+      'device': build.device,
+      'display': build.display,
+      'fingerprint': build.fingerprint,
+      'hardware': build.hardware,
+      'host': build.host,
+      'id': build.id,
+      'manufacturer': build.manufacturer,
+      'model': build.model,
+      'product': build.product,
+      'supported32BitAbis': build.supported32BitAbis,
+      'supported64BitAbis': build.supported64BitAbis,
+      'supportedAbis': build.supportedAbis,
+      'tags': build.tags,
+      'type': build.type,
+      'isPhysicalDevice': build.isPhysicalDevice,
+      'systemFeatures': build.systemFeatures,
+      'serialNumber': build.serialNumber,
+      'isLowRamDevice': build.isLowRamDevice,
+    };
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is PasscodeLoadedState) {
-          QR.navigator.popUntilOrPush(AppRoutes.registerPath);
+          context.read<LoginCubit>().cekUser(_deviceId);
         } else if (state is LoginErrorState) {
           showModalBottomSheet(
             context: context,
@@ -59,6 +150,17 @@ class _PasscodePageState extends State<PasscodePage> {
               );
             },
           );
+        } else if (state is InitVolunteerLoadedState) {
+          if (state.initResult == null) {
+            QR.navigator.popUntilOrPush(AppRoutes.registerPath);
+          } else {
+            if ((box.get('locationCode1', defaultValue: '') ?? '') == '' || (box.get('locationCode1', defaultValue: '') ?? '') == null) {
+              QR.navigator.popUntilOrPush(AppRoutes.registerPath);
+            } else {
+              QR.navigator.popUntilOrPush(AppRoutes.homePath);
+            }
+
+          }
         }
       },
       builder: (context, state) {
@@ -110,6 +212,7 @@ class _PasscodePageState extends State<PasscodePage> {
                           ),
                           const SizedBox(height: 32),
                           QuickcountTextFormField(
+                            keyboardType: TextInputType.number,
                             defaultValue: passcode,
                             isObsecured: true,
                             obscureText: true,

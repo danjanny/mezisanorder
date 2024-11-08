@@ -26,6 +26,8 @@ import 'package:skeleton/authentication/data/repositories/login_repository_impl.
     as _i819;
 import 'package:skeleton/authentication/domain/repositories/i_login_repository.dart'
     as _i652;
+import 'package:skeleton/authentication/domain/use_cases/cek_user_use_case.dart'
+    as _i791;
 import 'package:skeleton/authentication/domain/use_cases/init_volunteer_use_case.dart'
     as _i427;
 import 'package:skeleton/authentication/domain/use_cases/passcode_use_case.dart'
@@ -61,11 +63,11 @@ extension GetItInjectableX on _i174.GetIt {
       environment,
       environmentFilter,
     );
+    gh.factory<_i455.InputResultMapper>(() => _i455.InputResultMapper());
     gh.factory<_i276.PasscodeMapper>(() => _i276.PasscodeMapper());
     gh.factory<_i803.WilayahMapper>(() => _i803.WilayahMapper());
     gh.factory<_i720.VolunteerMapper>(() => _i720.VolunteerMapper());
     gh.factory<_i626.InitResultMapper>(() => _i626.InitResultMapper());
-    gh.factory<_i455.InputResultMapper>(() => _i455.InputResultMapper());
     gh.factory<_i1032.ILoginService>(() => _i991.LoginServiceImpl());
     gh.factory<_i652.ILoginRepository>(() => _i819.LoginRepositoryImpl(
           gh<_i1032.ILoginService>(),
@@ -75,6 +77,8 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i720.VolunteerMapper>(),
         ));
     gh.factory<_i774.IHomeService>(() => _i1048.HomeServiceImpl());
+    gh.factory<_i791.CekUserUseCase>(
+        () => _i791.CekUserUseCase(gh<_i652.ILoginRepository>()));
     gh.factory<_i939.VolunteerUseCase>(
         () => _i939.VolunteerUseCase(gh<_i652.ILoginRepository>()));
     gh.factory<_i1055.PasscodeUseCase>(
@@ -83,15 +87,16 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i14.WilayahUseCase(gh<_i652.ILoginRepository>()));
     gh.factory<_i427.InitVolunteerUseCase>(
         () => _i427.InitVolunteerUseCase(gh<_i652.ILoginRepository>()));
-    gh.factory<_i662.IHomeRepository>(() => _i945.HomeRepositoryImpl(
-          gh<_i774.IHomeService>(),
-          gh<_i455.InputResultMapper>(),
-        ));
     gh.factory<_i212.LoginCubit>(() => _i212.LoginCubit(
           gh<_i1055.PasscodeUseCase>(),
           gh<_i427.InitVolunteerUseCase>(),
           gh<_i14.WilayahUseCase>(),
           gh<_i939.VolunteerUseCase>(),
+          gh<_i791.CekUserUseCase>(),
+        ));
+    gh.factory<_i662.IHomeRepository>(() => _i945.HomeRepositoryImpl(
+          gh<_i774.IHomeService>(),
+          gh<_i455.InputResultMapper>(),
         ));
     gh.factory<_i128.InputResultUseCase>(
         () => _i128.InputResultUseCase(gh<_i662.IHomeRepository>()));

@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:skeleton/authentication/domain/params/passcode_request.dart';
+import 'package:skeleton/authentication/domain/use_cases/cek_user_use_case.dart';
 import 'package:skeleton/authentication/domain/use_cases/volunteer_use_case.dart';
 import 'package:skeleton/authentication/domain/use_cases/wilayah_use_case.dart';
 import 'package:skeleton/base/data/data_sources/error_exception.dart';
@@ -20,10 +21,60 @@ class LoginCubit extends Cubit<LoginState> {
   final InitVolunteerUseCase _initVolunteerUseCase;
   final WilayahUseCase _wilayahUseCase;
   final VolunteerUseCase _volunteerUseCase;
+  final CekUserUseCase _cekUserUseCase;
 
   LoginCubit(this._passcodeUseCase, this._initVolunteerUseCase,
-      this._wilayahUseCase, this._volunteerUseCase)
+      this._wilayahUseCase, this._volunteerUseCase, this._cekUserUseCase)
       : super(LoginInitialState());
+
+  Future<void> cekUser(
+      String deviceId) async {
+    print('Check params: ${deviceId}');
+    emit(LoginLoadingState());
+    try {
+      InitResult? result =
+      await _cekUserUseCase.call(deviceId);
+      if (result?.status?.toLowerCase() == "ok") {
+        List<Map<String, dynamic>> dataCalon = [];
+        for (var item in result?.data?.calon ?? []) {
+          dataCalon.add({
+            'no_urut': item.noUrut,
+            'pasangan': item.pasangan,
+          });
+        }
+        var box = Hive.box('settings');
+        await box.put('isInitVolunteerSuccess', true);
+        // await box.put('locationCode1', initVolunteerRequestParams.kodeLokasi1);
+        // await box.put('locationCode2', initVolunteerRequestParams.kodeLokasi2);
+
+        // store jenis relawan. 1 = enumerator, 2 = spotchecker
+        // await box.put(
+        //     'idTypeRelawan', initVolunteerRequestParams.idTypeRelawan);
+
+        await box.putAll({
+          'idWilayah': result?.data?.idWilayah,
+          'idInisiasi': result?.data?.idInisiasi,
+          // 'kodeLokasi1': initVolunteerRequestParams.kodeLokasi1,
+          // 'kodeLokasi2': initVolunteerRequestParams.kodeLokasi2,
+          'jumlahCalon': result?.data?.calon?.length,
+          'arrayNamaCalon':
+          result?.data?.calon?.map((e) => e.pasangan).toList(),
+        });
+        // await box.put('dataUser', initVolunteerRequestParams.toJson());
+        await box.put('dataCalon', dataCalon);
+        int totalCalon = result?.data?.calon?.length ?? 0;
+        print('Response Id Inisasi + ${result?.data?.idInisiasi}');
+        emit(InitVolunteerLoadedState(initResult: result));
+      } else {
+        emit(InitVolunteerLoadedState(initResult: null));
+      }
+    } on HttpResponseException catch (e) {
+      emit(LoginErrorState(
+          statusCode: '${e.statusCode} ${e.status}', message: e.message));
+    } catch (e) {
+      emit(LoginErrorState(message: 'General Error : $e'));
+    }
+  }
 
   Future<void> getVolunteer() async {
     emit(LoginLoadingState());
@@ -82,7 +133,7 @@ class LoginCubit extends Cubit<LoginState> {
         // store jenis relawan. 1 = enumerator, 2 = spotchecker
         await box.put(
             'idTypeRelawan', initVolunteerRequestParams.idTypeRelawan);
-
+        await box.put('isLogin', true);
         await box.putAll({
           'idWilayah': result?.data?.idWilayah,
           'idInisiasi': result?.data?.idInisiasi,
@@ -92,9 +143,10 @@ class LoginCubit extends Cubit<LoginState> {
           'arrayNamaCalon':
               result?.data?.calon?.map((e) => e.pasangan).toList(),
         });
+        await box.put('dataUser', initVolunteerRequestParams.toJson());
         await box.put('dataCalon', dataCalon);
         int totalCalon = result?.data?.calon?.length ?? 0;
-        print('Response Calon + $totalCalon');
+        print('Response Id Inisasi + ${result?.data?.idInisiasi}');
         emit(InitVolunteerLoadedState(initResult: result));
       } else {
         emit(LoginErrorState(message: result?.message));

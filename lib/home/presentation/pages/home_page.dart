@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:qlevar_router/qlevar_router.dart';
@@ -17,8 +16,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _historyStackLength = 0;
-
   @override
   void initState() {
     super.initState();
@@ -33,16 +30,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       return PopScope(
-        onPopInvokedWithResult: (_, __) {
-          if (_historyStackLength > 0) {
-            setState(() {
-              _historyStackLength = 0;
-              QR.history.clear(); // Clear the QR history
-            });
-          } else {
-            SystemNavigator.pop();
-          }
-        },
+        canPop: false,
         child: Scaffold(
           appBar: const QuickcountHomeAppBar(),
           body: Stack(
@@ -77,17 +65,10 @@ class _HomePageState extends State<HomePage> {
                                 },
                               ),
                               const SizedBox(height: 19),
-                              const MenuCardItem(
-                                iconPath: IconAsset.uploadC1Icon,
-                                title: 'Upload Formulir C1',
-                                subtitle: 'Kirim foto formulir C1',
-                              ),
-                              const SizedBox(height: 19),
                               MenuCardItem(
                                 iconPath: IconAsset.editProfileIcon,
                                 title: 'Edit Profil',
-                                subtitle:
-                                    'Perbaharui data anda atau ubah jika terdapat kesalahan',
+                                subtitle: 'Perbaharui data anda atau ubah jika terdapat kesalahan',
                                 onTap: () {
                                   QR.to(AppRoutes.editProfilePath);
                                 },
@@ -172,9 +153,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       onPressed: () async {
                         var box = Hive.box('settings');
-                        await box.put('isInitVolunteerSuccess', false);
-                        await box.put('isPasscodeFilled', false);
-                        QR.to(AppRoutes.rootPath);
+                        await box.put('isLogin', false);
+                        QR.rootNavigator.popUntilOrPush(AppRoutes.rootPath);
+                        Navigator.pop(context);
                       },
                       child: const Text('Yakin'),
                     ),
@@ -195,8 +176,7 @@ class MenuCardItem extends StatelessWidget {
   final String? subtitle;
   final VoidCallback? onTap;
 
-  const MenuCardItem(
-      {super.key, this.iconPath, this.title, this.subtitle, this.onTap});
+  const MenuCardItem({super.key, this.iconPath, this.title, this.subtitle, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -230,8 +210,7 @@ class MenuCardItem extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     subtitle ?? '',
-                    style: TextStyles.body14Regular
-                        .copyWith(color: AppColors.grey),
+                    style: TextStyles.body14Regular.copyWith(color: AppColors.grey),
                   ),
                 ],
               ),

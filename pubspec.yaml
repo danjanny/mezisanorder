@@ -51,6 +51,7 @@ dependencies:
   chucker_flutter: ^1.8.1
   device_info_plus: ^11.1.0
   permission_handler: ^11.3.1
+  telephony: ^0.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

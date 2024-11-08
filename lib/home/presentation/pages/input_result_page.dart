@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:background_sms/background_sms.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,6 +53,8 @@ class _InputResultPageState extends State<InputResultPage> {
 
   List<String> dropdownItems = [];
 
+  StreamSubscription? _smsSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -59,11 +63,34 @@ class _InputResultPageState extends State<InputResultPage> {
     _readSms();
   }
 
-  _readSms() {
+  // _readSms() {
+  //   getPermission().then((value) {
+  //     if (value) {
+  //       _plugin.read();
+  //       _plugin.smsStream.listen((event) {
+  //         setState(() {
+  //           // Check if the message contains 'OK' or 'OKE'
+  //           String message = event.body;
+  //           String sender = event.sender;
+  //           print('Check result $message');
+  //           if (sender == '96999' &&
+  //               (message.contains('OK') || message.contains('OKE'))) {
+  //             String replyMessage = message.contains('OKE') ? 'OKE' : 'OK';
+  //
+  //             sendSmsCustomHasilPilkada(replyMessage);
+  //           }
+  //         });
+  //       });
+  //     }
+  //   });
+  // }
+
+  void _readSms() {
     getPermission().then((value) {
       if (value) {
         _plugin.read();
-        _plugin.smsStream.listen((event) {
+        _smsSubscription = _plugin.smsStream.listen((event) {
+          if (!mounted) return; // Check if the widget is still mounted
           setState(() {
             // Check if the message contains 'OK' or 'OKE'
             String message = event.body;

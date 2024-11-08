@@ -288,7 +288,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               backgroundColor: Colors.green,
             ),
           );
-          QR.navigator.popUntilOrPush(AppRoutes.homePath);
         } else if (state is LoginErrorState) {
           showModalBottomSheet(
             isDismissible: false,

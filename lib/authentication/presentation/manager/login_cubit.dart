@@ -133,7 +133,7 @@ class LoginCubit extends Cubit<LoginState> {
         // store jenis relawan. 1 = enumerator, 2 = spotchecker
         await box.put(
             'idTypeRelawan', initVolunteerRequestParams.idTypeRelawan);
-
+        await box.put('isLogin', true);
         await box.putAll({
           'idWilayah': result?.data?.idWilayah,
           'idInisiasi': result?.data?.idInisiasi,

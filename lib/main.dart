@@ -103,32 +103,20 @@ void main() async {
   // Initialize Hive
   WidgetsFlutterBinding.ensureInitialized();
 
-  Workmanager().initialize(
-    callbackDispatcher,
-    isInDebugMode: true,
-  );
-
-  // Register the background task
-  Workmanager().registerOneOffTask(
-    "task-identifier",
-    "replySmsBack",
-  );
+  // Workmanager().initialize(
+  //   callbackDispatcher,
+  //   isInDebugMode: true,
+  // );
+  //
+  // // Register the background task
+  // Workmanager().registerOneOffTask(
+  //   "task-identifier",
+  //   "replySmsBack",
+  // );
   if (await getPermission()) {
-    Workmanager().initialize(callbackDispatcher);
-    Workmanager().registerOneOffTask(
-      "1",
-      "simpleTask",
-      constraints: Constraints(
-        networkType: NetworkType.not_required,
-        requiresBatteryNotLow: false,
-        requiresCharging: false,
-        requiresDeviceIdle: false,
-        requiresStorageNotLow: false,
-      ),
-    );
+    print("SMS permission granted.");
   } else {
     print("SMS permission not granted. Exiting.");
-    return;
   }
 
   await Hive.initFlutter();
@@ -136,11 +124,10 @@ void main() async {
 
   HttpOverrides.global = MyHttpOverrides();
 
-  ChuckerFlutter.showNotification = true;
-  ChuckerFlutter.showOnRelease = true;
-
+  ChuckerFlutter.showNotification = false;
+  ChuckerFlutter.showOnRelease = false;
   QR.setUrlStrategy();
-  QR.settings.enableLog = true;
+  QR.settings.enableLog = false;
   await dotenv.load(fileName: ".env"); // Load the .env file
   configureDependencies(); // Initialize dependencies
   runApp(MultiBlocProvider(

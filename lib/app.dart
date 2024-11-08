@@ -42,7 +42,7 @@ class _AppState extends State<App> {
                 routeInformationParser: const QRouteInformationParser(),
                 routerDelegate: QRouterDelegate(
                     AppRoutes.routes,
-                    initPath: box.get('isInitVolunteerSuccess', defaultValue: false)
+                    initPath: box.get('isLogin', defaultValue: false)
                         ? AppRoutes.homePath : AppRoutes.rootPath,
                     observers: [ChuckerFlutter.navigatorObserver])),
           ),

@@ -246,7 +246,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is InitVolunteerLoadedState) {
-          QR.navigator.popUntilOrPush(AppRoutes.homePath);
+          QR.rootNavigator.popUntilOrPush(AppRoutes.homePath);
         } else if (state is LoginErrorState) {
           showModalBottomSheet(
             isDismissible: false,

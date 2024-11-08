@@ -29,87 +29,90 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      return Scaffold(
-        appBar: const QuickcountHomeAppBar(),
-        body: Stack(
-          children: [
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: Column(
-                          children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                'Menu Utama',
-                                style: TextStyles.heading24Bold.copyWith(
-                                  color: Colors.black,
+      return PopScope(
+        canPop: false,
+        child: Scaffold(
+          appBar: const QuickcountHomeAppBar(),
+          body: Stack(
+            children: [
+              Container(
+                color: Colors.white,
+                padding: const EdgeInsets.only(top: 8, left: 16, right: 16),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: Column(
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Menu Utama',
+                                  style: TextStyles.heading24Bold.copyWith(
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 10),
-                            MenuCardItem(
-                              iconPath: IconAsset.inputHasilPilkadaIcon,
-                              title: 'Input Hasil Pilkada',
-                              subtitle: 'Kirim hasil perhitungan cepat',
-                              onTap: () {
-                                QR.to(AppRoutes.inputResultPath);
-                              },
-                            ),
-                            const SizedBox(height: 19),
-                            MenuCardItem(
-                              iconPath: IconAsset.editProfileIcon,
-                              title: 'Edit Profil',
-                              subtitle: 'Perbaharui data anda atau ubah jika terdapat kesalahan',
-                              onTap: () {
-                                QR.to(AppRoutes.editProfilePath);
-                              },
-                            ),
-                            const SizedBox(height: 19),
-                            MenuCardItem(
-                              iconPath: IconAsset.logoutIcon,
-                              title: 'Logout',
-                              subtitle: 'Keluar ke menu awal',
-                              onTap: () {
-                                logout(context);
-                              },
-                            )
-                          ],
+                              const SizedBox(height: 10),
+                              MenuCardItem(
+                                iconPath: IconAsset.inputHasilPilkadaIcon,
+                                title: 'Input Hasil Pilkada',
+                                subtitle: 'Kirim hasil perhitungan cepat',
+                                onTap: () {
+                                  QR.to(AppRoutes.inputResultPath);
+                                },
+                              ),
+                              const SizedBox(height: 19),
+                              MenuCardItem(
+                                iconPath: IconAsset.editProfileIcon,
+                                title: 'Edit Profil',
+                                subtitle: 'Perbaharui data anda atau ubah jika terdapat kesalahan',
+                                onTap: () {
+                                  QR.to(AppRoutes.editProfilePath);
+                                },
+                              ),
+                              const SizedBox(height: 19),
+                              MenuCardItem(
+                                iconPath: IconAsset.logoutIcon,
+                                title: 'Logout',
+                                subtitle: 'Keluar ke menu awal',
+                                onTap: () {
+                                  logout(context);
+                                },
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 80),
-                ],
+                    const SizedBox(height: 80),
+                  ],
+                ),
               ),
-            ),
-            Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
-              child: Column(
-                children: [
-                  Text('powered by',
-                      style: TextStyles.body16Regular
-                          .copyWith(height: 20 / 16, color: AppColors.grey)),
-                  const SizedBox(height: 4),
-                  Image.asset(
-                    IconAsset.companyLogo,
-                    width: 200,
-                    height: 35,
-                  ),
-                ],
+              Positioned(
+                bottom: 16,
+                left: 16,
+                right: 16,
+                child: Column(
+                  children: [
+                    Text('powered by',
+                        style: TextStyles.body16Regular
+                            .copyWith(height: 20 / 16, color: AppColors.grey)),
+                    const SizedBox(height: 4),
+                    Image.asset(
+                      IconAsset.companyLogo,
+                      width: 200,
+                      height: 35,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+          backgroundColor: Colors.white,
         ),
-        backgroundColor: Colors.white,
       );
     });
   }
@@ -150,8 +153,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                       onPressed: () async {
                         var box = Hive.box('settings');
-                        await box.put('isInitVolunteerSuccess', false);
-                        QR.to(AppRoutes.rootPath);
+                        await box.put('isLogin', false);
+                        QR.rootNavigator.popUntilOrPush(AppRoutes.rootPath);
+                        Navigator.pop(context);
                       },
                       child: const Text('Yakin'),
                     ),

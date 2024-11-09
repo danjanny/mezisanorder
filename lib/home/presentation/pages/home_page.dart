@@ -32,6 +32,10 @@ class _HomePageState extends State<HomePage> {
     return LayoutBuilder(builder: (context, constraints) {
       return PopScope(
         onPopInvokedWithResult: (_, __) {
+          if (QR.history.length > 0) {
+            QR.history.clear();
+          }
+
           SystemNavigator.pop();
         },
         child: Scaffold(
@@ -158,7 +162,7 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () async {
                         var box = Hive.box('settings');
                         await box.put('isLogin', false);
-                        QR.rootNavigator.popUntilOrPush(AppRoutes.rootPath);
+                        QR.navigator.popUntilOrPush(AppRoutes.rootPath);
                         Navigator.pop(context);
                       },
                       child: const Text('Yakin'),

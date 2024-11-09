@@ -28,17 +28,21 @@ class FormFieldData {
   String? value;
   TextInputType? type = TextInputType.text;
   bool? isWilayah;
-  FormFieldData({
-    required this.titleLabel,
-    required this.inputLabel,
-    this.dropdownItemsVolunteer = const [],
-    this.dropdownItemsWilayah = const [],
-    this.selectedDropdownItem,
-    this.helperText,
-    this.value,
-    this.type,
-    this.isWilayah
-  });
+  String? formFieldType;
+  bool? isNeedValidation;
+
+  FormFieldData(
+      {required this.titleLabel,
+      required this.inputLabel,
+      this.dropdownItemsVolunteer = const [],
+      this.dropdownItemsWilayah = const [],
+      this.selectedDropdownItem,
+      this.helperText,
+      this.value,
+      this.type,
+      this.isWilayah,
+      this.formFieldType,
+      this.isNeedValidation = true});
 }
 
 class EditProfilePage extends StatefulWidget {
@@ -49,6 +53,7 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   InitVolunteerRequestParams paramRequest = InitVolunteerRequestParams(
       idWilayah: '',
       idTypeRelawan: '',
@@ -62,15 +67,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
       brand: '',
       verSdkInt: '',
       fingerprint: '',
-      serialnumber: ''
-  );
+      serialnumber: '');
   String _deviceId = '';
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   final Box box = Hive.box('settings');
   List<Wilayah>? wilayahs;
   VolunteerResult? volunteerResult;
-  @override
 
+  @override
   void initState() {
     super.initState();
     _initializeData();
@@ -85,9 +89,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
         inputLabel: "Pilih Wilayah",
         isWilayah: true,
         dropdownItemsWilayah: wilayahs ?? [],
-        selectedDropdownItem: wilayahs?.firstWhere((element) => element.id == paramRequest.idWilayah,
-         orElse: () => Wilayah(id: '', title: '', alias: '', jumlahCalon: ''),
-         ).title ?? '',
+        selectedDropdownItem: wilayahs
+                ?.firstWhere(
+                  (element) => element.id == paramRequest.idWilayah,
+                  orElse: () =>
+                      Wilayah(id: '', title: '', alias: '', jumlahCalon: ''),
+                )
+                .title ??
+            '',
         helperText: null,
       ),
       FormFieldData(
@@ -96,60 +105,58 @@ class _EditProfilePageState extends State<EditProfilePage> {
         inputLabel: "Pilih Jenis Relawan",
         dropdownItemsVolunteer: volunteerResult?.volunteer ?? [],
         selectedDropdownItem: volunteerResult?.volunteer
-            .firstWhere(
-              (element) => element.id == paramRequest.idTypeRelawan,
-          orElse: () => Volunteer(id: '', tipeRelawan: ''),
-        ).tipeRelawan ?? '',
+                .firstWhere(
+                  (element) => element.id == paramRequest.idTypeRelawan,
+                  orElse: () => Volunteer(id: '', tipeRelawan: ''),
+                )
+                .tipeRelawan ??
+            '',
         helperText: null,
       ),
       FormFieldData(
           titleLabel: "Kode Lokasi 1",
           inputLabel: "Masukkan Kode Lokasi 1",
           helperText: "Periksa kembali kode lokasi yang diberikan.",
-          value: paramRequest.kodeLokasi1
-      ),
+          value: paramRequest.kodeLokasi1),
       FormFieldData(
           titleLabel: "Kode Lokasi 2",
           inputLabel: "Masukkan Kode Lokasi 2",
           helperText: "Periksa kembali kode lokasi yang diberikan.",
-          value: paramRequest.kodeLokasi2
-      ),
+          value: paramRequest.kodeLokasi2),
       FormFieldData(
           titleLabel: "Nama",
           inputLabel: "Masukkan Nama",
           helperText: null,
-          value: paramRequest.nama
-      ),
+          value: paramRequest.nama),
       FormFieldData(
           titleLabel: "No Handphone 1",
           inputLabel: "Masukkan No Handphone 1",
           helperText: "Nomor handphone adalah nomor aktif yang dapat dihubungi",
           type: TextInputType.number,
-          value: paramRequest.noHandphone1
-      ),
+          value: paramRequest.noHandphone1),
       FormFieldData(
           titleLabel: "No Handphone 2",
           inputLabel: "Masukkan No Handphone 2",
           helperText: "Nomor handphone adalah nomor aktif yang dapat dihubungi",
           type: TextInputType.number,
-          value: paramRequest.noHandphone2
-      ),
+          value: paramRequest.noHandphone2,
+          isNeedValidation: false),
     ];
   }
 
   void _initializeDataUser() {
-
-    Map<dynamic, dynamic> dynamicMap = box.get('dataUser',
-        defaultValue: {'nama': ''});
+    Map<dynamic, dynamic> dynamicMap =
+        box.get('dataUser', defaultValue: {'nama': ''});
     Map<String, dynamic> retrievedData = Map<String, dynamic>.from(dynamicMap);
     String? idInisasi = box.get('idInisasi');
     print('Id Inisasi: $idInisasi');
-    InitVolunteerRequestParams? dataUser = InitVolunteerRequestParams.fromJson(retrievedData);
+    InitVolunteerRequestParams? dataUser =
+        InitVolunteerRequestParams.fromJson(retrievedData);
 
     setState(() {
       print('Id Wilayah: ${paramRequest.idWilayah}');
       print('Id Volunteer: ${paramRequest.idTypeRelawan}');
-     paramRequest = dataUser;
+      paramRequest = dataUser;
     });
   }
 
@@ -167,10 +174,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     try {
       deviceData = switch (defaultTargetPlatform) {
         TargetPlatform.android =>
-            _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
+          _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
         TargetPlatform.iOS =>
-            _readIosDeviceInfo(await deviceInfoPlugin.iosInfo),
-      // Not implemented yet
+          _readIosDeviceInfo(await deviceInfoPlugin.iosInfo),
+        // Not implemented yet
         TargetPlatform.fuchsia => throw UnimplementedError(),
         TargetPlatform.linux => throw UnimplementedError(),
         TargetPlatform.macOS => throw UnimplementedError(),
@@ -189,9 +196,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
       paramRequest = paramRequest.copyWith(deviceId: deviceData['id'] ?? '');
       paramRequest = paramRequest.copyWith(brand: deviceData['brand'] ?? '');
       paramRequest = paramRequest.copyWith(model: deviceData['model'] ?? '');
-      paramRequest = paramRequest.copyWith(verSdkInt: (deviceData['version.sdkInt'] ?? '').toString());
-      paramRequest = paramRequest.copyWith(fingerprint: (deviceData['fingerprint'] ?? '').toString());
-      paramRequest = paramRequest.copyWith(serialnumber: (deviceData['serialNumber'] ?? '').toString());
+      paramRequest = paramRequest.copyWith(
+          verSdkInt: (deviceData['version.sdkInt'] ?? '').toString());
+      paramRequest = paramRequest.copyWith(
+          fingerprint: (deviceData['fingerprint'] ?? '').toString());
+      paramRequest = paramRequest.copyWith(
+          serialnumber: (deviceData['serialNumber'] ?? '').toString());
     });
   }
 
@@ -244,10 +254,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
       'isLowRamDevice': build.isLowRamDevice,
     };
   }
+
   List<FormFieldData> formFields = [];
+
   @override
   Widget build(BuildContext context) {
-    void _updateFieldValue(int index, String newValue, Wilayah? wilayah, Volunteer? volunteer) {
+    void _updateFieldValue(
+        int index, String newValue, Wilayah? wilayah, Volunteer? volunteer) {
       setState(() {
         formFields[index].value = newValue;
         print('Device Id: $_deviceId');
@@ -283,11 +296,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
         if (state is InitVolunteerLoadedState) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(
-                  "Data telah tersimpan"),
+              content: Text("Data telah tersimpan"),
               backgroundColor: Colors.green,
             ),
           );
+
+          Future.delayed(const Duration(seconds: 2), () {
+            QR.popUntilOrPush(AppRoutes.homePath);
+          });
         } else if (state is LoginErrorState) {
           showModalBottomSheet(
             isDismissible: false,
@@ -320,7 +336,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               );
             },
           );
-        } else if (state is WilayahLoadedState || state is VolunteerLoadedState) {
+        } else if (state is WilayahLoadedState ||
+            state is VolunteerLoadedState) {
           setState(() {
             if (state is WilayahLoadedState) {
               WilayahResult? wilayah = state.wilayahResult;
@@ -330,7 +347,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
             if (state is VolunteerLoadedState) {
               volunteerResult = state.volunteerResult;
-              print('Isinya apa volunteer? ${volunteerResult?.volunteer.toString()}');
+              print(
+                  'Isinya apa volunteer? ${volunteerResult?.volunteer.toString()}');
             }
 
             _initFields();
@@ -349,92 +367,146 @@ class _EditProfilePageState extends State<EditProfilePage> {
             centerTitle: true,
             toolbarHeight: 80,
           ),
-          body: Stack(
+          body: Stack(children: [
+            Column(
               children: [
-                SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        color: const Color(0xFFE5E5E5),
-                        height: 8,
-                      ),
-                      const SizedBox(height: 24),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          'Edit Profil Relawan',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          color: const Color(0xFFE5E5E5),
+                          height: 8,
+                        ),
+                        const SizedBox(height: 24),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(
+                            'Edit Profil Relawan',
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 32),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: formFields.length,
-                          itemBuilder: (context, index) {
-                            final fieldData = formFields[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16.0),
-                              child: QuickcountTextFormField(
-                                showDropdown: fieldData.dropdownItemsVolunteer.isNotEmpty || fieldData.dropdownItemsWilayah.isNotEmpty,
-                                onDropdownChanged: (String? value) {
-                                  _updateFieldValue(index, value ?? '', null, fieldData.dropdownItemsVolunteer.firstWhere((element) => element?.tipeRelawan == value, orElse: () => Volunteer(id: '', tipeRelawan: '')));
-                                  _updateFieldValue(index, value ?? '',fieldData.dropdownItemsWilayah.firstWhere((element) => element?.title == value, orElse: () => Wilayah(id: '', title: '', alias: '', jumlahCalon: '')), null);
-                                },
-                                dropdownItems: fieldData.isWilayah == false ? fieldData.dropdownItemsVolunteer
-                                    .map((e) => e.tipeRelawan)
-                                    .toList()
-                                    : fieldData.isWilayah == true ?
-                                fieldData.dropdownItemsWilayah
-                                    .map((e) => e.title)
-                                    .toList()
-                                    : [],
-                                selectedDropdownItem: fieldData.selectedDropdownItem,
-                                showHelper: fieldData.helperText != null,
-                                helperLabel: fieldData.helperText ?? '',
-                                titleLabel: fieldData.titleLabel,
-                                inputLabel: fieldData.inputLabel,
-                                defaultValue: fieldData.value,
-                                keyboardType: fieldData.type ?? TextInputType.text,
-                                onChange: (value) {
-                                  _updateFieldValue(index, value, null, null);
-                                },
-                              ),
-                            );
-                          },
+                        const SizedBox(height: 32),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Form(
+                            key: _formKey,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: formFields.length,
+                              itemBuilder: (context, index) {
+                                final fieldData = formFields[index];
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16.0),
+                                  child: QuickcountTextFormField(
+                                    showDropdown: fieldData
+                                            .dropdownItemsVolunteer
+                                            .isNotEmpty ||
+                                        fieldData
+                                            .dropdownItemsWilayah.isNotEmpty,
+                                    onDropdownChanged: (String? value) {
+                                      _updateFieldValue(
+                                          index,
+                                          value ?? '',
+                                          null,
+                                          fieldData.dropdownItemsVolunteer
+                                              .firstWhere(
+                                                  (element) =>
+                                                      element?.tipeRelawan ==
+                                                      value,
+                                                  orElse: () => Volunteer(
+                                                      id: '',
+                                                      tipeRelawan: '')));
+                                      _updateFieldValue(
+                                          index,
+                                          value ?? '',
+                                          fieldData.dropdownItemsWilayah
+                                              .firstWhere(
+                                                  (element) =>
+                                                      element?.title == value,
+                                                  orElse: () => Wilayah(
+                                                      id: '',
+                                                      title: '',
+                                                      alias: '',
+                                                      jumlahCalon: '')),
+                                          null);
+                                    },
+                                    dropdownItems: fieldData.isWilayah == false
+                                        ? fieldData.dropdownItemsVolunteer
+                                            .map((e) => e.tipeRelawan)
+                                            .toList()
+                                        : fieldData.isWilayah == true
+                                            ? fieldData.dropdownItemsWilayah
+                                                .map((e) => e.title)
+                                                .toList()
+                                            : [],
+                                    selectedDropdownItem:
+                                        fieldData.selectedDropdownItem,
+                                    showHelper: fieldData.helperText != null,
+                                    helperLabel: fieldData.helperText ?? '',
+                                    titleLabel: fieldData.titleLabel,
+                                    inputLabel: fieldData.inputLabel,
+                                    defaultValue: fieldData.value,
+                                    keyboardType:
+                                        fieldData.type ?? TextInputType.text,
+                                    validator: fieldData.isNeedValidation ==
+                                            true
+                                        ? (String? value) {
+                                            if (value == null || value == "") {
+                                              return "Harus diisi";
+                                            }
+                                            return null;
+                                          }
+                                        : null,
+                                    onChange: (value) {
+                                      _updateFieldValue(
+                                          index, value, null, null);
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: QuickcountButton(
-                          text: 'Simpan Perubahan',
-                          state: QuickcountButtonState.enabled,
-                          onPressed: () {
-                            context.read<LoginCubit>().initVolunteer(paramRequest);
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 36),
-                    ],
-                  ),
-                ),
-                if (state is LoginLoadingState)
-                  Container(
-                    color: Colors.white.withOpacity(0.5),
-                    child: const Center(
-                      child: CircularProgressIndicator(),
+                        const SizedBox(height: 36),
+                      ],
                     ),
                   ),
-              ]
-          ),
+                ),
+                const SizedBox(height: 80),
+              ],
+            ),
+            Positioned(
+                bottom: 15,
+                left: 0,
+                right: 0,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: QuickcountButton(
+                    text: 'Simpan Perubahan',
+                    state: QuickcountButtonState.enabled,
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        context.read<LoginCubit>().initVolunteer(paramRequest);
+                      }
+                    },
+                  ),
+                )),
+            if (state is LoginLoadingState)
+              Container(
+                color: Colors.white.withOpacity(0.5),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+          ]),
           backgroundColor: Colors.white,
         );
       },

@@ -56,6 +56,9 @@ class _InputResultPageState extends State<InputResultPage> {
 
   List<String> dropdownItems = [];
 
+  bool? _isNomorTelkomsel;
+  bool _isSmsReplySent = false;
+
   StreamSubscription? _smsSubscription;
 
   @override
@@ -123,6 +126,9 @@ class _InputResultPageState extends State<InputResultPage> {
         );
         if (result == SmsStatus.sent) {
           print("Sent");
+          setState(() {
+            _isSmsReplySent = true;
+          });
         } else {
           print("Failed");
         }
@@ -234,6 +240,11 @@ class _InputResultPageState extends State<InputResultPage> {
               },
             );
           } else if (state is HomeLoadedState) {
+            // set isNomorTelkomsel or not ?
+            setState(() {
+              _isNomorTelkomsel = state.isNomorTelkomsel;
+            });
+
             showModalBottomSheet(
               isDismissible: false,
               enableDrag: false,
@@ -255,8 +266,16 @@ class _InputResultPageState extends State<InputResultPage> {
                             minimumSize: const Size(double.infinity, 50),
                           ),
                           onPressed: () {
-                            Navigator.pop(context);
-                            QR.popUntilOrPush(AppRoutes.homePath);
+                            print('isNomorTelkomsel : $_isNomorTelkomsel');
+                            print('isSmsReplySent: $_isSmsReplySent');
+                            if (_isNomorTelkomsel == true &&
+                                _isSmsReplySent == false) {
+                              showWarningIncompleteTask(context);
+                            } else {
+                              // Navigator.pop(context);
+                              // selain telkomsel
+                              QR.popUntilOrPush(AppRoutes.homePath);
+                            }
                           },
                           child: const Text('OK'),
                         ),
@@ -312,221 +331,322 @@ class _InputResultPageState extends State<InputResultPage> {
                 isNeedValidation: true),
           ];
 
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Colors.white,
-              title: Image.asset(
-                AppConfig.companyIcon,
-                width: 200,
-                height: 100,
+          return PopScope(
+            onPopInvokedWithResult: (_, __) {
+              print('isNomorTelkomsel : $_isNomorTelkomsel');
+              print('isSmsReplySent: $_isSmsReplySent');
+
+              if (_isNomorTelkomsel == true && _isSmsReplySent == false) {
+                showWarningIncompleteTask(context);
+              }
+            },
+            child: Scaffold(
+              appBar: AppBar(
+                backgroundColor: Colors.white,
+                // automaticallyImplyLeading: false,
+                title: Image.asset(
+                  AppConfig.companyIcon,
+                  width: 200,
+                  height: 100,
+                ),
+                centerTitle: true,
+                toolbarHeight: 80,
               ),
-              centerTitle: true,
-              toolbarHeight: 80,
-            ),
-            body: Stack(children: [
-              Column(
-                children: [
-                  Expanded(
-                      child: SingleChildScrollView(
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            color: const Color(0xFFE5E5E5),
-                            height: 8,
-                          ),
-                          const SizedBox(height: 24),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Text(
-                              'Hasil Pilkada',
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+              body: Stack(children: [
+                Column(
+                  children: [
+                    Expanded(
+                        child: SingleChildScrollView(
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              color: const Color(0xFFE5E5E5),
+                              height: 8,
+                            ),
+                            const SizedBox(height: 24),
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Text(
+                                'Hasil Pilkada',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 32),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: formFields.length,
-                              itemBuilder: (context, index) {
-                                final fieldData = formFields[index];
-                                final isNeedValidation =
-                                    fieldData.isNeedValidation;
-                                return Padding(
-                                  padding: const EdgeInsets.only(bottom: 16.0),
-                                  child: QuickcountTextFormField(
-                                    keyboardType:
-                                        fieldData.dropdownItems.isEmpty
-                                            ? TextInputType.number
-                                            : TextInputType.text,
-                                    showDropdown:
-                                        fieldData.dropdownItems.isNotEmpty,
-                                    onDropdownChanged: (String? value) {
-                                      formFields[index].selectedDropdownItem =
-                                          value;
-                                      formFields[index].value = value;
-                                    },
-                                    defaultValue: formFields[index].value,
-                                    dropdownItems: fieldData.dropdownItems,
-                                    selectedDropdownItem:
-                                        fieldData.selectedDropdownItem,
-                                    showHelper: fieldData.helperText != null,
-                                    helperLabel: fieldData.helperText ?? '',
-                                    titleLabel: fieldData.titleLabel,
-                                    inputLabel: fieldData.inputLabel,
-                                    onChange: (val) {
-                                      formFields[index].value = val;
-                                    },
-                                    validator: isNeedValidation == true
-                                        ? (String? value) {
-                                            if (value == null || value == "") {
-                                              return "Harus diisi";
-                                            }
+                            const SizedBox(height: 32),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                itemCount: formFields.length,
+                                itemBuilder: (context, index) {
+                                  final fieldData = formFields[index];
+                                  final isNeedValidation =
+                                      fieldData.isNeedValidation;
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.only(bottom: 16.0),
+                                    child: QuickcountTextFormField(
+                                      keyboardType:
+                                          fieldData.dropdownItems.isEmpty
+                                              ? TextInputType.number
+                                              : TextInputType.text,
+                                      showDropdown:
+                                          fieldData.dropdownItems.isNotEmpty,
+                                      onDropdownChanged: (String? value) {
+                                        formFields[index].selectedDropdownItem =
+                                            value;
+                                        formFields[index].value = value;
+                                      },
+                                      defaultValue: formFields[index].value,
+                                      dropdownItems: fieldData.dropdownItems,
+                                      selectedDropdownItem:
+                                          fieldData.selectedDropdownItem,
+                                      showHelper: fieldData.helperText != null,
+                                      helperLabel: fieldData.helperText ?? '',
+                                      titleLabel: fieldData.titleLabel,
+                                      inputLabel: fieldData.inputLabel,
+                                      onChange: (val) {
+                                        formFields[index].value = val;
+                                      },
+                                      validator: isNeedValidation == true
+                                          ? (String? value) {
+                                              if (value == null ||
+                                                  value == "") {
+                                                return "Harus diisi";
+                                              }
 
-                                            return null;
-                                          }
-                                        : null,
-                                    // validator: isNeedValidation == true ? () {} : null,
+                                              return null;
+                                            }
+                                          : null,
+                                      // validator: isNeedValidation == true ? () {} : null,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            // const SizedBox(height: 36),
+                          ],
+                        ),
+                      ),
+                    )),
+                    const SizedBox(height: 80),
+                  ],
+                ),
+                Positioned(
+                  bottom: 15,
+                  left: 0,
+                  right: 0,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: QuickcountButton(
+                        text: 'Kirim Hasil',
+                        state: QuickcountButtonState.enabled,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            submitData(context, onPressed: () {
+                              Navigator.pop(context);
+                              // TODO: Implement SMS sending
+                              String? riilLat =
+                                  formFields[0].selectedDropdownItem;
+                              String? dpt =
+                                  formFields[formFields.length - 1].value;
+                              String? suaraTidakSah =
+                                  formFields[formFields.length - 2].value;
+
+                              int totalVotes =
+                                  int.tryParse(suaraTidakSah ?? '0') ?? 0;
+
+                              for (int i = 0;
+                                  i < (listCalon?.length ?? 0);
+                                  i++) {
+                                final calonResult = int.tryParse(
+                                        formFields[i + 2].value ?? '0') ??
+                                    0;
+                                totalVotes += (calonResult);
+                              }
+
+                              // Convert DPT to integer for comparison
+                              int dptValue = int.tryParse(dpt ?? '0') ?? 0;
+                              if (dptValue < totalVotes) {
+                                // Show an error message if DPT is smaller
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        "Jumlah DPT tidak boleh lebih kecil dari total suara lain"),
+                                    backgroundColor: Colors.red,
                                   ),
                                 );
-                              },
-                            ),
-                          ),
-                          // const SizedBox(height: 36),
-                        ],
-                      ),
-                    ),
-                  )),
-                  const SizedBox(height: 80),
-                ],
-              ),
-              Positioned(
-                bottom: 15,
-                left: 0,
-                right: 0,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: QuickcountButton(
-                      text: 'Kirim Hasil',
-                      state: QuickcountButtonState.enabled,
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          // TODO: Implement SMS sending
-                          String? riilLat = formFields[0].selectedDropdownItem;
-                          String? dpt = formFields[formFields.length - 1].value;
-                          String? suaraTidakSah =
-                              formFields[formFields.length - 2].value;
+                                return;
+                              }
 
-                          int totalVotes =
-                              int.tryParse(suaraTidakSah ?? '0') ?? 0;
-
-                          for (int i = 0; i < (listCalon?.length ?? 0); i++) {
-                            final calonResult =
-                                int.tryParse(formFields[i + 2].value ?? '0') ??
-                                    0;
-                            totalVotes += (calonResult);
-                          }
-
-                          // Convert DPT to integer for comparison
-                          int dptValue = int.tryParse(dpt ?? '0') ?? 0;
-                          if (dptValue < totalVotes) {
-                            // Show an error message if DPT is smaller
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    "Jumlah DPT tidak boleh lebih kecil dari total suara lain"),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                            return;
-                          }
-
-                          if (dptValue == 0) {
-                            // Show an error message if DPT is smaller
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    "Jumlah DPT tidak boleh lebih kecil dari total suara lain"),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                            return;
-                          }
-
-                          String? jenisInput =
-                              riilLat?.toLowerCase() == 'riil' ? 'R' : 'L';
-
-                          // Validate DPT
-                          if (dptValue < totalVotes || dptValue == 0) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  "Jumlah DPT tidak boleh lebih kecil dari total suara lain",
-                                ),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                            return;
-                          }
-
-                          // Send data
-                          InputResultParam inputResultParam = InputResultParam(
-                            riilLatihan: jenisInput,
-                            idInisiasi: box
-                                .get('idInisiasi', defaultValue: '')
-                                .toString(),
-                            kodeLokasi: formFields[1].selectedDropdownItem,
-                            suaraTidakSah: suaraTidakSah,
-                            dpt: dpt,
-                          );
-
-                          for (int i = 0; i < (listCalon?.length ?? 0); i++) {
-                            final calonResult = formFields[i + 2].value;
-                            if (calonResult == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Mohon isi perolehan suara calon",
+                              if (dptValue == 0) {
+                                // Show an error message if DPT is smaller
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        "Jumlah DPT tidak boleh lebih kecil dari total suara lain"),
+                                    backgroundColor: Colors.red,
                                   ),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                              return;
-                            }
-                            inputResultParam.addCalonResult(
-                                i + 1, calonResult ?? '');
-                          }
+                                );
+                                return;
+                              }
 
-                          // Trigger the result input
-                          context
-                              .read<HomeCubit>()
-                              .inputResult(inputResultParam);
-                        }
-                      }),
-                ),
-              ),
-              if (state is HomeLoadingState)
-                Container(
-                  color: Colors.white.withOpacity(0.5),
-                  child: const Center(
-                    child: CircularProgressIndicator(),
+                              String? jenisInput =
+                                  riilLat?.toLowerCase() == 'riil' ? 'R' : 'L';
+
+                              // Validate DPT
+                              if (dptValue < totalVotes || dptValue == 0) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Jumlah DPT tidak boleh lebih kecil dari total suara lain",
+                                    ),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              // Send data
+                              InputResultParam inputResultParam =
+                                  InputResultParam(
+                                riilLatihan: jenisInput,
+                                idInisiasi: box
+                                    .get('idInisiasi', defaultValue: '')
+                                    .toString(),
+                                kodeLokasi: formFields[1].selectedDropdownItem,
+                                suaraTidakSah: suaraTidakSah,
+                                dpt: dpt,
+                              );
+
+                              for (int i = 0;
+                                  i < (listCalon?.length ?? 0);
+                                  i++) {
+                                final calonResult = formFields[i + 2].value;
+                                if (calonResult == null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        "Mohon isi perolehan suara calon",
+                                      ),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                  return;
+                                }
+                                inputResultParam.addCalonResult(
+                                    i + 1, calonResult ?? '');
+                              }
+
+                              // Trigger the result input
+                              context
+                                  .read<HomeCubit>()
+                                  .inputResult(inputResultParam);
+                            });
+                          }
+                        }),
                   ),
                 ),
-            ]),
-            backgroundColor: Colors.white,
+                if (state is HomeLoadingState)
+                  Container(
+                    color: Colors.white.withOpacity(0.5),
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+              ]),
+              backgroundColor: Colors.white,
+            ),
           );
         },
       ),
+    );
+  }
+
+  void showWarningIncompleteTask(BuildContext context) async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                  'Harap tunggu sebentar. Cek kembali SMS anda pastikan terkirim jika muncul pesan “OKE”'),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.dangerMain,
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void submitData(BuildContext context, {VoidCallback? onPressed}) async {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Pastikan nomor anda indosat atau telkomsel'),
+              const SizedBox(height: 16.0),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.dangerMain,
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Batal'),
+                    ),
+                  ),
+                  const SizedBox(width: 8), // Added spacing between buttons
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.primaryColor,
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      onPressed: onPressed,
+                      child: const Text('Ya'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

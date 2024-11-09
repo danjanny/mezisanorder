@@ -7,6 +7,7 @@ import '../../../authentication/domain/entities/volunteer.dart';
 import '../../../authentication/domain/entities/volunteer_result.dart';
 import '../../../authentication/domain/entities/wilayah.dart';
 import '../../../authentication/presentation/manager/login_state.dart';
+import '../../../base/core/app_config.dart';
 import '../../../base/presentation/button/quickcount_custom_button.dart';
 import '../../../base/presentation/textformfield/app_colors.dart';
 import '../../../base/presentation/textformfield/quickcount_text_form_field.dart';
@@ -360,7 +361,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           appBar: AppBar(
             backgroundColor: Colors.white,
             title: Image.asset(
-              'assets/images/company_logo.png',
+              AppConfig.companyIcon,
               width: 200,
               height: 100,
             ),

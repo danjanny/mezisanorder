@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qlevar_router/qlevar_router.dart';
+import 'package:skeleton/base/core/app_config.dart';
 import '../../../base/presentation/button/quickcount_custom_button.dart';
 import '../manager/login_cubit.dart';
 import '../manager/login_state.dart';
@@ -22,12 +23,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<LoginCubit, LoginState>(
-      listener: (context, state) {
-      },
+      listener: (context, state) {},
       builder: (context, state) {
         return PopScope(
-          onPopInvokedWithResult: (_, __ ) {
-            if(QR.history.length > 0) {
+          onPopInvokedWithResult: (_, __) {
+            if (QR.history.length > 0) {
               QR.history.clear();
             }
             SystemNavigator.pop();
@@ -36,7 +36,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             appBar: AppBar(
               backgroundColor: Colors.white,
               title: Image.asset(
-                'assets/images/company_logo.png',
+                AppConfig.companyIcon,
                 width: 200,
                 height: 100,
               ),
@@ -54,7 +54,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SvgPicture.asset(
-                            'assets/images/illustration_voting.svg',
+                            AppConfig.onboardingImage,
                             width: double.infinity,
                             height: 300,
                             fit: BoxFit.contain,
@@ -87,7 +87,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     text: 'Mulai',
                     state: QuickcountButtonState.enabled,
                     onPressed: () {
-                      box.get('isPasscodeFilled', defaultValue: false) ? box.get('isInitVolunteerSuccess', defaultValue: false) ? QR.rootNavigator.popUntilOrPush(AppRoutes.homePath) : QR.push(AppRoutes.registerPath) : QR.push(AppRoutes.passcodePath);
+                      box.get('isPasscodeFilled', defaultValue: false)
+                          ? box.get('isInitVolunteerSuccess',
+                                  defaultValue: false)
+                              ? QR.rootNavigator
+                                  .popUntilOrPush(AppRoutes.homePath)
+                              : QR.push(AppRoutes.registerPath)
+                          : QR.push(AppRoutes.passcodePath);
                     },
                   ),
                   const SizedBox(height: 36),

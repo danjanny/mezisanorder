@@ -7,6 +7,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qlevar_router/qlevar_router.dart';
 import 'package:readsms/readsms.dart';
+import 'package:skeleton/base/core/app_config.dart';
 import 'package:skeleton/home/domain/params/input_result_param.dart';
 import 'package:skeleton/route/routes.dart';
 import '../../../authentication/domain/entities/init_result.dart';
@@ -315,7 +316,7 @@ class _InputResultPageState extends State<InputResultPage> {
             appBar: AppBar(
               backgroundColor: Colors.white,
               title: Image.asset(
-                'assets/images/company_logo.png',
+                AppConfig.companyIcon,
                 width: 200,
                 height: 100,
               ),

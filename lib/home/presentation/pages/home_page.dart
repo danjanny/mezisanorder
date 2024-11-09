@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:qlevar_router/qlevar_router.dart';
+import 'package:skeleton/base/core/app_config.dart';
 import 'package:skeleton/base/presentation/appbar/quickcount_home_app_bar.dart';
 import 'package:skeleton/base/presentation/icons/icon_asset.dart';
 import 'package:skeleton/base/presentation/styles/text_styles.dart';
@@ -110,7 +111,7 @@ class _HomePageState extends State<HomePage> {
                             .copyWith(height: 20 / 16, color: AppColors.grey)),
                     const SizedBox(height: 4),
                     Image.asset(
-                      IconAsset.companyLogo,
+                      AppConfig.companyIcon,
                       width: 200,
                       height: 35,
                     ),

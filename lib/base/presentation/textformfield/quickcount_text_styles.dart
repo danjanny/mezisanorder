@@ -136,11 +136,4 @@ class QuickCountTextStyles {
     height: 36 / 28,
     textBaseline: TextBaseline.alphabetic,
   );
-
-  //styleName: Body16/Bold
-  static const TextStyle telkomselBatikSans = TextStyle(
-      fontFamily: 'TelkomselBatikSans',
-      fontWeight: FontWeight.w400,
-      fontSize: 20,
-      height: 28 / 20);
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skeleton/base/core/app_config.dart';
 
 class AppColors {
   static const Color neutral10 = Color(0xFFFFFFFF);
@@ -72,5 +73,7 @@ class AppColors {
 
   static const Color grey2 = Color(0xFFAEAEB2);
   static const Color grey = Color(0xFF8E8E93);
-  static const Color primaryColor = Color(0xFF52BFBC);
+
+  // static const Color primaryColor = Color(0xFF52BFBC);
+  static const Color primaryColor = AppConfig.companyColor;
 }

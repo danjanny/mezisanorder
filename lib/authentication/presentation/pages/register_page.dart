@@ -192,12 +192,14 @@ class _RegisterPageState extends State<RegisterPage> {
       FormFieldData(
           titleLabel: "Kode Lokasi 2",
           inputLabel: "Masukkan Kode Lokasi 2",
-          helperText: "Periksa kembali kode lokasi yang diberikan.",
-          formFieldType: "allCaps"),
+          helperText: "(Tidak wajib diisi) Periksa kembali kode lokasi yang diberikan.",
+          formFieldType: "allCaps",
+          isNeedValidation: false),
       FormFieldData(
         titleLabel: "Nama",
         inputLabel: "Masukkan Nama",
         helperText: null,
+        formFieldType: "allCaps"
       ),
       FormFieldData(
           titleLabel: "No Handphone 1",
@@ -208,7 +210,7 @@ class _RegisterPageState extends State<RegisterPage> {
           titleLabel: "No Handphone 2",
           inputLabel: "Masukkan No Handphone 2",
           helperText: "Nomor handphone adalah nomor aktif yang dapat dihubungi",
-          formFieldType: "number", isNeedValidation: false),
+          formFieldType: "number"),
     ];
 
     void _updateFieldValue(

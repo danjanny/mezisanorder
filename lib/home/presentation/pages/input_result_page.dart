@@ -447,7 +447,7 @@ class _InputResultPageState extends State<InputResultPage> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
-                                        "Jumlah DPT tidak boleh lebih kecil dari total suara lain"),
+                                        "Jumlah DPT tidak boleh lebih kecil dari total suara lain. Tanyakan jumlah DPT kepada petugas TPS"),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -459,7 +459,7 @@ class _InputResultPageState extends State<InputResultPage> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
-                                        "Jumlah DPT tidak boleh lebih kecil dari total suara lain"),
+                                        "Jumlah DPT tidak boleh lebih kecil dari total suara lain. Tanyakan jumlah DPT kepada petugas TPS"),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -474,7 +474,7 @@ class _InputResultPageState extends State<InputResultPage> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
-                                      "Jumlah DPT tidak boleh lebih kecil dari total suara lain",
+                                      "Jumlah DPT tidak boleh lebih kecil dari total suara lain. Tanyakan jumlah DPT kepada petugas TPS",
                                     ),
                                     backgroundColor: Colors.red,
                                   ),

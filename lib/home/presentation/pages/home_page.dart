@@ -142,14 +142,18 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: AppColors.dangerMain,
                         minimumSize: const Size(double.infinity, 50),
+                        side: const BorderSide(color: AppColors.primaryColor, width: 1), // Border color and width
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25), // Optional: Border radius
+                        ),
                       ),
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: const Text('Cancel'),
+                      child: const Text('Batalkan', style: TextStyle(
+                        color: AppColors.primaryColor,
+                      ),),
                     ),
                   ),
                   const SizedBox(width: 8), // Added spacing between buttons

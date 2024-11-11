@@ -75,7 +75,7 @@ flutter_native_splash:
 # following page: https://dart.dev/tools/pub/pubspec
 flutter_icons:
   android: true
-  image_path: "assets/icon/app_icon.png"
+  image_path: "assets/icon/app_icon_logo.png"
 
 # The following section is specific to Flutter packages.
 flutter:

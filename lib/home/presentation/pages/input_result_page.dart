@@ -173,6 +173,48 @@ class _InputResultPageState extends State<InputResultPage> {
       int? totalCalon =
           box.get('jumlahCalon', defaultValue: 0); // Adjust default type
       print('Check initResult: $totalCalon');
+
+      formFields = [
+        FormFieldData(
+          titleLabel: "Riil / Latihan",
+          inputLabel: "Riil / Latihan",
+          dropdownItems: ['Riil', 'Latihan'],
+          selectedDropdownItem: 'Riil',
+          helperText: null,
+        ),
+        FormFieldData(
+          titleLabel: "Kode Lokasi",
+          inputLabel: "Pilih Kode Lokasi",
+          dropdownItems: dropdownItems,
+          selectedDropdownItem:
+          dropdownItems.isNotEmpty ? dropdownItems.first : null,
+          helperText: null,
+        ),
+        // Add form fields for each calon
+        ...?listCalon?.map((calon) => FormFieldData(
+            titleLabel: calon.pasangan ?? "Pasangan",
+            inputLabel:
+            "Masukkan perolehan pasangan no urut ${calon.noUrut ?? ""}",
+            dropdownItems: [],
+            helperText: "Periksa kembali hasil perolehan",
+            formType: "number",
+            isNeedValidation: true)),
+        FormFieldData(
+            titleLabel: "Suara tidak sah",
+            inputLabel: "Masukkan jumlah suara tidak sah",
+            dropdownItems: [],
+            helperText: null,
+            formType: "number",
+            isNeedValidation: true),
+        FormFieldData(
+            titleLabel: "DPT (Daftar Pemilih Tetap)",
+            inputLabel: "Masukkan jumlah DPT",
+            dropdownItems: [],
+            helperText:
+            "DPT tidak boleh lebih kecil dari keseluruhan jumlah suara",
+            formType: "number",
+            isNeedValidation: true),
+      ];
     });
   }
 
@@ -217,6 +259,7 @@ class _InputResultPageState extends State<InputResultPage> {
               },
             );
           } else if (state is HomeLoadedState) {
+            print('Home loaded state: ${state.statusCode}');
             showModalBottomSheet(
               isDismissible: false,
               enableDrag: false,
@@ -239,6 +282,10 @@ class _InputResultPageState extends State<InputResultPage> {
                           ),
                           onPressed: () {
                             print('isSmsReplySent: $_isSmsReplySent');
+                            // when succes then remove list calon
+                            if (state.statusCode?.toLowerCase() == 'ok') {
+                              _resetFields();
+                            }
                             Navigator.pop(context);
                           },
                           child: const Text('OK'),
@@ -252,49 +299,6 @@ class _InputResultPageState extends State<InputResultPage> {
           }
         },
         builder: (context, state) {
-          // Define the initial form fields
-          formFields = [
-            FormFieldData(
-              titleLabel: "Riil / Latihan",
-              inputLabel: "Riil / Latihan",
-              dropdownItems: ['Riil', 'Latihan'],
-              selectedDropdownItem: 'Riil',
-              helperText: null,
-            ),
-            FormFieldData(
-              titleLabel: "Kode Lokasi",
-              inputLabel: "Pilih Kode Lokasi",
-              dropdownItems: dropdownItems,
-              selectedDropdownItem:
-                  dropdownItems.isNotEmpty ? dropdownItems.first : null,
-              helperText: null,
-            ),
-            // Add form fields for each calon
-            ...?listCalon?.map((calon) => FormFieldData(
-                titleLabel: calon.pasangan ?? "Pasangan",
-                inputLabel:
-                    "Masukkan perolehan pasangan no urut ${calon.noUrut ?? ""}",
-                dropdownItems: [],
-                helperText: "Periksa kembali hasil perolehan",
-                formType: "number",
-                isNeedValidation: true)),
-            FormFieldData(
-                titleLabel: "Suara tidak sah",
-                inputLabel: "Masukkan jumlah suara tidak sah",
-                dropdownItems: [],
-                helperText: null,
-                formType: "number",
-                isNeedValidation: true),
-            FormFieldData(
-                titleLabel: "DPT (Daftar Pemilih Tetap)",
-                inputLabel: "Masukkan jumlah DPT",
-                dropdownItems: [],
-                helperText:
-                    "DPT tidak boleh lebih kecil dari keseluruhan jumlah suara",
-                formType: "number",
-                isNeedValidation: true),
-          ];
-
           return PopScope(
             canPop: true,
             onPopInvokedWithResult: (_, __) {
@@ -351,6 +355,7 @@ class _InputResultPageState extends State<InputResultPage> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16.0),
                               child: ListView.builder(
+                                key: ValueKey(formFields),
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: formFields.length,
@@ -602,6 +607,34 @@ class _InputResultPageState extends State<InputResultPage> {
     );
   }
 
+  _resetFields() {
+    setState(() {
+      print('Before: ${formFields.map((field) => field.value).toList()}');
+
+      // Create a new list with the updated values
+      formFields = formFields.map((field) {
+        if (field.formType == 'number') {
+          print('Resetting value for ${field.titleLabel}');
+          // Reset field value and dropdown selection
+          return FormFieldData(
+            titleLabel: field.titleLabel,
+            inputLabel: field.inputLabel,
+            dropdownItems: field.dropdownItems,
+            selectedDropdownItem: '',  // Reset dropdown selection
+            helperText: field.helperText,
+            value: '',  // Reset field value
+            formType: field.formType,
+            isNeedValidation: field.isNeedValidation,
+          );
+        }
+        return field;  // Return other fields unchanged
+      }).toList();
+
+      print('After: ${formFields.map((field) => field.value).toList()}');
+    });
+  }
+
+
   void submitData(BuildContext context, {VoidCallback? onPressed}) async {
     showModalBottomSheet(
       context: context,
@@ -628,14 +661,18 @@ class _InputResultPageState extends State<InputResultPage> {
                   Expanded(
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: AppColors.dangerMain,
                         minimumSize: const Size(double.infinity, 50),
+                        side: const BorderSide(color: AppColors.primaryColor, width: 1), // Border color and width
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25), // Optional: Border radius
+                        ),
                       ),
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: const Text('Batal'),
+                      child: const Text('Batal', style: TextStyle(
+                        color: AppColors.primaryColor,
+                      ),),
                     ),
                   ),
                   const SizedBox(width: 8), // Added spacing between buttons

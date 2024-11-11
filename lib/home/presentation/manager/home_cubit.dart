@@ -165,7 +165,7 @@ class HomeCubit extends Cubit<HomeState> {
       print("result input: ${result?.status}");
       print("result input: ${result?.message}");
       if (result?.status?.toLowerCase() == "ok") {
-        emit(HomeLoadedState(message: result?.message));
+        emit(HomeLoadedState(statusCode: result?.status, message: result?.message));
       } else {
         emit(HomeErrorState(message: result?.message));
       }

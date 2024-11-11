@@ -7,9 +7,8 @@ class HomeLoadingState extends HomeState {}
 class HomeLoadedState extends HomeState {
   final String? statusCode;
   final String? message;
-  final bool? isNomorTelkomsel;
 
-  HomeLoadedState({this.statusCode, this.message, this.isNomorTelkomsel});
+  HomeLoadedState({this.statusCode, this.message});
 }
 
 class HomeComingSoonState extends HomeState {

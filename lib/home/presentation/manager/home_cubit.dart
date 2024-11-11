@@ -157,11 +157,6 @@ class HomeCubit extends Cubit<HomeState> {
       // fetch user data
       final userData = await _initializeDataUser();
 
-      // check nomor telkomsel or not ?
-      String? noHandphone1 = userData.noHandphone1;
-      bool isNomorTelkomsel =
-          checkNomorTelkomsel(noHandphone1, listNomorTelkomsel);
-
       // send hasil pilkada to sms gateway
       await sendSmsHasilPilkada(inputParam);
 
@@ -170,7 +165,7 @@ class HomeCubit extends Cubit<HomeState> {
       print("result input: ${result?.status}");
       print("result input: ${result?.message}");
       if (result?.status?.toLowerCase() == "ok") {
-        emit(HomeLoadedState(message: result?.message, isNomorTelkomsel: isNomorTelkomsel));
+        emit(HomeLoadedState(message: result?.message));
       } else {
         emit(HomeErrorState(message: result?.message));
       }
@@ -180,15 +175,6 @@ class HomeCubit extends Cubit<HomeState> {
     } catch (e) {
       emit(HomeErrorState(message: 'General Error : $e'));
     }
-  }
-
-  bool checkNomorTelkomsel(
-      String? noHandphone1, List<String> listNomorTelkomsel) {
-    if (noHandphone1 != null && noHandphone1.length >= 4) {
-      String leadingNumbers = noHandphone1.substring(0, 4);
-      return listNomorTelkomsel.contains(leadingNumbers);
-    }
-    return false;
   }
 
   Future<InitVolunteerRequestParams> _initializeDataUser() async {

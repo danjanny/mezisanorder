@@ -55,9 +55,8 @@ class _InputResultPageState extends State<InputResultPage> {
   final _plugin = Readsms();
 
   List<String> dropdownItems = [];
-
-  bool? _isNomorTelkomsel;
   bool _isSmsReplySent = false;
+  bool _isSubmitTapped = false;
 
   StreamSubscription? _smsSubscription;
 
@@ -68,28 +67,6 @@ class _InputResultPageState extends State<InputResultPage> {
     _requestSmsPermission();
     _readSms();
   }
-
-  // _readSms() {
-  //   getPermission().then((value) {
-  //     if (value) {
-  //       _plugin.read();
-  //       _plugin.smsStream.listen((event) {
-  //         setState(() {
-  //           // Check if the message contains 'OK' or 'OKE'
-  //           String message = event.body;
-  //           String sender = event.sender;
-  //           print('Check result $message');
-  //           if (sender == '96999' &&
-  //               (message.contains('OK') || message.contains('OKE'))) {
-  //             String replyMessage = message.contains('OKE') ? 'OKE' : 'OK';
-  //
-  //             sendSmsCustomHasilPilkada(replyMessage);
-  //           }
-  //         });
-  //       });
-  //     }
-  //   });
-  // }
 
   void _readSms() {
     getPermission().then((value) {
@@ -240,11 +217,6 @@ class _InputResultPageState extends State<InputResultPage> {
               },
             );
           } else if (state is HomeLoadedState) {
-            // set isNomorTelkomsel or not ?
-            setState(() {
-              _isNomorTelkomsel = state.isNomorTelkomsel;
-            });
-
             showModalBottomSheet(
               isDismissible: false,
               enableDrag: false,
@@ -266,16 +238,8 @@ class _InputResultPageState extends State<InputResultPage> {
                             minimumSize: const Size(double.infinity, 50),
                           ),
                           onPressed: () {
-                            print('isNomorTelkomsel : $_isNomorTelkomsel');
                             print('isSmsReplySent: $_isSmsReplySent');
-                            if (_isNomorTelkomsel == true &&
-                                _isSmsReplySent == false) {
-                              showWarningIncompleteTask(context);
-                            } else {
-                              // Navigator.pop(context);
-                              // selain telkomsel
-                              QR.popUntilOrPush(AppRoutes.homePath);
-                            }
+                            Navigator.pop(context);
                           },
                           child: const Text('OK'),
                         ),
@@ -332,12 +296,13 @@ class _InputResultPageState extends State<InputResultPage> {
           ];
 
           return PopScope(
+            canPop: false,
             onPopInvokedWithResult: (_, __) {
-              print('isNomorTelkomsel : $_isNomorTelkomsel');
               print('isSmsReplySent: $_isSmsReplySent');
-
-              if (_isNomorTelkomsel == true && _isSmsReplySent == false) {
-                showWarningIncompleteTask(context);
+              if (_isSubmitTapped) {
+                return showWarningIncompleteTask(context);
+              } else {
+                QR.popUntilOrPush(AppRoutes.homePath);
               }
             },
             child: Scaffold(
@@ -454,6 +419,7 @@ class _InputResultPageState extends State<InputResultPage> {
                           if (_formKey.currentState!.validate()) {
                             submitData(context, onPressed: () {
                               Navigator.pop(context);
+                              _isSubmitTapped = true;
                               // TODO: Implement SMS sending
                               String? riilLat =
                                   formFields[0].selectedDropdownItem;
@@ -582,19 +548,50 @@ class _InputResultPageState extends State<InputResultPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                  'Harap tunggu sebentar. Cek kembali SMS anda pastikan terkirim jika muncul pesan “OKE”'),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: AppColors.dangerMain,
-                  minimumSize: const Size(double.infinity, 50),
+              const Text('Yakin keluar dari halaman?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20
                 ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('OK'),
+              ),
+              const SizedBox(height: 16.0),
+              const Text(
+                'Periksa kembali SMS anda pastikan terkirim jika muncul pesan “OKE”',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16.0),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.dangerMain,
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Batal'),
+                    ),
+                  ),
+                  const SizedBox(width: 8), // Added spacing between buttons
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: AppColors.primaryColor,
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      onPressed: () {
+                        QR.popUntilOrPush(AppRoutes.homePath);
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Yakin'),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -612,7 +609,17 @@ class _InputResultPageState extends State<InputResultPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Pastikan nomor anda indosat atau telkomsel'),
+              const Text('Yakin mengirim data?',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              const Text('Periksa kembali data yang akan dikirim dan pastikan nomor anda menggunakan Telkomsel atau Indosat.',
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 16.0),
               Row(
                 children: [

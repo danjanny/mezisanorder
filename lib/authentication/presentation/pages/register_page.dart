@@ -210,7 +210,7 @@ class _RegisterPageState extends State<RegisterPage> {
           titleLabel: "No Handphone 2",
           inputLabel: "Masukkan No Handphone 2",
           helperText: "Nomor handphone adalah nomor aktif yang dapat dihubungi",
-          formFieldType: "number"),
+          formFieldType: "number", isNeedValidation: false),
     ];
 
     void _updateFieldValue(

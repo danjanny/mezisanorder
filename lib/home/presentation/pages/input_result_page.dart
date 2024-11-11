@@ -296,14 +296,16 @@ class _InputResultPageState extends State<InputResultPage> {
           ];
 
           return PopScope(
-            canPop: false,
+            canPop: true,
             onPopInvokedWithResult: (_, __) {
               print('isSmsReplySent: $_isSmsReplySent');
+              /*
               if (_isSubmitTapped) {
                 return showWarningIncompleteTask(context);
               } else {
                 QR.popUntilOrPush(AppRoutes.homePath);
               }
+               */
             },
             child: Scaffold(
               appBar: AppBar(

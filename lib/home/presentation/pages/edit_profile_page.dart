@@ -7,6 +7,7 @@ import '../../../authentication/domain/entities/volunteer.dart';
 import '../../../authentication/domain/entities/volunteer_result.dart';
 import '../../../authentication/domain/entities/wilayah.dart';
 import '../../../authentication/presentation/manager/login_state.dart';
+import '../../../authentication/presentation/pages/register_page.dart';
 import '../../../base/core/app_config.dart';
 import '../../../base/presentation/button/quickcount_custom_button.dart';
 import '../../../base/presentation/textformfield/app_colors.dart';
@@ -118,28 +119,35 @@ class _EditProfilePageState extends State<EditProfilePage> {
           titleLabel: "Kode Lokasi 1",
           inputLabel: "Masukkan Kode Lokasi 1",
           helperText: "Periksa kembali kode lokasi yang diberikan.",
-          value: paramRequest.kodeLokasi1),
+          value: paramRequest.kodeLokasi1,
+          formFieldType: "allCaps"
+      ),
       FormFieldData(
           titleLabel: "Kode Lokasi 2",
           inputLabel: "Masukkan Kode Lokasi 2",
-          helperText: "Periksa kembali kode lokasi yang diberikan.",
-          value: paramRequest.kodeLokasi2),
+          helperText: "(Tidak wajib diisi) Periksa kembali kode lokasi yang diberikan.",
+          value: paramRequest.kodeLokasi2,
+          formFieldType: "allCaps",
+          isNeedValidation: false
+      ),
       FormFieldData(
           titleLabel: "Nama",
           inputLabel: "Masukkan Nama",
           helperText: null,
-          value: paramRequest.nama),
+          value: paramRequest.nama,
+          formFieldType: "allCaps"
+      ),
       FormFieldData(
           titleLabel: "No Handphone 1",
           inputLabel: "Masukkan No Handphone 1",
           helperText: "Nomor handphone adalah nomor aktif yang dapat dihubungi",
-          type: TextInputType.number,
+          formFieldType: "number",
           value: paramRequest.noHandphone1),
       FormFieldData(
           titleLabel: "No Handphone 2",
           inputLabel: "Masukkan No Handphone 2",
           helperText: "Nomor handphone adalah nomor aktif yang dapat dihubungi",
-          type: TextInputType.number,
+          formFieldType: "number",
           value: paramRequest.noHandphone2,
           isNeedValidation: false),
     ];
@@ -404,9 +412,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               itemCount: formFields.length,
                               itemBuilder: (context, index) {
                                 final fieldData = formFields[index];
+                                final fieldType = fieldData.formFieldType;
+                                final isNeedValidation =
+                                    fieldData.isNeedValidation;
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 16.0),
                                   child: QuickcountTextFormField(
+                                  inputFormatters: fieldType == 'allCaps'
+                                  ? [UpperCaseTextFormatter()]
+                                  : null,
+                                  keyboardType: fieldType == 'number'
+                                      ? TextInputType.number
+                                      : TextInputType.text,
                                     showDropdown: fieldData
                                             .dropdownItemsVolunteer
                                             .isNotEmpty ||
@@ -455,8 +472,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     titleLabel: fieldData.titleLabel,
                                     inputLabel: fieldData.inputLabel,
                                     defaultValue: fieldData.value,
-                                    keyboardType:
-                                        fieldData.type ?? TextInputType.text,
                                     validator: fieldData.isNeedValidation ==
                                             true
                                         ? (String? value) {

@@ -8,6 +8,7 @@ import 'package:qlevar_router/qlevar_router.dart';
 import 'package:readsms/readsms.dart';
 import 'package:skeleton/app.dart';
 import 'package:skeleton/authentication/presentation/manager/login_cubit.dart';
+import 'package:skeleton/home/presentation/manager/check_data_cubit.dart';
 import 'package:skeleton/home/presentation/manager/home_cubit.dart';
 import 'package:workmanager/workmanager.dart';
 import 'base/core/my_http_overrides.dart';
@@ -133,7 +134,8 @@ void main() async {
   runApp(MultiBlocProvider(
     providers: [
       BlocProvider<LoginCubit>(create: (context) => getIt<LoginCubit>()),
-      BlocProvider<HomeCubit>(create: (context) => getIt<HomeCubit>())
+      BlocProvider<HomeCubit>(create: (context) => getIt<HomeCubit>()),
+      BlocProvider<CheckDataCubit>(create: (context) => getIt<CheckDataCubit>()),
     ],
     child: const App(),
   ));

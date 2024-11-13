@@ -10,6 +10,8 @@ import 'package:skeleton/home/presentation/pages/input_result_page.dart'
     deferred as input_result_page;
 import 'package:skeleton/home/presentation/pages/edit_profile_page.dart'
     deferred as edit_profile_page;
+import 'package:skeleton/home/presentation/pages/history_input_page.dart'
+    deferred as history_input_page;
 import 'deferred_loader.dart';
 
 class AppRoutes {
@@ -19,8 +21,15 @@ class AppRoutes {
   static const editProfilePath = "/edit-profile";
   static const inputResultPath = "/input-result";
   static const homePath = "/home-dashboard";
-
+  static const historyInputPath = "/input-history";
   static final routes = [
+    QRoute(
+      path: historyInputPath,
+      builder: () => history_input_page.HistoryInputPage(),
+      middleware: [
+        DeferredLoader(history_input_page.loadLibrary),
+      ]
+    ),
     QRoute(
       path: editProfilePath,
       builder: () => edit_profile_page.EditProfilePage(),

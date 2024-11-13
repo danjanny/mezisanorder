@@ -158,6 +158,7 @@ class _QuickcountTextFormFieldState extends State<QuickcountTextFormField> {
                 child: Text(
                   widget.titleLabel,
                   style: QuickCountTextStyles.body12Regular.copyWith(
+                    fontWeight: FontWeight.bold,
                     height: 18 / 12,
                     color: widget.enabled
                         ? AppColors.textSecondary

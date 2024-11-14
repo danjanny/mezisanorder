@@ -139,7 +139,7 @@ class CustomHistoryCell extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  width: 60,
+                  width: 80,
                   padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 8),
                   decoration: BoxDecoration(
                     color: isReal ? const Color(0xFF30AB20) : const Color(0xFFFFC2C2),

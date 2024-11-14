@@ -11,10 +11,14 @@ class CheckDataCubit extends Cubit<CheckDataState> {
 
   CheckDataCubit(this._dataPilkadaUseCase) : super(CheckDataInitialState());
 
-  void checkData(CheckDataPilkadaRequest params) async {
-    try {
-      emit(CheckDataLoadingState());
+  void initState() {
+    CheckDataInitialState();
+  }
 
+  void checkData(CheckDataPilkadaRequest params) async {
+    print('Check data param ${params.idInisiasi}');
+    emit(CheckDataLoadingState());
+    try {
       final dataPilkada = await _dataPilkadaUseCase.call(params);
 
       emit(CheckDataLoadedState(

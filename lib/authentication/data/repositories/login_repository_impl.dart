@@ -25,33 +25,41 @@ class LoginRepositoryImpl extends BaseRepository implements ILoginRepository {
   final WilayahMapper _wilayahMapper;
   final VolunteerMapper _voulnteerMapper;
 
-  LoginRepositoryImpl(this._loginService, this._passcodeMapper, this._initResultMapper, this._wilayahMapper, this._voulnteerMapper);
-
+  LoginRepositoryImpl(this._loginService, this._passcodeMapper,
+      this._initResultMapper, this._wilayahMapper, this._voulnteerMapper);
 
   @override
   Future<Passcode?> submitPasscode(PasscodeRequest request) async {
-    final response =  await executeRequest(() =>  _loginService.submitPasscode(request));
+    final response =
+        await executeRequest(() => _loginService.submitPasscode(request));
     handleResponse(response);
-    final passcode = PasscodeResponseModel.fromJson(decodeResponseBody(response));
-    final passcodeResult = _passcodeMapper.fromPasscodeModelToPasscode(passcode);
+    final passcode =
+        PasscodeResponseModel.fromJson(decodeResponseBody(response));
+    final passcodeResult =
+        _passcodeMapper.fromPasscodeModelToPasscode(passcode);
     return passcodeResult;
   }
 
   @override
   Future<InitResult?> initVolunteer(InitVolunteerRequestParams request) async {
-    final response = await executeRequest(() => _loginService.initVolunteer(request));
+    final response =
+        await executeRequest(() => _loginService.initVolunteer(request));
     handleResponse(response);
-    final initVolunteerResponse = InitVolunteerResponseModel.fromJson(decodeResponseBody(response));
-    final initResult = _initResultMapper.fromInitResultModelToInitResult(initVolunteerResponse);
+    final initVolunteerResponse =
+        InitVolunteerResponseModel.fromJson(decodeResponseBody(response));
+    final initResult = _initResultMapper
+        .fromInitResultModelToInitResult(initVolunteerResponse);
     return initResult;
   }
 
   @override
-  Future<WilayahResult?> getWilayah() async {
-    final response = await executeRequest(() => _loginService.getWilayah());
+  Future<WilayahResult?> getWilayah(PasscodeRequest params) async {
+    final response =
+        await executeRequest(() => _loginService.getWilayah(params));
     handleResponse(response);
     final wilayah = WilayahResultModel.fromJson(decodeResponseBody(response));
-    final wilayahResult = _wilayahMapper.fromWilayahResponseModelToWilayahResult(wilayah);
+    final wilayahResult =
+        _wilayahMapper.fromWilayahResponseModelToWilayahResult(wilayah);
     return wilayahResult;
   }
 
@@ -59,17 +67,22 @@ class LoginRepositoryImpl extends BaseRepository implements ILoginRepository {
   Future<VolunteerResult?> getVolunteer() async {
     final response = await executeRequest(() => _loginService.getVolunteer());
     handleResponse(response);
-    final volunteer = VolunteerResultModel.fromJson(decodeResponseBody(response));
-    final volunteerResult = _voulnteerMapper.fromVolunteerResponseModelToVolunteerResult(volunteer);
+    final volunteer =
+        VolunteerResultModel.fromJson(decodeResponseBody(response));
+    final volunteerResult =
+        _voulnteerMapper.fromVolunteerResponseModelToVolunteerResult(volunteer);
     return volunteerResult;
   }
 
   @override
   Future<InitResult?> cekUser(String deviceId) async {
-    final response = await executeRequest(() => _loginService.cekUser(deviceId));
+    final response =
+        await executeRequest(() => _loginService.cekUser(deviceId));
     handleResponse(response);
-    final initVolunteerResponse = InitVolunteerResponseModel.fromJson(decodeResponseBody(response));
-    final initResult = _initResultMapper.fromInitResultModelToInitResult(initVolunteerResponse);
+    final initVolunteerResponse =
+        InitVolunteerResponseModel.fromJson(decodeResponseBody(response));
+    final initResult = _initResultMapper
+        .fromInitResultModelToInitResult(initVolunteerResponse);
     return initResult;
   }
 }

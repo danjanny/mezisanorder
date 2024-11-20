@@ -8,7 +8,7 @@ import '../params/passcode_request.dart';
 abstract class ILoginRepository {
   Future<InitResult?> initVolunteer(InitVolunteerRequestParams request);
   Future<Passcode?> submitPasscode(PasscodeRequest request);
-  Future<WilayahResult?> getWilayah();
+  Future<WilayahResult?> getWilayah(PasscodeRequest request);
   Future<VolunteerResult?> getVolunteer();
   Future<InitResult?>  cekUser(String deviceId);
 }

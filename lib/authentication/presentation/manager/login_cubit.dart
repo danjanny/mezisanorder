@@ -4,6 +4,7 @@ import 'package:skeleton/authentication/domain/params/passcode_request.dart';
 import 'package:skeleton/authentication/domain/use_cases/cek_user_use_case.dart';
 import 'package:skeleton/authentication/domain/use_cases/volunteer_use_case.dart';
 import 'package:skeleton/authentication/domain/use_cases/wilayah_use_case.dart';
+import 'package:skeleton/base/core/hive_config.dart';
 import 'package:skeleton/base/data/data_sources/error_exception.dart';
 import '../../domain/entities/init_result.dart';
 import '../../domain/entities/passcode.dart';
@@ -27,13 +28,11 @@ class LoginCubit extends Cubit<LoginState> {
       this._wilayahUseCase, this._volunteerUseCase, this._cekUserUseCase)
       : super(LoginInitialState());
 
-  Future<void> cekUser(
-      String deviceId) async {
+  Future<void> cekUser(String deviceId) async {
     print('Check params: ${deviceId}');
     emit(LoginLoadingState());
     try {
-      InitResult? result =
-      await _cekUserUseCase.call(deviceId);
+      InitResult? result = await _cekUserUseCase.call(deviceId);
       if (result?.status?.toLowerCase() == "ok") {
         List<Map<String, dynamic>> dataCalon = [];
         for (var item in result?.data?.calon ?? []) {
@@ -58,7 +57,7 @@ class LoginCubit extends Cubit<LoginState> {
           // 'kodeLokasi2': initVolunteerRequestParams.kodeLokasi2,
           'jumlahCalon': result?.data?.calon?.length,
           'arrayNamaCalon':
-          result?.data?.calon?.map((e) => e.pasangan).toList(),
+              result?.data?.calon?.map((e) => e.pasangan).toList(),
         });
         // await box.put('dataUser', initVolunteerRequestParams.toJson());
         await box.put('dataCalon', dataCalon);
@@ -96,7 +95,11 @@ class LoginCubit extends Cubit<LoginState> {
   Future<void> getWilayah() async {
     emit(LoginLoadingState());
     try {
-      WilayahResult? result = await _wilayahUseCase.call(null);
+      // retrieve passcode from hive box
+      var box = Hive.box('settings');
+      String? passcode = box.get(HiveConfig.passcode);
+      WilayahResult? result =
+          await _wilayahUseCase.call(PasscodeRequest(passcode: passcode ?? ''));
       if (result?.wilayah.isNotEmpty ?? false) {
         emit(WilayahLoadedState(wilayahResult: result));
       } else {
@@ -170,6 +173,10 @@ class LoginCubit extends Cubit<LoginState> {
         emit(PasscodeLoadedState());
         var box = Hive.box('settings');
         await box.put('isPasscodeFilled', true);
+
+        // store passcode within box
+        await box.put(HiveConfig.passcode,
+            passcodeRequest.passcode);
       } else {
         emit(LoginErrorState(message: result?.message));
       }

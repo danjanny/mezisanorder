@@ -17,14 +17,16 @@ class LoginServiceImpl extends BaseHttpService implements ILoginService {
   }
 
   @override
-  Future<http.Response> initVolunteer(InitVolunteerRequestParams initVolunteerRequestParams) async {
+  Future<http.Response> initVolunteer(
+      InitVolunteerRequestParams initVolunteerRequestParams) async {
     var request = initVolunteerRequestParams.toJson();
     return await fetchPost('/post_inisiasi', body: request);
   }
 
   @override
-  Future<http.Response> getWilayah() async {
-    return await fetchGet('/get_wilayah');
+  Future<http.Response> getWilayah(PasscodeRequest params) async {
+    var request = params.toJson();
+    return await fetchGet('/get_wilayah', queryParams: request);
   }
 
   @override

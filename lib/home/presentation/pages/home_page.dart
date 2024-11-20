@@ -84,6 +84,16 @@ class _HomePageState extends State<HomePage> {
                               ),
                               const SizedBox(height: 19),
                               MenuCardItem(
+                                iconPath: IconAsset.riwayatIcon,
+                                title: 'Riwayat Input',
+                                subtitle:
+                                'Periksa kembali riwayat data yang telah anda input',
+                                onTap: () {
+                                  QR.to(AppRoutes.historyInputPath);
+                                },
+                              ),
+                              const SizedBox(height: 19),
+                              MenuCardItem(
                                 iconPath: IconAsset.logoutIcon,
                                 title: 'Logout',
                                 subtitle: 'Keluar ke menu awal',

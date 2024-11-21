@@ -207,11 +207,11 @@ class _InputResultPageState extends State<InputResultPage> {
             formType: "number",
             isNeedValidation: true),
         FormFieldData(
-            titleLabel: "DPT (Daftar Pemilih Tetap)",
-            inputLabel: "Masukkan jumlah DPT",
+            titleLabel: "Jumlah Pemilih Terdaftar (DPT + DPTb + DPK)",
+            inputLabel: "Masukkan jumlah pemilih terdaftar",
             dropdownItems: [],
             helperText:
-            "DPT tidak boleh lebih kecil dari keseluruhan jumlah suara",
+            "Tidak boleh lebih kecil dari keseluruhan jumlah suara",
             formType: "number",
             isNeedValidation: true),
       ];

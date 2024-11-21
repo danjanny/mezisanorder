@@ -23,7 +23,7 @@ class InitResult {
 }
 
 class InitData {
-  final int? idInisiasi;
+  final dynamic? idInisiasi;
   final String? idWilayah;
   final List<CalonData>? calon;
 

@@ -78,6 +78,7 @@ class _HistoryInputPageState extends State<HistoryInputPage> {
                             locationCode: data?[index].kodeLokasi ?? '-',
                             date: formatDate(data?[index].tanggal ?? '-'),
                             isReal: data?[index].riilLat?.contains('Riil') ?? false,
+                            sms: data?[index].sms ?? '-'
                           );
                         },
                       ) :
@@ -110,11 +111,13 @@ class CustomHistoryCell extends StatelessWidget {
   final String locationCode;
   final String date;
   final bool isReal;
+  final String sms;
 
   const CustomHistoryCell({
     required this.locationCode,
     required this.date,
     required this.isReal,
+    required this.sms,
   });
 
   @override
@@ -176,6 +179,24 @@ class CustomHistoryCell extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(
                   locationCode,
+                  style: TextStyles.body16Bold.copyWith(
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'SMS: ',
+                  style: TextStyles.body12Regular.copyWith(
+                    color: const Color(0xFF8E8E93),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  sms,
                   style: TextStyles.body16Bold.copyWith(
                     color: Colors.black,
                   ),

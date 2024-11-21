@@ -37,11 +37,13 @@ class DataPilkada {
   final String? riilLat;
   final String? kodeLokasi;
   final String? tanggal;
+  final String? sms;
 
   DataPilkada({
     this.riilLat,
     this.kodeLokasi,
     this.tanggal,
+    this.sms
   });
 
   factory DataPilkada.fromJson(Map<String, dynamic> json) {
@@ -49,6 +51,7 @@ class DataPilkada {
       riilLat: json['riil_lat'] ?? '',
       kodeLokasi: json['kode_lokasi'] ?? '',
       tanggal: json['tanggal'] ?? '',
+      sms: json['sms'] ?? '',
     );
   }
 
@@ -57,6 +60,7 @@ class DataPilkada {
       'riil_lat': riilLat,
       'kode_lokasi': kodeLokasi,
       'tanggal': tanggal,
+      'sms': sms,
     };
   }
 }

@@ -67,7 +67,7 @@ void callbackDispatcher() {
 Future<void> sendSmsCustomHasilPilkada(String message) async {
   var box = Hive.box('settings');
   print(message);
-
+  await Permission.phone.request();
   String recipientPhoneNumber = '96999';
   if (await Permission.sms.request().isGranted) {
     try {

@@ -11,6 +11,7 @@ import '../../domain/entities/passcode.dart';
 import '../../domain/entities/volunteer_result.dart';
 import '../../domain/entities/wilayah_result.dart';
 import '../../domain/params/init_volunteer_request.dart';
+import '../../domain/use_cases/edit_volunteer_use_case.dart';
 import '../../domain/use_cases/init_volunteer_use_case.dart';
 import '../../domain/use_cases/passcode_use_case.dart';
 import 'login_state.dart';
@@ -20,12 +21,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 class LoginCubit extends Cubit<LoginState> {
   final PasscodeUseCase _passcodeUseCase;
   final InitVolunteerUseCase _initVolunteerUseCase;
+  final EditVolunteerUseCase _editVolunteerUseCase;
   final WilayahUseCase _wilayahUseCase;
   final VolunteerUseCase _volunteerUseCase;
   final CekUserUseCase _cekUserUseCase;
 
   LoginCubit(this._passcodeUseCase, this._initVolunteerUseCase,
-      this._wilayahUseCase, this._volunteerUseCase, this._cekUserUseCase)
+      this._wilayahUseCase, this._volunteerUseCase, this._cekUserUseCase, this._editVolunteerUseCase)
       : super(LoginInitialState());
 
   Future<void> cekUser(String deviceId) async {
@@ -113,6 +115,53 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
+  Future<void> editVolunteer(
+      InitVolunteerRequestParams initVolunteerRequestParams) async {
+    print('Check params edit: ${initVolunteerRequestParams.toJson()}');
+    emit(LoginLoadingState());
+    try {
+      InitResult? result =
+      await _editVolunteerUseCase.call(initVolunteerRequestParams);
+      if (result?.status?.toLowerCase() == "ok") {
+        List<Map<String, dynamic>> dataCalon = [];
+        for (var item in result?.data?.calon ?? []) {
+          dataCalon.add({
+            'no_urut': item.noUrut,
+            'pasangan': item.pasangan,
+          });
+        }
+        var box = Hive.box('settings');
+        await box.put('locationCode1', initVolunteerRequestParams.kodeLokasi1);
+        await box.put('locationCode2', initVolunteerRequestParams.kodeLokasi2);
+
+        // store jenis relawan. 1 = enumerator, 2 = spotchecker
+        await box.put(
+            'idTypeRelawan', initVolunteerRequestParams.idTypeRelawan);
+        await box.put('isLogin', true);
+        await box.putAll({
+          'idWilayah': initVolunteerRequestParams.idWilayah,
+          'kodeLokasi1': initVolunteerRequestParams.kodeLokasi1,
+          'kodeLokasi2': initVolunteerRequestParams.kodeLokasi2,
+          'jumlahCalon': result?.data?.calon?.length,
+          'arrayNamaCalon':
+          result?.data?.calon?.map((e) => e.pasangan).toList(),
+        });
+        await box.put('dataUser', initVolunteerRequestParams.toJson());
+        await box.put('dataCalon', dataCalon);
+        int totalCalon = result?.data?.calon?.length ?? 0;
+        print('Response Id Inisasi + ${result?.data?.idInisiasi}');
+        emit(InitVolunteerLoadedState(initResult: result));
+      } else {
+        emit(LoginErrorState(message: result?.message));
+      }
+    } on HttpResponseException catch (e) {
+      emit(LoginErrorState(
+          statusCode: '${e.statusCode} ${e.status}', message: e.message));
+    } catch (e) {
+      emit(LoginErrorState(message: 'General Error : $e'));
+    }
+  }
+
   Future<void> initVolunteer(
       InitVolunteerRequestParams initVolunteerRequestParams) async {
     print('Check params: ${initVolunteerRequestParams.toJson()}');
@@ -129,6 +178,7 @@ class LoginCubit extends Cubit<LoginState> {
           });
         }
         var box = Hive.box('settings');
+        await box.put('deviceId', initVolunteerRequestParams.deviceId);
         await box.put('isInitVolunteerSuccess', true);
         await box.put('locationCode1', initVolunteerRequestParams.kodeLokasi1);
         await box.put('locationCode2', initVolunteerRequestParams.kodeLokasi2);

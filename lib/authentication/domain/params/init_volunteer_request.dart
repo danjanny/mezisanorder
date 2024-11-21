@@ -12,8 +12,10 @@ class InitVolunteerRequestParams {
   final String verSdkInt;
   final String fingerprint;
   final String serialnumber;
+  final String idInisiasi;
 
   InitVolunteerRequestParams({
+    required this.idInisiasi,
     required this.idWilayah,
     required this.idTypeRelawan,
     required this.kodeLokasi1,
@@ -32,6 +34,7 @@ class InitVolunteerRequestParams {
   // Convert from a JSON map to an InitVolunteerRequestParams instance
   factory InitVolunteerRequestParams.fromJson(Map<String, dynamic> json) {
     return InitVolunteerRequestParams(
+      idInisiasi: json['id_inisiasi'] ?? '',
       idWilayah: json['id_wilayah'] ?? '',
       idTypeRelawan: json['id_type_relawan'] ?? '',
       kodeLokasi1: json['kode_lokasi1'] ?? '',
@@ -50,6 +53,7 @@ class InitVolunteerRequestParams {
 
   Map<String, dynamic> toJson() {
     return {
+      'id_inisiasi': idInisiasi,
       'id_wilayah': idWilayah,
       'id_type_relawan': idTypeRelawan,
       'kode_lokasi1': kodeLokasi1,
@@ -67,6 +71,7 @@ class InitVolunteerRequestParams {
   }
 
   InitVolunteerRequestParams copyWith({
+    String? idInisiasi,
     String? idWilayah,
     String? idTypeRelawan,
     String? kodeLokasi1,
@@ -82,6 +87,7 @@ class InitVolunteerRequestParams {
     String? serialnumber,
   }) {
     return InitVolunteerRequestParams(
+      idInisiasi: idInisiasi ?? this.idInisiasi,
       idWilayah: idWilayah ?? this.idWilayah,
       idTypeRelawan: idTypeRelawan ?? this.idTypeRelawan,
       kodeLokasi1: kodeLokasi1 ?? this.kodeLokasi1,

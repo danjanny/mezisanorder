@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -49,6 +51,7 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   InitVolunteerRequestParams paramRequest = InitVolunteerRequestParams(
+    idInisiasi: '',
     idWilayah: '',
     idTypeRelawan: '',
     kodeLokasi1: '',
@@ -64,6 +67,11 @@ class _RegisterPageState extends State<RegisterPage> {
     serialnumber: ''
   );
   String _deviceId = '';
+  String _model = '';
+  int _verSdkInt = 0;
+  String _fingerprint = '';
+  String _serialnumber = '';
+  String _brand = '';
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
 
   WilayahResult? wilayahResult;
@@ -73,6 +81,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void initState() {
     super.initState();
     _initializeData();
+    _initData();
   }
 
   Future<void> _initializeData() async {
@@ -83,16 +92,27 @@ class _RegisterPageState extends State<RegisterPage> {
     ]);
   }
 
+  Future<void> _initData() async {
+    try {
+      _deviceId = generateUniqueDeviceId(await deviceInfoPlugin.androidInfo);
+      _model = generateModel(await deviceInfoPlugin.androidInfo);
+      _verSdkInt = generateSdkInt(await deviceInfoPlugin.androidInfo);
+      _fingerprint = generateFingerprint(await deviceInfoPlugin.androidInfo);
+      _serialnumber = generateSerialNumber(await deviceInfoPlugin.androidInfo);
+      _brand = generateBrand(await deviceInfoPlugin.androidInfo);
+      print('Device ID: $_deviceId');
+    } catch (e) {
+      print('Error in _initData: $e');
+    }
+  }
+
   Future<void> _initPlatformState() async {
     var deviceData = <String, dynamic>{};
 
     try {
       deviceData = switch (defaultTargetPlatform) {
-        TargetPlatform.android =>
-          _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
-        TargetPlatform.iOS =>
-          _readIosDeviceInfo(await deviceInfoPlugin.iosInfo),
-        // Not implemented yet
+        TargetPlatform.android => await _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
+        TargetPlatform.iOS => throw UnimplementedError(),
         TargetPlatform.fuchsia => throw UnimplementedError(),
         TargetPlatform.linux => throw UnimplementedError(),
         TargetPlatform.macOS => throw UnimplementedError(),
@@ -106,35 +126,51 @@ class _RegisterPageState extends State<RegisterPage> {
 
     if (!mounted) return;
 
-    setState(() {
-      _deviceId = deviceData['id'] ?? '';
-      paramRequest = paramRequest.copyWith(deviceId: deviceData['id'] ?? '');
-      paramRequest = paramRequest.copyWith(brand: deviceData['brand'] ?? '');
-      paramRequest = paramRequest.copyWith(model: deviceData['model'] ?? '');
-      paramRequest = paramRequest.copyWith(verSdkInt: deviceData['version.sdkInt'] ?? '');
-      paramRequest = paramRequest.copyWith(fingerprint: deviceData['fingerprint'] ?? '');
-      paramRequest = paramRequest.copyWith(serialnumber: deviceData['serialNumber'] ?? '');
+    setState(() async {
+      // Generate unique device ID for Android
+      _deviceId = generateUniqueDeviceId(await deviceInfoPlugin.androidInfo);
+      print("Device ID: " + _deviceId);
+      // Update paramRequest with device data
+      paramRequest = paramRequest.copyWith(
+        deviceId: _deviceId,
+        brand: _brand,
+        model: _model,
+        verSdkInt: _verSdkInt.toString(),
+        fingerprint: _fingerprint,
+        serialnumber: _serialnumber,
+      );
     });
   }
 
-  Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {
-    return <String, dynamic>{
-      'name': data.name,
-      'systemName': data.systemName,
-      'systemVersion': data.systemVersion,
-      'model': data.model,
-      'localizedModel': data.localizedModel,
-      'identifierForVendor': data.identifierForVendor,
-      'isPhysicalDevice': data.isPhysicalDevice,
-      'utsname.sysname:': data.utsname.sysname,
-      'utsname.nodename:': data.utsname.nodename,
-      'utsname.release:': data.utsname.release,
-      'utsname.version:': data.utsname.version,
-      'utsname.machine:': data.utsname.machine,
-    };
+  String generateBrand(AndroidDeviceInfo build) {
+    return build.brand;
+  }
+
+  String generateModel(AndroidDeviceInfo build) {
+    return build.model;
+  }
+
+  int generateSdkInt(AndroidDeviceInfo build) {
+    return build.version.sdkInt;
+  }
+
+  String generateFingerprint(AndroidDeviceInfo build) {
+    return build.fingerprint;
+  }
+
+  String generateSerialNumber(AndroidDeviceInfo build) {
+    return build.serialNumber;
+  }
+
+  String generateUniqueDeviceId(AndroidDeviceInfo build) {
+    String data = build.brand + build.device + build.model + build.fingerprint + build.hardware;
+    var bytes = utf8.encode(data);
+    var hash = sha256.convert(bytes);
+    return hash.toString();
   }
 
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
+    String uniqueDeviceId = generateUniqueDeviceId(build);
     return <String, dynamic>{
       'version.securityPatch': build.version.securityPatch,
       'version.sdkInt': build.version.sdkInt,
@@ -164,9 +200,9 @@ class _RegisterPageState extends State<RegisterPage> {
       'systemFeatures': build.systemFeatures,
       'serialNumber': build.serialNumber,
       'isLowRamDevice': build.isLowRamDevice,
+      'uniqueDeviceId': uniqueDeviceId,
     };
   }
-
   @override
   Widget build(BuildContext context) {
     final List<FormFieldData> formFields = [
@@ -218,7 +254,15 @@ class _RegisterPageState extends State<RegisterPage> {
       setState(() {
         formFields[index].value = newValue;
         print('Device Id: $_deviceId');
-        paramRequest = paramRequest.copyWith(deviceId: _deviceId);
+        paramRequest = paramRequest.copyWith(
+          deviceId: _deviceId,
+          brand: _brand,
+          model: _model,
+          verSdkInt: _verSdkInt.toString(),
+          fingerprint: _fingerprint,
+          serialnumber: _serialnumber,
+        );
+
         switch (index) {
           case 0:
             paramRequest = paramRequest.copyWith(idWilayah: wilayah?.id);

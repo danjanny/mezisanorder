@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -12,7 +15,7 @@ import '../../../base/core/app_config.dart';
 import '../../../base/presentation/button/quickcount_custom_button.dart';
 import '../../../base/presentation/textformfield/app_colors.dart';
 import '../../../base/presentation/textformfield/quickcount_text_form_field.dart';
-import '../../../injection.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:skeleton/route/routes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -57,6 +60,7 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   InitVolunteerRequestParams paramRequest = InitVolunteerRequestParams(
+      idInisiasi: '',
       idWilayah: '',
       idTypeRelawan: '',
       kodeLokasi1: '',
@@ -69,19 +73,80 @@ class _EditProfilePageState extends State<EditProfilePage> {
       brand: '',
       verSdkInt: '',
       fingerprint: '',
-      serialnumber: '');
+      serialnumber: ''
+  );
+
   String _deviceId = '';
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   final Box box = Hive.box('settings');
   List<Wilayah>? wilayahs;
   VolunteerResult? volunteerResult;
+  String? _idInisiasi;
+  String _model = '';
+  int _verSdkInt = 0;
+  String _fingerprint = '';
+  String _serialnumber = '';
+  String _brand = '';
 
   @override
   void initState() {
     super.initState();
+    _initData();
     _initializeData();
     _initializeDataUser();
     _initFields();
+  }
+
+  Future<void> _initData() async {
+    _model = generateModel(await deviceInfoPlugin.androidInfo);
+    _verSdkInt = generateSdkInt(await deviceInfoPlugin.androidInfo);
+    _fingerprint = generateFingerprint(await deviceInfoPlugin.androidInfo);
+    _serialnumber = generateSerialNumber(await deviceInfoPlugin.androidInfo);
+    _brand = generateBrand(await deviceInfoPlugin.androidInfo);
+    try {
+      // Generate unique device ID for Android
+      if (box.get('deviceId', defaultValue: '') == '') {
+        setState(() async {
+          _deviceId = generateUniqueDeviceId(await deviceInfoPlugin.androidInfo);
+        });
+
+        await box.put('deviceId', _deviceId);
+      } else {
+        setState(() {
+          _deviceId = box.get('deviceId', defaultValue: '') ?? '';
+        });
+
+      }
+      print('Device ID: $_deviceId');
+    } catch (e) {
+      print('Error in _initData: $e');
+    }
+  }
+  String generateBrand(AndroidDeviceInfo build) {
+    return build.brand;
+  }
+
+  String generateModel(AndroidDeviceInfo build) {
+    return build.model;
+  }
+
+  int generateSdkInt(AndroidDeviceInfo build) {
+    return build.version.sdkInt;
+  }
+
+  String generateFingerprint(AndroidDeviceInfo build) {
+    return build.fingerprint;
+  }
+
+  String generateSerialNumber(AndroidDeviceInfo build) {
+    return build.serialNumber;
+  }
+
+  String generateUniqueDeviceId(AndroidDeviceInfo build) {
+    String data = build.brand + build.device + build.model + build.fingerprint + build.hardware;
+    var bytes = utf8.encode(data);
+    var hash = sha256.convert(bytes);
+    return hash.toString();
   }
 
   _initFields() {
@@ -157,12 +222,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
     Map<dynamic, dynamic> dynamicMap =
         box.get('dataUser', defaultValue: {'nama': ''});
     Map<String, dynamic> retrievedData = Map<String, dynamic>.from(dynamicMap);
-    String? idInisasi = box.get('idInisasi');
-    print('Id Inisasi: $idInisasi');
+    String? idInisiasi = box.get('idInisiasi').toString();
+    print('Id idInisiasi: $idInisiasi');
     InitVolunteerRequestParams? dataUser =
         InitVolunteerRequestParams.fromJson(retrievedData);
 
     setState(() {
+      _idInisiasi = idInisiasi;
       print('Id Wilayah: ${paramRequest.idWilayah}');
       print('Id Volunteer: ${paramRequest.idTypeRelawan}');
       paramRequest = dataUser;
@@ -178,15 +244,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   }
 
   Future<void> _initPlatformState() async {
+    PermissionStatus status = await Permission.phone.request();
     var deviceData = <String, dynamic>{};
 
     try {
       deviceData = switch (defaultTargetPlatform) {
-        TargetPlatform.android =>
-          _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
-        TargetPlatform.iOS =>
-          _readIosDeviceInfo(await deviceInfoPlugin.iosInfo),
-        // Not implemented yet
+        TargetPlatform.android => await _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
+        TargetPlatform.iOS => throw UnimplementedError(),
         TargetPlatform.fuchsia => throw UnimplementedError(),
         TargetPlatform.linux => throw UnimplementedError(),
         TargetPlatform.macOS => throw UnimplementedError(),
@@ -197,41 +261,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
         'Error:': 'Failed to get platform version.'
       };
     }
-
-    if (!mounted) return;
-
     setState(() {
-      _deviceId = deviceData['id'] ?? '';
-      paramRequest = paramRequest.copyWith(deviceId: deviceData['id'] ?? '');
-      paramRequest = paramRequest.copyWith(brand: deviceData['brand'] ?? '');
-      paramRequest = paramRequest.copyWith(model: deviceData['model'] ?? '');
+      // Update paramRequest with device data
       paramRequest = paramRequest.copyWith(
-          verSdkInt: (deviceData['version.sdkInt'] ?? '').toString());
-      paramRequest = paramRequest.copyWith(
-          fingerprint: (deviceData['fingerprint'] ?? '').toString());
-      paramRequest = paramRequest.copyWith(
-          serialnumber: (deviceData['serialNumber'] ?? '').toString());
+        idInisiasi: _idInisiasi,
+        deviceId: _deviceId,
+        brand: _brand,
+        model: _model,
+        verSdkInt: _verSdkInt.toString(),
+        fingerprint: _fingerprint,
+        serialnumber: _serialnumber,
+      );
     });
   }
 
-  Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {
-    return <String, dynamic>{
-      'name': data.name,
-      'systemName': data.systemName,
-      'systemVersion': data.systemVersion,
-      'model': data.model,
-      'localizedModel': data.localizedModel,
-      'identifierForVendor': data.identifierForVendor,
-      'isPhysicalDevice': data.isPhysicalDevice,
-      'utsname.sysname:': data.utsname.sysname,
-      'utsname.nodename:': data.utsname.nodename,
-      'utsname.release:': data.utsname.release,
-      'utsname.version:': data.utsname.version,
-      'utsname.machine:': data.utsname.machine,
-    };
-  }
-
   Map<String, dynamic> _readAndroidBuildData(AndroidDeviceInfo build) {
+    String uniqueDeviceId = generateUniqueDeviceId(build);
     return <String, dynamic>{
       'version.securityPatch': build.version.securityPatch,
       'version.sdkInt': build.version.sdkInt,
@@ -261,9 +306,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       'systemFeatures': build.systemFeatures,
       'serialNumber': build.serialNumber,
       'isLowRamDevice': build.isLowRamDevice,
+      'uniqueDeviceId': uniqueDeviceId,
     };
   }
-
   List<FormFieldData> formFields = [];
 
   @override
@@ -273,7 +318,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
       setState(() {
         formFields[index].value = newValue;
         print('Device Id: $_deviceId');
-        paramRequest = paramRequest.copyWith(deviceId: _deviceId);
+        print('IdInisiasis: $_idInisiasi');
+        paramRequest = paramRequest.copyWith(
+          deviceId: _deviceId,
+          idInisiasi: _idInisiasi,
+          brand: _brand,
+          model: _model,
+          verSdkInt: _verSdkInt.toString(),
+          fingerprint: _fingerprint,
+          serialnumber: _serialnumber,
+        );
         switch (index) {
           case 0:
             paramRequest = paramRequest.copyWith(idWilayah: wilayah?.id);
@@ -510,7 +564,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     state: QuickcountButtonState.enabled,
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        context.read<LoginCubit>().initVolunteer(paramRequest);
+                        InitVolunteerRequestParams param = InitVolunteerRequestParams(
+                            idInisiasi: _idInisiasi ?? '',
+                            idWilayah: paramRequest.idWilayah,
+                            idTypeRelawan: paramRequest.idTypeRelawan,
+                            kodeLokasi1: paramRequest.kodeLokasi1,
+                            kodeLokasi2: paramRequest.kodeLokasi2,
+                            nama: paramRequest.nama,
+                            noHandphone1: paramRequest.noHandphone1,
+                            noHandphone2: paramRequest.noHandphone2,
+                            deviceId: _deviceId,
+                            model: _model,
+                            brand: _brand,
+                            verSdkInt: _verSdkInt.toString(),
+                            fingerprint: _fingerprint,
+                            serialnumber: _serialnumber
+                        );
+                        context.read<LoginCubit>().editVolunteer(param);
                       }
                     },
                   ),

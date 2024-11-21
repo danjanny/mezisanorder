@@ -51,6 +51,14 @@ class LoginRepositoryImpl extends BaseRepository implements ILoginRepository {
         .fromInitResultModelToInitResult(initVolunteerResponse);
     return initResult;
   }
+  @override
+  Future<InitResult?> editVolunteer(InitVolunteerRequestParams request) async {
+    final response = await executeRequest(() => _loginService.editVolunteer(request));
+    handleResponse(response);
+    final initVolunteerResponse = InitVolunteerResponseModel.fromJson(decodeResponseBody(response));
+    final initResult = _initResultMapper.fromInitResultModelToInitResult(initVolunteerResponse);
+    return initResult;
+  }
 
   @override
   Future<WilayahResult?> getWilayah(PasscodeRequest params) async {

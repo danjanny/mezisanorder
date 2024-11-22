@@ -207,7 +207,7 @@ class _InputResultPageState extends State<InputResultPage> {
             formType: "number",
             isNeedValidation: true),
         FormFieldData(
-            titleLabel: "Jumlah Pemilih Terdaftar (DPT + DPTb + DPK)",
+            titleLabel: "Total Jumlah Pemilih (DPT + DPTb + DPK)",
             inputLabel: "Masukkan jumlah pemilih terdaftar",
             dropdownItems: [],
             helperText:

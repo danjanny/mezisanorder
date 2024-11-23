@@ -39,16 +39,19 @@ class InitData {
 
   factory InitData.fromJson(Map<String, dynamic> json, Map<String, dynamic> idInisasi) {
     return InitData(
-      idInisiasi: json['id_inisiasi'] ?? idInisasi['id_inisasi'] ?? 0,
+      idInisiasi: (json['id_inisiasi'] != null && json['id_inisiasi'].toString().isNotEmpty)
+          ? json['id_inisiasi'] // Ambil dari JSON jika tersedia
+          : (idInisasi['id_inisiasi'] != null && idInisasi['id_inisiasi'].toString().isNotEmpty)
+          ? idInisasi['id_inisiasi'] // Ambil dari parent JSON
+          : 0, // Default jika semua kosong
       idWilayah: json['id_wilayah'] ?? '',
       calon: json['calon'] != null
-          ? List<CalonData>.from(
-          json['calon'].map((e) => CalonData.fromJson(e)).toList())
+          ? List<CalonData>.from(json['calon'].map((e) => CalonData.fromJson(e)).toList())
           : [],
     );
   }
-
 }
+
 
 class CalonData {
   final String? id;

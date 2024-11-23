@@ -146,6 +146,19 @@ class _QuickcountTextFormFieldState extends State<QuickcountTextFormField> {
 
   @override
   Widget build(BuildContext context) {
+    String? selectedItem = widget.selectedDropdownItem;
+
+    // Pastikan selectedDropdownItem ada dalam dropdownItems
+    if (selectedItem != null && !widget.dropdownItems.contains(selectedItem)) {
+      selectedItem = null; // Reset jika tidak ditemukan
+    }
+
+    // Verifikasi duplikat di dropdownItems
+    Set<String> uniqueItems = Set.from(widget.dropdownItems);
+    if (uniqueItems.length != widget.dropdownItems.length) {
+      print('There are duplicate items in the dropdown list.');
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -179,15 +192,27 @@ class _QuickcountTextFormFieldState extends State<QuickcountTextFormField> {
           Container(
             margin: const EdgeInsets.only(top: 8),
             child: DropdownButtonFormField<String>(
-              value: widget.selectedDropdownItem,
+              value: selectedItem, // Gunakan selectedItem yang valid
               hint: Text(
-                  widget.inputLabel,
-                  style: QuickCountTextStyles.body12Regular.copyWith(
-                    color: AppColors.textDisabled,
-                    height: 18 / 12,
-                  ),
+                widget.inputLabel,
+                style: QuickCountTextStyles.body12Regular.copyWith(
+                  color: AppColors.textDisabled,
+                  height: 18 / 12,
+                ),
               ),
               isExpanded: true,
+              items: widget.dropdownItems.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: QuickCountTextStyles.body12Regular.copyWith(
+                      color: AppColors.textPrimary,
+                      height: 18 / 12,
+                    ),
+                  ),
+                );
+              }).toList(),
               onChanged: widget.enabled
                   ? (String? newValue) {
                 setState(() {
@@ -227,18 +252,6 @@ class _QuickcountTextFormFieldState extends State<QuickcountTextFormField> {
                 ),
 
               ),
-              items: widget.dropdownItems.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(
-                    value,
-                    style: QuickCountTextStyles.body12Regular.copyWith(
-                      color: AppColors.textPrimary,
-                      height: 18 / 12,
-                    ),
-                  ),
-                );
-              }).toList(),
             ),
           ),
         if (!widget.showDropdown)

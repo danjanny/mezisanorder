@@ -21,7 +21,7 @@ class _HistoryInputPageState extends State<HistoryInputPage> {
   void initState() {
     super.initState();
     print('Initializingg');
-    int? idInisasi = box.get('idInisiasi');
+    String? idInisasi = box.get('idInisiasi').toString();
     context.read<CheckDataCubit>().checkData(CheckDataPilkadaRequest(idInisiasi: idInisasi.toString()));
   }
 

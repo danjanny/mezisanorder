@@ -125,8 +125,8 @@ void main() async {
 
   HttpOverrides.global = MyHttpOverrides();
 
-  ChuckerFlutter.showNotification = true;
-  ChuckerFlutter.showOnRelease = true;
+  ChuckerFlutter.showNotification = false;
+  ChuckerFlutter.showOnRelease = false;
   QR.setUrlStrategy();
   QR.settings.enableLog = false;
   await dotenv.load(fileName: ".env"); // Load the .env file

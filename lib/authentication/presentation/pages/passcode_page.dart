@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -33,35 +36,23 @@ class _PasscodePageState extends State<PasscodePage> {
   @override
   void initState() {
     super.initState();
-    _initPlatformState();
+    _initData();
   }
 
-  Future<void> _initPlatformState() async {
-    var deviceData = <String, dynamic>{};
+  String generateUniqueDeviceId(AndroidDeviceInfo build) {
+    String data = build.brand + build.device + build.model + build.fingerprint + build.hardware;
+    var bytes = utf8.encode(data);
+    var hash = sha256.convert(bytes);
+    return hash.toString();
+  }
 
+  Future<void> _initData() async {
     try {
-      deviceData = switch (defaultTargetPlatform) {
-        TargetPlatform.android =>
-            _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
-        TargetPlatform.iOS =>
-            _readIosDeviceInfo(await deviceInfoPlugin.iosInfo),
-      // Not implemented yet
-        TargetPlatform.fuchsia => throw UnimplementedError(),
-        TargetPlatform.linux => throw UnimplementedError(),
-        TargetPlatform.macOS => throw UnimplementedError(),
-        TargetPlatform.windows => throw UnimplementedError(),
-      };
-    } on PlatformException {
-      deviceData = <String, dynamic>{
-        'Error:': 'Failed to get platform version.'
-      };
+      _deviceId = generateUniqueDeviceId(await deviceInfoPlugin.androidInfo);
+      print('Device ID: $_deviceId');
+    } catch (e) {
+      print('Error in _initData: $e');
     }
-
-    if (!mounted) return;
-
-    setState(() {
-      _deviceId = deviceData['id'] ?? '';
-    });
   }
 
   Map<String, dynamic> _readIosDeviceInfo(IosDeviceInfo data) {

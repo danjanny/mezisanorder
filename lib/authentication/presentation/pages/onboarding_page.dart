@@ -83,6 +83,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 50),
                     QuickcountButton(
                       text: 'Mulai',
                       state: QuickcountButtonState.enabled,

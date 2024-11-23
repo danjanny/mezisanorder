@@ -44,60 +44,62 @@ class _OnboardingPageState extends State<OnboardingPage> {
               automaticallyImplyLeading: false,
               toolbarHeight: 80,
             ),
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            AppConfig.onboardingImage,
-                            width: double.infinity,
-                            height: 300,
-                            fit: BoxFit.contain,
-                          ),
-                          const SizedBox(height: 40),
-                          const Text(
-                            'Quick Count Pilkada 2024',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 34,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              AppConfig.onboardingImage,
+                              width: double.infinity,
+                              height: 300,
+                              fit: BoxFit.contain,
                             ),
-                          ),
-                          const SizedBox(height: 22),
-                          const Text(
-                            'Masuk ke akun Anda untuk memulai. Pantau dan analisis hasil pemilihan dengan cepat dan akurat.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.grey,
+                            const SizedBox(height: 40),
+                            const Text(
+                              'Quick Count Pilkada 2024',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 34,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 22),
+                            const Text(
+                              'Masuk ke akun Anda untuk memulai. Pantau dan analisis hasil pemilihan dengan cepat dan akurat.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  QuickcountButton(
-                    text: 'Mulai',
-                    state: QuickcountButtonState.enabled,
-                    onPressed: () {
-                      box.get('isPasscodeFilled', defaultValue: false)
-                          ? box.get('isInitVolunteerSuccess',
-                                  defaultValue: false)
-                              ? QR.rootNavigator
-                                  .popUntilOrPush(AppRoutes.homePath)
-                              : QR.push(AppRoutes.registerPath)
-                          : QR.push(AppRoutes.passcodePath);
-                    },
-                  ),
-                  const SizedBox(height: 36),
-                ],
+                    QuickcountButton(
+                      text: 'Mulai',
+                      state: QuickcountButtonState.enabled,
+                      onPressed: () {
+                        box.get('isPasscodeFilled', defaultValue: false)
+                            ? box.get('isInitVolunteerSuccess',
+                                    defaultValue: false)
+                                ? QR.rootNavigator
+                                    .popUntilOrPush(AppRoutes.homePath)
+                                : QR.push(AppRoutes.registerPath)
+                            : QR.push(AppRoutes.passcodePath);
+                      },
+                    ),
+                    const SizedBox(height: 36),
+                  ],
+                ),
               ),
             ),
             backgroundColor: Colors.white,

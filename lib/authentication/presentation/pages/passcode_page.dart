@@ -175,84 +175,86 @@ class _PasscodePageState extends State<PasscodePage> {
             centerTitle: true,
             toolbarHeight: 80,
           ),
-          body: Stack(children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  color: const Color(0xFFE5E5E5),
-                  height: 8,
-                ),
-                const SizedBox(height: 24),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Masukkan passcode',
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
+          body: SingleChildScrollView(
+            child: Stack(children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    color: const Color(0xFFE5E5E5),
+                    height: 8,
+                  ),
+                  const SizedBox(height: 24),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Masukkan passcode',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
                             ),
-                          ),
-                          const Text(
-                            'Passcode hanya diberikan kepada individu atau instansi yang memiliki tanggung jawab dan kewajiban terkait dengan proses penghitungan suara.',
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Colors.grey,
+                            const Text(
+                              'Passcode hanya diberikan kepada individu atau instansi yang memiliki tanggung jawab dan kewajiban terkait dengan proses penghitungan suara.',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.grey,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 32),
-                          QuickcountTextFormField(
-                            keyboardType: TextInputType.number,
-                            defaultValue: passcode,
-                            isObsecured: true,
-                            obscureText: true,
-                            titleLabel: 'Passcode',
-                            inputLabel: 'Masukkan passcode',
-                            onChange: (value) {
-                              setState(() {
-                                passcode = value;
-                              });
-                            },
-                          ),
-                        ],
+                            const SizedBox(height: 32),
+                            QuickcountTextFormField(
+                              keyboardType: TextInputType.number,
+                              defaultValue: passcode,
+                              isObsecured: true,
+                              obscureText: true,
+                              titleLabel: 'Passcode',
+                              inputLabel: 'Masukkan passcode',
+                              onChange: (value) {
+                                setState(() {
+                                  passcode = value;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: QuickcountButton(
-                    text: 'Lanjutkan',
-                    state: QuickcountButtonState.enabled,
-                    onPressed: () {
-                      context.read<LoginCubit>().passcode(
-                            PasscodeRequest(
-                              passcode: passcode,
-                            ),
-                          );
-                    },
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: QuickcountButton(
+                      text: 'Lanjutkan',
+                      state: QuickcountButtonState.enabled,
+                      onPressed: () {
+                        context.read<LoginCubit>().passcode(
+                              PasscodeRequest(
+                                passcode: passcode,
+                              ),
+                            );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 36),
+                ],
+              ),
+              if (state is LoginLoadingState)
+                Container(
+                  color: Colors.white.withOpacity(0.5),
+                  child: const Center(
+                    child: CircularProgressIndicator(),
                   ),
                 ),
-                const SizedBox(height: 36),
-              ],
-            ),
-            if (state is LoginLoadingState)
-              Container(
-                color: Colors.white.withOpacity(0.5),
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-          ]),
+            ]),
+          ),
           backgroundColor: Colors.white,
         );
       },

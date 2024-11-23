@@ -45,23 +45,15 @@ class LoginCubit extends Cubit<LoginState> {
         }
         var box = Hive.box('settings');
         await box.put('isInitVolunteerSuccess', true);
-        // await box.put('locationCode1', initVolunteerRequestParams.kodeLokasi1);
-        // await box.put('locationCode2', initVolunteerRequestParams.kodeLokasi2);
-
         // store jenis relawan. 1 = enumerator, 2 = spotchecker
-        // await box.put(
-        //     'idTypeRelawan', initVolunteerRequestParams.idTypeRelawan);
-
+        await box.put('isLogin', true);
         await box.putAll({
           'idWilayah': result?.data?.idWilayah,
           'idInisiasi': result?.data?.idInisiasi,
-          // 'kodeLokasi1': initVolunteerRequestParams.kodeLokasi1,
-          // 'kodeLokasi2': initVolunteerRequestParams.kodeLokasi2,
           'jumlahCalon': result?.data?.calon?.length,
           'arrayNamaCalon':
-              result?.data?.calon?.map((e) => e.pasangan).toList(),
+          result?.data?.calon?.map((e) => e.pasangan).toList(),
         });
-        // await box.put('dataUser', initVolunteerRequestParams.toJson());
         await box.put('dataCalon', dataCalon);
         int totalCalon = result?.data?.calon?.length ?? 0;
         print('Response Id Inisasi + ${result?.data?.idInisiasi}');

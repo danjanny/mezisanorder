@@ -461,6 +461,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           child: Form(
                             key: _formKey,
                             child: ListView.builder(
+                              key: ValueKey(formFields),
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: formFields.length,

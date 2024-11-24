@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,6 +21,7 @@ import 'package:flutter/services.dart';
 import 'package:skeleton/authentication/domain/entities/wilayah_result.dart';
 import 'package:skeleton/authentication/domain/params/init_volunteer_request.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 
 class FormFieldData {
   final String titleLabel;
@@ -73,8 +73,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       brand: '',
       verSdkInt: '',
       fingerprint: '',
-      serialnumber: ''
-  );
+      serialnumber: '');
 
   String _deviceId = '';
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
@@ -87,14 +86,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String _fingerprint = '';
   String _serialnumber = '';
   String _brand = '';
+  String _uuid = '';
 
   @override
   void initState() {
     super.initState();
-    _initData();
+    getData();
     _initializeData();
     _initializeDataUser();
     _initFields();
+  }
+
+  getData() async {
+    await generateDeviceId();
+    _initData();
   }
 
   Future<void> _initData() async {
@@ -107,7 +112,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
       // Generate unique device ID for Android
       if (box.get('deviceId', defaultValue: '') == '') {
         setState(() async {
-          _deviceId = generateUniqueDeviceId(await deviceInfoPlugin.androidInfo);
+          _deviceId =
+              generateUniqueDeviceId(await deviceInfoPlugin.androidInfo);
         });
 
         await box.put('deviceId', _deviceId);
@@ -115,13 +121,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
         setState(() {
           _deviceId = box.get('deviceId', defaultValue: '') ?? '';
         });
-
       }
       print('Device ID: $_deviceId');
     } catch (e) {
       print('Error in _initData: $e');
     }
   }
+
   String generateBrand(AndroidDeviceInfo build) {
     return build.brand;
   }
@@ -142,10 +148,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return build.serialNumber;
   }
 
+  final _mobileDeviceIdentifierPlugin = MobileDeviceIdentifier();
+
+  Future<String?> generateDeviceId() async {
+    String deviceId;
+    try {
+      deviceId = await _mobileDeviceIdentifierPlugin.getDeviceId() ??
+          'Unknown platform version';
+    } on PlatformException {
+      deviceId = 'Failed to get platform version.';
+    }
+    setState(() {
+      _uuid = deviceId;
+    });
+  }
+
   String generateUniqueDeviceId(AndroidDeviceInfo build) {
-    String data = build.brand + build.device + build.model + build.fingerprint + build.hardware;
+    String data = _uuid +
+        build.id +
+        build.brand +
+        build.device +
+        build.model +
+        build.fingerprint +
+        build.hardware;
     var bytes = utf8.encode(data);
     var hash = sha256.convert(bytes);
+    print('Device ID beneran: ${_uuid}');
+    print('Build ID beneran: ${build.id}');
+    print('Device ID hasil beneran: ${hash.toString()}');
     return hash.toString();
   }
 
@@ -185,23 +215,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
           inputLabel: "Masukkan Kode Lokasi 1",
           helperText: "Periksa kembali kode lokasi yang diberikan.",
           value: paramRequest.kodeLokasi1,
-          formFieldType: "allCaps"
-      ),
+          formFieldType: "allCaps"),
       FormFieldData(
           titleLabel: "Kode Lokasi 2",
           inputLabel: "Masukkan Kode Lokasi 2",
-          helperText: "(Tidak wajib diisi) Periksa kembali kode lokasi yang diberikan.",
+          helperText:
+              "(Tidak wajib diisi) Periksa kembali kode lokasi yang diberikan.",
           value: paramRequest.kodeLokasi2,
           formFieldType: "allCaps",
-          isNeedValidation: false
-      ),
+          isNeedValidation: false),
       FormFieldData(
           titleLabel: "Nama",
           inputLabel: "Masukkan Nama",
           helperText: null,
           value: paramRequest.nama,
-          formFieldType: "allCaps"
-      ),
+          formFieldType: "allCaps"),
       FormFieldData(
           titleLabel: "No Handphone 1",
           inputLabel: "Masukkan No Handphone 1",
@@ -249,7 +277,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     try {
       deviceData = switch (defaultTargetPlatform) {
-        TargetPlatform.android => await _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
+        TargetPlatform.android =>
+          await _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
         TargetPlatform.iOS => throw UnimplementedError(),
         TargetPlatform.fuchsia => throw UnimplementedError(),
         TargetPlatform.linux => throw UnimplementedError(),
@@ -309,6 +338,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       'uniqueDeviceId': uniqueDeviceId,
     };
   }
+
   List<FormFieldData> formFields = [];
 
   @override
@@ -473,12 +503,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 return Padding(
                                   padding: const EdgeInsets.only(bottom: 16.0),
                                   child: QuickcountTextFormField(
-                                  inputFormatters: fieldType == 'allCaps'
-                                  ? [UpperCaseTextFormatter()]
-                                  : null,
-                                  keyboardType: fieldType == 'number'
-                                      ? TextInputType.number
-                                      : TextInputType.text,
+                                    inputFormatters: fieldType == 'allCaps'
+                                        ? [UpperCaseTextFormatter()]
+                                        : null,
+                                    keyboardType: fieldType == 'number'
+                                        ? TextInputType.number
+                                        : TextInputType.text,
                                     showDropdown: fieldData
                                             .dropdownItemsVolunteer
                                             .isNotEmpty ||
@@ -565,22 +595,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     state: QuickcountButtonState.enabled,
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        InitVolunteerRequestParams param = InitVolunteerRequestParams(
-                            idInisiasi: _idInisiasi ?? '',
-                            idWilayah: paramRequest.idWilayah,
-                            idTypeRelawan: paramRequest.idTypeRelawan,
-                            kodeLokasi1: paramRequest.kodeLokasi1,
-                            kodeLokasi2: paramRequest.kodeLokasi2,
-                            nama: paramRequest.nama,
-                            noHandphone1: paramRequest.noHandphone1,
-                            noHandphone2: paramRequest.noHandphone2,
-                            deviceId: _deviceId,
-                            model: _model,
-                            brand: _brand,
-                            verSdkInt: _verSdkInt.toString(),
-                            fingerprint: _fingerprint,
-                            serialnumber: _serialnumber
-                        );
+                        InitVolunteerRequestParams param =
+                            InitVolunteerRequestParams(
+                                idInisiasi: _idInisiasi ?? '',
+                                idWilayah: paramRequest.idWilayah,
+                                idTypeRelawan: paramRequest.idTypeRelawan,
+                                kodeLokasi1: paramRequest.kodeLokasi1,
+                                kodeLokasi2: paramRequest.kodeLokasi2,
+                                nama: paramRequest.nama,
+                                noHandphone1: paramRequest.noHandphone1,
+                                noHandphone2: paramRequest.noHandphone2,
+                                deviceId: _deviceId,
+                                model: _model,
+                                brand: _brand,
+                                verSdkInt: _verSdkInt.toString(),
+                                fingerprint: _fingerprint,
+                                serialnumber: _serialnumber);
                         context.read<LoginCubit>().editVolunteer(param);
                       }
                     },

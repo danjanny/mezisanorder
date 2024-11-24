@@ -17,6 +17,7 @@ import '../manager/login_cubit.dart';
 import '../manager/login_state.dart';
 import 'package:skeleton/route/routes.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 
 class FormFieldData {
   final String titleLabel;
@@ -51,21 +52,20 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   InitVolunteerRequestParams paramRequest = InitVolunteerRequestParams(
-    idInisiasi: '',
-    idWilayah: '',
-    idTypeRelawan: '',
-    kodeLokasi1: '',
-    kodeLokasi2: '',
-    nama: '',
-    noHandphone1: '',
-    noHandphone2: '',
-    deviceId: '',
-    model: '',
-    brand: '',
-    verSdkInt: '',
-    fingerprint: '',
-    serialnumber: ''
-  );
+      idInisiasi: '',
+      idWilayah: '',
+      idTypeRelawan: '',
+      kodeLokasi1: '',
+      kodeLokasi2: '',
+      nama: '',
+      noHandphone1: '',
+      noHandphone2: '',
+      deviceId: '',
+      model: '',
+      brand: '',
+      verSdkInt: '',
+      fingerprint: '',
+      serialnumber: '');
   String _deviceId = '';
   String _model = '';
   int _verSdkInt = 0;
@@ -73,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String _serialnumber = '';
   String _brand = '';
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-
+  String _uuid = '';
   WilayahResult? wilayahResult;
   VolunteerResult? volunteerResult;
 
@@ -81,7 +81,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void initState() {
     super.initState();
     _initializeData();
-    _initData();
+    getData();
   }
 
   Future<void> _initializeData() async {
@@ -111,7 +111,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       deviceData = switch (defaultTargetPlatform) {
-        TargetPlatform.android => await _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
+        TargetPlatform.android =>
+          await _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
         TargetPlatform.iOS => throw UnimplementedError(),
         TargetPlatform.fuchsia => throw UnimplementedError(),
         TargetPlatform.linux => throw UnimplementedError(),
@@ -162,10 +163,39 @@ class _RegisterPageState extends State<RegisterPage> {
     return build.serialNumber;
   }
 
+  getData() async {
+    await generateDeviceId();
+    _initData();
+  }
+
+  final _mobileDeviceIdentifierPlugin = MobileDeviceIdentifier();
+
+  Future<String?> generateDeviceId() async {
+    String deviceId;
+    try {
+      deviceId = await _mobileDeviceIdentifierPlugin.getDeviceId() ??
+          'Unknown platform version';
+    } on PlatformException {
+      deviceId = 'Failed to get platform version.';
+    }
+    setState(() {
+      _uuid = deviceId;
+    });
+  }
+
   String generateUniqueDeviceId(AndroidDeviceInfo build) {
-    String data = build.brand + build.device + build.model + build.fingerprint + build.hardware;
+    String data = _uuid +
+        build.id +
+        build.brand +
+        build.device +
+        build.model +
+        build.fingerprint +
+        build.hardware;
     var bytes = utf8.encode(data);
     var hash = sha256.convert(bytes);
+    print('Device ID beneran: ${_uuid}');
+    print('Build ID beneran: ${build.id}');
+    print('Device ID hasil beneran: ${hash.toString()}');
     return hash.toString();
   }
 
@@ -203,6 +233,7 @@ class _RegisterPageState extends State<RegisterPage> {
       'uniqueDeviceId': uniqueDeviceId,
     };
   }
+
   @override
   Widget build(BuildContext context) {
     final List<FormFieldData> formFields = [
@@ -228,15 +259,15 @@ class _RegisterPageState extends State<RegisterPage> {
       FormFieldData(
           titleLabel: "Kode Lokasi 2",
           inputLabel: "Masukkan Kode Lokasi 2",
-          helperText: "(Tidak wajib diisi) Periksa kembali kode lokasi yang diberikan.",
+          helperText:
+              "(Tidak wajib diisi) Periksa kembali kode lokasi yang diberikan.",
           formFieldType: "allCaps",
           isNeedValidation: false),
       FormFieldData(
-        titleLabel: "Nama",
-        inputLabel: "Masukkan Nama",
-        helperText: null,
-        formFieldType: "allCaps"
-      ),
+          titleLabel: "Nama",
+          inputLabel: "Masukkan Nama",
+          helperText: null,
+          formFieldType: "allCaps"),
       FormFieldData(
           titleLabel: "No Handphone 1",
           inputLabel: "Masukkan No Handphone 1",
@@ -246,7 +277,8 @@ class _RegisterPageState extends State<RegisterPage> {
           titleLabel: "No Handphone 2",
           inputLabel: "Masukkan No Handphone 2",
           helperText: "Nomor handphone adalah nomor aktif yang dapat dihubungi",
-          formFieldType: "number", isNeedValidation: false),
+          formFieldType: "number",
+          isNeedValidation: false),
     ];
 
     void _updateFieldValue(

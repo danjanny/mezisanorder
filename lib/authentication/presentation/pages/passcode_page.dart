@@ -140,7 +140,7 @@ class _PasscodePageState extends State<PasscodePage> {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is PasscodeLoadedState) {
-          context.read<LoginCubit>().cekUser(_deviceId);
+          context.read<LoginCubit>().cekUser(box.get('idInisiasi', defaultValue: '').toString());
         } else if (state is LoginErrorState) {
           showModalBottomSheet(
             context: context,

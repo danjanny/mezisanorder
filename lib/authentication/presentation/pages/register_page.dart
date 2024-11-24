@@ -51,21 +51,20 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   InitVolunteerRequestParams paramRequest = InitVolunteerRequestParams(
-    idInisiasi: '',
-    idWilayah: '',
-    idTypeRelawan: '',
-    kodeLokasi1: '',
-    kodeLokasi2: '',
-    nama: '',
-    noHandphone1: '',
-    noHandphone2: '',
-    deviceId: '',
-    model: '',
-    brand: '',
-    verSdkInt: '',
-    fingerprint: '',
-    serialnumber: ''
-  );
+      idInisiasi: '',
+      idWilayah: '',
+      idTypeRelawan: '',
+      kodeLokasi1: '',
+      kodeLokasi2: '',
+      nama: '',
+      noHandphone1: '',
+      noHandphone2: '',
+      deviceId: '',
+      model: '',
+      brand: '',
+      verSdkInt: '',
+      fingerprint: '',
+      serialnumber: '');
   String _deviceId = '';
   String _model = '';
   int _verSdkInt = 0;
@@ -111,7 +110,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       deviceData = switch (defaultTargetPlatform) {
-        TargetPlatform.android => await _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
+        TargetPlatform.android =>
+          await _readAndroidBuildData(await deviceInfoPlugin.androidInfo),
         TargetPlatform.iOS => throw UnimplementedError(),
         TargetPlatform.fuchsia => throw UnimplementedError(),
         TargetPlatform.linux => throw UnimplementedError(),
@@ -163,7 +163,12 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   String generateUniqueDeviceId(AndroidDeviceInfo build) {
-    String data = build.brand + build.device + build.model + build.fingerprint + build.hardware;
+    String data = build.id +
+        build.brand +
+        build.device +
+        build.model +
+        build.fingerprint +
+        build.hardware;
     var bytes = utf8.encode(data);
     var hash = sha256.convert(bytes);
     return hash.toString();
@@ -203,6 +208,7 @@ class _RegisterPageState extends State<RegisterPage> {
       'uniqueDeviceId': uniqueDeviceId,
     };
   }
+
   @override
   Widget build(BuildContext context) {
     final List<FormFieldData> formFields = [
@@ -228,15 +234,15 @@ class _RegisterPageState extends State<RegisterPage> {
       FormFieldData(
           titleLabel: "Kode Lokasi 2",
           inputLabel: "Masukkan Kode Lokasi 2",
-          helperText: "(Tidak wajib diisi) Periksa kembali kode lokasi yang diberikan.",
+          helperText:
+              "(Tidak wajib diisi) Periksa kembali kode lokasi yang diberikan.",
           formFieldType: "allCaps",
           isNeedValidation: false),
       FormFieldData(
-        titleLabel: "Nama",
-        inputLabel: "Masukkan Nama",
-        helperText: null,
-        formFieldType: "allCaps"
-      ),
+          titleLabel: "Nama",
+          inputLabel: "Masukkan Nama",
+          helperText: null,
+          formFieldType: "allCaps"),
       FormFieldData(
           titleLabel: "No Handphone 1",
           inputLabel: "Masukkan No Handphone 1",
@@ -246,7 +252,8 @@ class _RegisterPageState extends State<RegisterPage> {
           titleLabel: "No Handphone 2",
           inputLabel: "Masukkan No Handphone 2",
           helperText: "Nomor handphone adalah nomor aktif yang dapat dihubungi",
-          formFieldType: "number", isNeedValidation: false),
+          formFieldType: "number",
+          isNeedValidation: false),
     ];
 
     void _updateFieldValue(

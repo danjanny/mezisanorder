@@ -40,7 +40,12 @@ class _PasscodePageState extends State<PasscodePage> {
   }
 
   String generateUniqueDeviceId(AndroidDeviceInfo build) {
-    String data = build.brand + build.device + build.model + build.fingerprint + build.hardware;
+    String data = build.id +
+        build.brand +
+        build.device +
+        build.model +
+        build.fingerprint +
+        build.hardware;
     var bytes = utf8.encode(data);
     var hash = sha256.convert(bytes);
     return hash.toString();
@@ -166,9 +171,8 @@ class _PasscodePageState extends State<PasscodePage> {
             centerTitle: true,
             toolbarHeight: 80,
           ),
-          body: Stack(
-            children: [
-              SingleChildScrollView(
+          body: Stack(children: [
+            SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -227,10 +231,10 @@ class _PasscodePageState extends State<PasscodePage> {
                       state: QuickcountButtonState.enabled,
                       onPressed: () {
                         context.read<LoginCubit>().passcode(
-                          PasscodeRequest(
-                            passcode: passcode,
-                          ),
-                        );
+                              PasscodeRequest(
+                                passcode: passcode,
+                              ),
+                            );
                       },
                     ),
                   ),
@@ -238,15 +242,14 @@ class _PasscodePageState extends State<PasscodePage> {
                 ],
               ),
             ),
-              if (state is LoginLoadingState)
-                Container(
-                  color: Colors.white.withOpacity(0.5),
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+            if (state is LoginLoadingState)
+              Container(
+                color: Colors.white.withOpacity(0.5),
+                child: const Center(
+                  child: CircularProgressIndicator(),
                 ),
-            ]
-          ),
+              ),
+          ]),
           backgroundColor: Colors.white,
         );
       },

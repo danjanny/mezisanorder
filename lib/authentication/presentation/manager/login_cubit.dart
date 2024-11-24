@@ -44,7 +44,6 @@ class LoginCubit extends Cubit<LoginState> {
           });
         }
         var box = Hive.box('settings');
-        await box.put('isInitVolunteerSuccess', true);
         // store jenis relawan. 1 = enumerator, 2 = spotchecker
         await box.put('isLogin', true);
         await box.putAll({

@@ -66,6 +66,7 @@ dev_dependencies:
   flutter_lints: ^3.0.0
   injectable_generator: ^2.6.1
   build_runner: ^2.4.11
+  mobile_device_identifier: ^0.0.2
 
 flutter_native_splash:
   color: "#ffffff"

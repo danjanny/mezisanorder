@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,6 +21,7 @@ import 'package:flutter/services.dart';
 import 'package:skeleton/authentication/domain/entities/wilayah_result.dart';
 import 'package:skeleton/authentication/domain/params/init_volunteer_request.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 
 class FormFieldData {
   final String titleLabel;
@@ -86,14 +86,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String _fingerprint = '';
   String _serialnumber = '';
   String _brand = '';
+  String _uuid = '';
 
   @override
   void initState() {
     super.initState();
-    _initData();
+    getData();
     _initializeData();
     _initializeDataUser();
     _initFields();
+  }
+
+  getData() async {
+    await generateDeviceId();
+    _initData();
   }
 
   Future<void> _initData() async {
@@ -142,8 +148,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return build.serialNumber;
   }
 
+  final _mobileDeviceIdentifierPlugin = MobileDeviceIdentifier();
+
+  Future<String?> generateDeviceId() async {
+    String deviceId;
+    try {
+      deviceId = await _mobileDeviceIdentifierPlugin.getDeviceId() ??
+          'Unknown platform version';
+    } on PlatformException {
+      deviceId = 'Failed to get platform version.';
+    }
+    setState(() {
+      _uuid = deviceId;
+    });
+  }
+
   String generateUniqueDeviceId(AndroidDeviceInfo build) {
-    String data = build.id +
+    String data = _uuid +
+        build.id +
         build.brand +
         build.device +
         build.model +
@@ -151,6 +173,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         build.hardware;
     var bytes = utf8.encode(data);
     var hash = sha256.convert(bytes);
+    print('Device ID beneran: ${_uuid}');
+    print('Build ID beneran: ${build.id}');
+    print('Device ID hasil beneran: ${hash.toString()}');
     return hash.toString();
   }
 

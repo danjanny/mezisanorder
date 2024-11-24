@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -30,17 +30,24 @@ class PasscodePage extends StatefulWidget {
 class _PasscodePageState extends State<PasscodePage> {
   String passcode = '';
   String _deviceId = '';
+  String _uuid = '';
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
   final Box box = Hive.box('settings');
 
   @override
   void initState() {
     super.initState();
+    getData();
+  }
+
+  getData() async {
+    await generateDeviceId();
     _initData();
   }
 
   String generateUniqueDeviceId(AndroidDeviceInfo build) {
-    String data = build.id +
+    String data = _uuid +
+        build.id +
         build.brand +
         build.device +
         build.model +
@@ -48,7 +55,25 @@ class _PasscodePageState extends State<PasscodePage> {
         build.hardware;
     var bytes = utf8.encode(data);
     var hash = sha256.convert(bytes);
+    print('Device ID beneran: ${_uuid}');
+    print('Build ID beneran: ${build.id}');
+    print('Device ID hasil beneran: ${hash.toString()}');
     return hash.toString();
+  }
+
+  final _mobileDeviceIdentifierPlugin = MobileDeviceIdentifier();
+
+  Future<String?> generateDeviceId() async {
+    String deviceId;
+    try {
+      deviceId = await _mobileDeviceIdentifierPlugin.getDeviceId() ??
+          'Unknown platform version';
+    } on PlatformException {
+      deviceId = 'Failed to get platform version.';
+    }
+    setState(() {
+      _uuid = deviceId;
+    });
   }
 
   Future<void> _initData() async {
@@ -115,7 +140,7 @@ class _PasscodePageState extends State<PasscodePage> {
     return BlocConsumer<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state is PasscodeLoadedState) {
-          context.read<LoginCubit>().cekUser(_deviceId);
+          context.read<LoginCubit>().cekUser(box.get('idInisiasi', defaultValue: '').toString());
         } else if (state is LoginErrorState) {
           showModalBottomSheet(
             context: context,

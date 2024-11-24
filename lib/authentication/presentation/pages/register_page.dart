@@ -17,6 +17,7 @@ import '../manager/login_cubit.dart';
 import '../manager/login_state.dart';
 import 'package:skeleton/route/routes.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:mobile_device_identifier/mobile_device_identifier.dart';
 
 class FormFieldData {
   final String titleLabel;
@@ -72,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String _serialnumber = '';
   String _brand = '';
   static final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
-
+  String _uuid = '';
   WilayahResult? wilayahResult;
   VolunteerResult? volunteerResult;
 
@@ -80,7 +81,7 @@ class _RegisterPageState extends State<RegisterPage> {
   void initState() {
     super.initState();
     _initializeData();
-    _initData();
+    getData();
   }
 
   Future<void> _initializeData() async {
@@ -162,8 +163,29 @@ class _RegisterPageState extends State<RegisterPage> {
     return build.serialNumber;
   }
 
+  getData() async {
+    await generateDeviceId();
+    _initData();
+  }
+
+  final _mobileDeviceIdentifierPlugin = MobileDeviceIdentifier();
+
+  Future<String?> generateDeviceId() async {
+    String deviceId;
+    try {
+      deviceId = await _mobileDeviceIdentifierPlugin.getDeviceId() ??
+          'Unknown platform version';
+    } on PlatformException {
+      deviceId = 'Failed to get platform version.';
+    }
+    setState(() {
+      _uuid = deviceId;
+    });
+  }
+
   String generateUniqueDeviceId(AndroidDeviceInfo build) {
-    String data = build.id +
+    String data = _uuid +
+        build.id +
         build.brand +
         build.device +
         build.model +
@@ -171,6 +193,9 @@ class _RegisterPageState extends State<RegisterPage> {
         build.hardware;
     var bytes = utf8.encode(data);
     var hash = sha256.convert(bytes);
+    print('Device ID beneran: ${_uuid}');
+    print('Build ID beneran: ${build.id}');
+    print('Device ID hasil beneran: ${hash.toString()}');
     return hash.toString();
   }
 

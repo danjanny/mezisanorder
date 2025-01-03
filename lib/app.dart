@@ -1,6 +1,7 @@
 import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:qlevar_router/qlevar_router.dart';
+import 'package:skeleton/route/mezisan_order_routes.dart';
 import 'base/presentation/styles/text_form_field_style.dart';
 import 'base/presentation/styles/text_styles.dart';
 import 'route/routes.dart';
@@ -40,10 +41,10 @@ class _AppState extends State<App> {
                   // Add other custom component themes here
                 ),
                 routeInformationParser: const QRouteInformationParser(),
-                routerDelegate: QRouterDelegate(
-                    AppRoutes.routes,
+                routerDelegate: QRouterDelegate(MezisanOrderRoutes.routes,
                     initPath: box.get('isLogin', defaultValue: false)
-                        ? AppRoutes.homePath : AppRoutes.rootPath,
+                        ? AppRoutes.homePath
+                        : AppRoutes.rootPath,
                     observers: [ChuckerFlutter.navigatorObserver])),
           ),
         );

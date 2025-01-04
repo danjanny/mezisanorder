@@ -13,8 +13,10 @@ class OrderRepositoryImpl extends BaseRepository implements IOrderRepository {
 
   @override
   Future<OrderResponse?> submit(OrderRequestParam params) async {
-    final response = await executeRequest(() => _orderService.submit(params));
+    final response =
+        await executeRequest(() async => await _orderService.submit(params));
     handleResponse(response);
+    // 200 ok
     final orderResponseModel =
         OrderResponse.fromJson(decodeResponseBody(response));
     return orderResponseModel;

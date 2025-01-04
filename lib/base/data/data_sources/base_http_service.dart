@@ -5,7 +5,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 abstract class BaseHttpService {
-  String get baseUrl => dotenv.env['BASE_URL'] ?? "https://run.mocky.io/v3";
+  // String get baseUrl => dotenv.env['BASE_URL'] ?? "https://run.mocky.io/v3";
+  String get baseUrl => "https://script.google.com";
 
   Future<http.Response> fetchGet(String path,
       {Map<String, dynamic>? queryParams}) async {
@@ -35,7 +36,8 @@ abstract class BaseHttpService {
   //   return response;
   // }
 
-  Future<http.Response> fetchPost(String path, {Map<String, dynamic>? body}) async {
+  Future<http.Response> fetchPost(String path,
+      {Map<String, dynamic>? body}) async {
     var uri = Uri.parse(baseUrl + path);
 
     final client = CustomChuckerHttpClient(http.Client());
@@ -58,7 +60,6 @@ abstract class BaseHttpService {
 
     return response;
   }
-
 }
 
 class CustomChuckerHttpClient extends http.BaseClient {

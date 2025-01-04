@@ -15,9 +15,7 @@ class OrderCubit extends HydratedCubit<OrderState> {
   Future<void> submitOrder(OrderRequestParam param) async {
     try {
       emit(OrderState(uiState: OrderUiLoadingState()));
-
       final orderResponse = await _orderUseCase.call(param);
-
       emit(OrderState(uiState: OrderUiLoadedState(response: orderResponse)));
     } on HttpResponseException catch (e) {
       emit(OrderState(
@@ -30,13 +28,41 @@ class OrderCubit extends HydratedCubit<OrderState> {
 
   @override
   OrderState? fromJson(Map<String, dynamic> json) {
-    // TODO: implement fromJson
-    throw UnimplementedError();
+    return OrderState(
+      customerName: json['customerName'],
+      phoneNumber: json['phoneNumber'],
+      email: json['email'],
+      shippingAddress: json['shippingAddress'],
+      location: json['location'],
+      product: json['product'],
+      productDescription: json['productDescription'],
+      dueDate: json['dueDate'],
+      orderDate: json['orderDate'],
+      progressStatus: json['progressStatus'],
+      image1: json['image1'],
+      mimeType1: json['mimeType1'],
+      image2: json['image2'],
+      mimeType2: json['mimeType2'],
+    );
   }
 
   @override
   Map<String, dynamic>? toJson(OrderState state) {
-    // TODO: implement toJson
-    throw UnimplementedError();
+    return {
+      'customerName': state.customerName,
+      'phoneNumber': state.phoneNumber,
+      'email': state.email,
+      'shippingAddress': state.shippingAddress,
+      'location': state.location,
+      'product': state.product,
+      'productDescription': state.productDescription,
+      'dueDate': state.dueDate,
+      'orderDate': state.orderDate,
+      'progressStatus': state.progressStatus,
+      'image1': state.image1,
+      'mimeType1': state.mimeType1,
+      'image2': state.image2,
+      'mimeType2': state.mimeType2,
+    };
   }
 }

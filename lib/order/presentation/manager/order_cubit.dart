@@ -26,6 +26,42 @@ class OrderCubit extends HydratedCubit<OrderState> {
     }
   }
 
+  Future<void> updateState({
+    String? customerName,
+    String? phoneNumber,
+    String? email,
+    String? shippingAddress,
+    String? location,
+    String? product,
+    String? productDescription,
+    String? dueDate,
+    String? orderDate,
+    String? progressStatus,
+    String? image1,
+    String? mimeType1,
+    String? image2,
+    String? mimeType2,
+    OrderUiState? uiState,
+  }) async {
+    emit(state.copyWith(
+      customerName: customerName,
+      phoneNumber: phoneNumber,
+      email: email,
+      shippingAddress: shippingAddress,
+      location: location,
+      product: product,
+      productDescription: productDescription,
+      dueDate: dueDate,
+      orderDate: orderDate,
+      progressStatus: progressStatus,
+      image1: image1,
+      mimeType1: mimeType1,
+      image2: image2,
+      mimeType2: mimeType2,
+      uiState: uiState,
+    ));
+  }
+
   @override
   OrderState? fromJson(Map<String, dynamic> json) {
     return OrderState(

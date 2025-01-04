@@ -48,8 +48,10 @@ class QuickcountTextFormField extends StatefulWidget {
   final String? Function(String?)? validator;
   final bool clearable;
   final TextEditingController? controller;
+
   // obsecureText is to show/hide password
   final bool obscureText;
+
   // isObsecured is to show/hide password icon
   final bool isObsecured;
   final AutovalidateMode autovalidateMode;
@@ -121,7 +123,8 @@ class _QuickcountTextFormFieldState extends State<QuickcountTextFormField> {
     super.initState();
     _obscureText = widget.obscureText;
     _internalFocusNode = widget.focusNode ?? FocusNode();
-    _internalController = widget.controller ?? TextEditingController(text: widget.defaultValue);
+    _internalController =
+        widget.controller ?? TextEditingController(text: widget.defaultValue);
     _internalController.addListener(() {
       setState(() {});
     });
@@ -192,7 +195,8 @@ class _QuickcountTextFormFieldState extends State<QuickcountTextFormField> {
           Container(
             margin: const EdgeInsets.only(top: 8),
             child: DropdownButtonFormField<String>(
-              value: selectedItem, // Gunakan selectedItem yang valid
+              value: selectedItem,
+              // Gunakan selectedItem yang valid
               hint: Text(
                 widget.inputLabel,
                 style: QuickCountTextStyles.body12Regular.copyWith(
@@ -201,7 +205,8 @@ class _QuickcountTextFormFieldState extends State<QuickcountTextFormField> {
                 ),
               ),
               isExpanded: true,
-              items: widget.dropdownItems.map<DropdownMenuItem<String>>((String value) {
+              items: widget.dropdownItems
+                  .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
@@ -215,10 +220,10 @@ class _QuickcountTextFormFieldState extends State<QuickcountTextFormField> {
               }).toList(),
               onChanged: widget.enabled
                   ? (String? newValue) {
-                setState(() {
-                  widget.onDropdownChanged?.call(newValue);
-                });
-              }
+                      setState(() {
+                        widget.onDropdownChanged?.call(newValue);
+                      });
+                    }
                   : null,
               decoration: InputDecoration(
                 hintText: widget.inputLabel,
@@ -236,118 +241,119 @@ class _QuickcountTextFormFieldState extends State<QuickcountTextFormField> {
                 ),
                 focusedBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
-                  borderSide:
-                  BorderSide(color: AppColors.strokeGray, width: 1),
+                  borderSide: BorderSide(color: AppColors.strokeGray, width: 1),
                 ),
                 enabledBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
-                  borderSide: BorderSide(
-                      color: AppColors.strokeGray,
-                      width: 1),
+                  borderSide: BorderSide(color: AppColors.strokeGray, width: 1),
                 ),
                 errorBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
-                  borderSide:
-                  BorderSide(color: Color(0xFFC4473B), width: 1),
+                  borderSide: BorderSide(color: Color(0xFFC4473B), width: 1),
                 ),
-
               ),
             ),
           ),
         if (!widget.showDropdown)
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                maxLines: _obscureText ? 1 : widget.maxLines,
-                minLines: widget.minLines,
-                enabled: widget.enabled,
-                controller: _internalController,
-                focusNode: _internalFocusNode,
-                autovalidateMode: widget.autovalidateMode,
-                obscureText: _obscureText,
-                decoration: InputDecoration(
-                  hintText: widget.inputLabel,
-                  hintStyle: QuickCountTextStyles.body12Regular.copyWith(
-                    color: AppColors.textDisabled,
-                    height: 18 / 12,
-                  ),
-                  contentPadding: const EdgeInsets.only(left: 12.0),
-                  border: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    borderSide: BorderSide(
-                      color: Color(0xFFDAE0E9),
-                      width: 1,
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  maxLines: _obscureText ? 1 : widget.maxLines,
+                  minLines: widget.minLines,
+                  enabled: widget.enabled,
+                  controller: _internalController,
+                  focusNode: _internalFocusNode,
+                  autovalidateMode: widget.autovalidateMode,
+                  obscureText: _obscureText,
+                  decoration: InputDecoration(
+                    hintText: widget.inputLabel,
+                    hintStyle: QuickCountTextStyles.body12Regular.copyWith(
+                      color: AppColors.textDisabled,
+                      height: 18 / 12,
                     ),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    borderSide:
-                    BorderSide(color: AppColors.strokeGray, width: 1),
-                  ),
-                  enabledBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    borderSide: BorderSide(
-                        color: AppColors.strokeGray,
-                        width: 1),
-                  ),
-                  errorBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
-                    borderSide:
-                    BorderSide(color: Color(0xFFC4473B), width: 1),
-                  ),
-                  suffixIcon: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (widget.clearable && _internalController.text.isNotEmpty)
-                        IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _internalController.clear();
-                            if (widget.onChange != null) {
-                              widget.onChange!('');
-                            }
-                          },
-                        ),
-                      if (widget.isObsecured)  IconButton(
-                        icon: Text(_obscureText ? "Tampilkan" : "Sembunyikan"),
-                        onPressed: () {
-                          setState(() {
-                            _obscureText = !_obscureText;
-                          });
-                        },
+                    contentPadding:
+                        widget.keyboardType == TextInputType.multiline
+                            ? const EdgeInsets.only(
+                                left: 12.0, top: 12.0, bottom: 12.0)
+                            : const EdgeInsets.only(left: 12.0),
+                    border: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      borderSide: BorderSide(
+                        color: Color(0xFFDAE0E9),
+                        width: 1,
                       ),
-                    ],
+                    ),
+                    focusedBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      borderSide:
+                          BorderSide(color: AppColors.strokeGray, width: 1),
+                    ),
+                    enabledBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      borderSide:
+                          BorderSide(color: AppColors.strokeGray, width: 1),
+                    ),
+                    errorBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      borderSide:
+                          BorderSide(color: Color(0xFFC4473B), width: 1),
+                    ),
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (widget.clearable &&
+                            _internalController.text.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _internalController.clear();
+                              if (widget.onChange != null) {
+                                widget.onChange!('');
+                              }
+                            },
+                          ),
+                        if (widget.isObsecured)
+                          IconButton(
+                            icon: Text(
+                                _obscureText ? "Tampilkan" : "Sembunyikan"),
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
+                          ),
+                      ],
+                    ),
                   ),
+                  keyboardType: widget.keyboardType,
+                  validator: widget.validator,
+                  inputFormatters: widget.inputFormatters,
+                  onChanged: widget.onChange,
                 ),
-                keyboardType: widget.keyboardType,
-                validator: widget.validator,
-                inputFormatters: widget.inputFormatters,
-                onChanged: widget.onChange,
               ),
-            ),
-            if (widget.suffix == SuffixType.unit) ...[
-              Container(
-                margin: const EdgeInsets.only(left: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEDEEF0),
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                ),
-                height: 48,
-                child: Center(
-                  child: Text(
-                    widget.unitLabel,
-                    style: QuickCountTextStyles.body16Regular.copyWith(
-                      color: AppColors.textSecondary,
-                      height: 24 / 16,
+              if (widget.suffix == SuffixType.unit) ...[
+                Container(
+                  margin: const EdgeInsets.only(left: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEDEEF0),
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  ),
+                  height: 48,
+                  child: Center(
+                    child: Text(
+                      widget.unitLabel,
+                      style: QuickCountTextStyles.body16Regular.copyWith(
+                        color: AppColors.textSecondary,
+                        height: 24 / 16,
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ],
-          ],
-        ),
+          ),
         if (widget.showHelper)
           Container(
             margin: const EdgeInsets.only(top: 4),

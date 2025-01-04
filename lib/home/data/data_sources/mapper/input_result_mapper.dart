@@ -6,8 +6,8 @@ import '../../models/input_model.dart';
 class InputResultMapper {
   InputResult fromInputModelToInputResult(InputResultModel inputResult) {
     return InputResult(
-      message: inputResult.responseMessage,
-      status: inputResult.responseCode,
+      message: inputResult.status,
+      status: inputResult.message,
     );
   }
 }

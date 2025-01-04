@@ -3,8 +3,8 @@ import '../../domain/entities/init_result.dart';
 
 class InitVolunteerResponseModel extends GeneralResponse {
   InitVolunteerResponseModel({
-    required super.responseCode,
-    required super.responseMessage,
+    required super.status,
+    required super.message,
     required this.data,
   });
 
@@ -12,14 +12,9 @@ class InitVolunteerResponseModel extends GeneralResponse {
 
   factory InitVolunteerResponseModel.fromJson(Map<String, dynamic> json) {
     return InitVolunteerResponseModel(
-      responseCode: json['status'] ?? '',
-      responseMessage: json['message'] ?? '',
+      status: json['status'] ?? '',
+      message: json['message'] ?? '',
       data: InitResult.fromJson(json),
     );
-  }
-
-  @override
-  String toString() {
-    return 'InitVolunteerResponseModel{responseCode: $responseCode, responseMessage: $responseMessage, data: $data}';
   }
 }

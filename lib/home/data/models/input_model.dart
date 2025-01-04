@@ -2,18 +2,13 @@ import '../../../base/data/models/general_response_model.dart';
 
 class InputResultModel extends GeneralResponse {
   InputResultModel(
-      {required super.responseCode,
-        required super.responseMessage});
+      {required super.status,
+        required super.message});
 
   factory InputResultModel.fromJson(Map<String, dynamic> json) {
     return InputResultModel(
-      responseCode: json['status'],
-      responseMessage: json['message'],
+      status: json['status'],
+      message: json['message'],
     );
-  }
-
-  @override
-  String toString() {
-    return 'InputResponse{responseCode: $responseCode, responseMessage: $responseMessage}';
   }
 }

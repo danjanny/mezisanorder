@@ -6,8 +6,8 @@ import '../../../domain/entities/init_result.dart';
 class InitResultMapper {
   InitResult fromInitResultModelToInitResult(InitVolunteerResponseModel initVolunteerResponseModel) {
     return InitResult(
-      message: initVolunteerResponseModel.responseMessage,
-      status: initVolunteerResponseModel.responseCode,
+      message: initVolunteerResponseModel.message,
+      status: initVolunteerResponseModel.status,
       data: initVolunteerResponseModel.data?.data,
     );
   }

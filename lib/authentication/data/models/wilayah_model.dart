@@ -6,21 +6,16 @@ class WilayahResultModel extends GeneralResponse {
   final WilayahResult data;
 
   WilayahResultModel({
-    required super.responseCode,
-    required super.responseMessage,
+    required super.status,
+    required super.message,
     required this.data,
   });
 
   factory WilayahResultModel.fromJson(Map<String, dynamic> json) {
     return WilayahResultModel(
-      responseCode: json['responseCode'] as String? ?? '',
-      responseMessage: json['responseMessage'] as String? ?? '',
+      status: json['responseCode'] as String? ?? '',
+      message: json['responseMessage'] as String? ?? '',
       data: WilayahResult.fromJson(json),
     );
-  }
-
-  @override
-  String toString() {
-    return 'WilayahResultModel{responseCode: $responseCode, responseMessage: $responseMessage, data: $data}';
   }
 }

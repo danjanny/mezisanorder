@@ -6,8 +6,8 @@ import 'package:skeleton/authentication/domain/entities/passcode.dart';
 class PasscodeMapper {
   Passcode fromPasscodeModelToPasscode(PasscodeResponseModel passcodeModel  ) {
     return Passcode(
-      message: passcodeModel.responseMessage,
-      status: passcodeModel.responseCode,
+      message: passcodeModel.message,
+      status: passcodeModel.status,
     );
   }
 }

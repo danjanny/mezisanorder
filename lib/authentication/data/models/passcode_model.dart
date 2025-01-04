@@ -1,19 +1,12 @@
 import '../../../base/data/models/general_response_model.dart';
 
 class PasscodeResponseModel extends GeneralResponse {
-  PasscodeResponseModel(
-      {required super.responseCode,
-        required super.responseMessage});
+  PasscodeResponseModel({required super.status, required super.message});
 
   factory PasscodeResponseModel.fromJson(Map<String, dynamic> json) {
     return PasscodeResponseModel(
-      responseCode: json['status'],
-      responseMessage: json['message'],
+      status: json['status'],
+      message: json['message'],
     );
-  }
-
-  @override
-  String toString() {
-    return 'PasscodeResponse{responseCode: $responseCode, responseMessage: $responseMessage}';
   }
 }

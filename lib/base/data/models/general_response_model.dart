@@ -1,15 +1,11 @@
 class GeneralResponse {
-  final String responseCode;
-  final String responseMessage;
+  final String? status;
+  final String? message;
 
-  GeneralResponse({
-    required this.responseCode,
-    required this.responseMessage,
-  });
+  GeneralResponse({this.status, this.message});
 
   factory GeneralResponse.toJson(Map<String, dynamic> json) {
     return GeneralResponse(
-        responseCode: json['responseCode'] ?? '',
-        responseMessage: json['responseMessage'] ?? '');
+        status: json['status'] ?? '', message: json['message'] ?? '');
   }
 }

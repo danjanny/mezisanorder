@@ -133,9 +133,9 @@ void main() async {
   configureDependencies(); // Initialize dependencies
   runApp(MultiBlocProvider(
     providers: [
-      BlocProvider<LoginCubit>(create: (context) => getIt<LoginCubit>()),
-      BlocProvider<HomeCubit>(create: (context) => getIt<HomeCubit>()),
-      BlocProvider<CheckDataCubit>(create: (context) => getIt<CheckDataCubit>()),
+      // BlocProvider<LoginCubit>(create: (context) => getIt<LoginCubit>()),
+      // BlocProvider<HomeCubit>(create: (context) => getIt<HomeCubit>()),
+      // BlocProvider<CheckDataCubit>(create: (context) => getIt<CheckDataCubit>()),
     ],
     child: const App(),
   ));

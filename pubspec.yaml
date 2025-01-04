@@ -53,6 +53,7 @@ dependencies:
   permission_handler: ^11.3.1
   telephony: ^0.2.0
   crypto: ^3.0.0
+  hydrated_bloc: ^9.1.5
 dev_dependencies:
   flutter_test:
     sdk: flutter

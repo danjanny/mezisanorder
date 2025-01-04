@@ -27,17 +27,11 @@ abstract class BaseRepository {
       case 200:
         // success. do nothing
         break;
-      case 401:
-        throw HttpResponseException(
-            statusCode: response.statusCode, message: 'Expired Token');
-      case 404:
-        throw HttpResponseException(
-            statusCode: response.statusCode,
-            message: generalResponse.responseMessage);
       default:
         throw HttpResponseException(
             statusCode: response.statusCode,
-            message: generalResponse.responseMessage);
+            status: generalResponse.status,
+            message: generalResponse.message);
     }
   }
 

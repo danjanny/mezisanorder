@@ -11,4 +11,10 @@ class IconAsset {
   static const String riwayatIcon = 'assets/home/riwayat_input_ic.svg';
   static const String uploadC1Icon = 'assets/home/upload_c1_ic.svg';
   static const String logoutIcon = 'assets/home/logout_ic.svg';
+
+  // order
+  static const String mezisanSplashScreenIcon =
+      'assets/icon/mj_splash_screen.jpg';
+  static const String mezisanOrderMainIcon =
+      'assets/icon/order_main.svg';
 }

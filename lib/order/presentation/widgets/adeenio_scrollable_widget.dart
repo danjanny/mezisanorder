@@ -16,8 +16,8 @@ class AdeenioScrollableWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.backgroundSolidDefault,
-      padding: const EdgeInsets.only(top: 20, left: 16, right: 16),
+      // color: AppColors.backgroundSolidDefault,
+      padding: const EdgeInsets.only(left: 16, right: 16),
       child: SingleChildScrollView(
         child: SizedBox(
           width: double.infinity,
@@ -25,10 +25,12 @@ class AdeenioScrollableWidget extends StatelessWidget {
               ? Form(
                   key: formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: children,
                   ),
                 )
               : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: children,
                 ),
         ),

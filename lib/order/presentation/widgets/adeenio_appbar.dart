@@ -22,7 +22,8 @@ class AdeenioAppbar extends StatelessWidget implements PreferredSizeWidget {
       this.onBack,
       this.leadingIconButton,
       this.titleColor = const Color(0xFF181C21),
-      this.backgroundColor = AppColors.backgroundSolidDefault,
+      // this.backgroundColor = AppColors.backgroundSolidDefault,
+      this.backgroundColor = Colors.white,
       this.customWidget,
       this.actions = const []}); // Initialize customWidget
 

@@ -57,6 +57,17 @@ import 'package:skeleton/home/domain/use_cases/input_result_use_case.dart'
 import 'package:skeleton/home/presentation/manager/check_data_cubit.dart'
     as _i469;
 import 'package:skeleton/home/presentation/manager/home_cubit.dart' as _i993;
+import 'package:skeleton/order/data/data_sources/abstractions/i_order_service.dart'
+    as _i42;
+import 'package:skeleton/order/data/data_sources/order_service_impl.dart'
+    as _i322;
+import 'package:skeleton/order/data/repositories/order_repository_impl.dart'
+    as _i341;
+import 'package:skeleton/order/domain/repositories/i_order_repository.dart'
+    as _i526;
+import 'package:skeleton/order/domain/use_cases/submit_order_use_case.dart'
+    as _i289;
+import 'package:skeleton/order/presentation/manager/order_cubit.dart' as _i490;
 
 extension GetItInjectableX on _i174.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -82,7 +93,12 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i803.WilayahMapper>(),
           gh<_i720.VolunteerMapper>(),
         ));
+    gh.factory<_i42.IOrderService>(() => _i322.OrderServiceImpl());
     gh.factory<_i774.IHomeService>(() => _i1048.HomeServiceImpl());
+    gh.factory<_i526.IOrderRepository>(
+        () => _i341.OrderRepositoryImpl(gh<_i42.IOrderService>()));
+    gh.factory<_i289.SubmitOrderUseCase>(
+        () => _i289.SubmitOrderUseCase(gh<_i526.IOrderRepository>()));
     gh.factory<_i791.CekUserUseCase>(
         () => _i791.CekUserUseCase(gh<_i652.ILoginRepository>()));
     gh.factory<_i939.VolunteerUseCase>(
@@ -95,6 +111,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i427.InitVolunteerUseCase(gh<_i652.ILoginRepository>()));
     gh.factory<_i967.EditVolunteerUseCase>(
         () => _i967.EditVolunteerUseCase(gh<_i652.ILoginRepository>()));
+    gh.factory<_i490.OrderCubit>(
+        () => _i490.OrderCubit(gh<_i289.SubmitOrderUseCase>()));
     gh.factory<_i212.LoginCubit>(() => _i212.LoginCubit(
           gh<_i1055.PasscodeUseCase>(),
           gh<_i427.InitVolunteerUseCase>(),

@@ -29,8 +29,8 @@ void main() async {
   );
   HydratedBloc.storage = storage;
 
-  ChuckerFlutter.showNotification = false;
-  ChuckerFlutter.showOnRelease = false;
+  // ChuckerFlutter.showNotification = false;
+  // ChuckerFlutter.showOnRelease = false;
   QR.setUrlStrategy();
   QR.settings.enableLog = false;
   await dotenv.load(fileName: ".env"); // Load the .env file

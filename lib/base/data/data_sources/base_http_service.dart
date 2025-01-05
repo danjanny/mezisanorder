@@ -40,7 +40,9 @@ abstract class BaseHttpService {
       {Map<String, dynamic>? body}) async {
     var uri = Uri.parse(baseUrl + path);
 
-    final client = CustomChuckerHttpClient(http.Client());
+    // final client = CustomChuckerHttpClient(http.Client());
+
+    final client = http.Client();
     final request = http.MultipartRequest('POST', uri);
 
     if (body != null) {

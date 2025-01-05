@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CustomLoadingDialog extends StatelessWidget {
-  const CustomLoadingDialog({super.key});
+class AdeenioLoadingDialog extends StatelessWidget {
+  const AdeenioLoadingDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +37,12 @@ class CustomLoadingDialog extends StatelessWidget {
       transitionDuration: const Duration(milliseconds: 200),
       pageBuilder: (BuildContext buildContext, Animation animation,
           Animation secondaryAnimation) {
-        return const CustomLoadingDialog();
+        return const AdeenioLoadingDialog();
       },
     );
   }
 
   static void hideDialog(BuildContext context) {
-    if (Navigator.of(context, rootNavigator: true).canPop()) {
-      Navigator.of(context, rootNavigator: true).pop();
-    }
+    Navigator.of(context, rootNavigator: true).pop();
   }
 }

@@ -44,7 +44,9 @@ class _AppState extends State<App> {
                 ),
                 routeInformationParser: const QRouteInformationParser(),
                 routerDelegate: QRouterDelegate(MezisanOrderRoutes.routes,
-                    observers: [ChuckerFlutter.navigatorObserver])),
+                    // observers: [ChuckerFlutter.navigatorObserver]
+                )
+            ),
           ),
         );
       },

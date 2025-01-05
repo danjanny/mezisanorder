@@ -1,7 +1,10 @@
 import 'package:equatable/equatable.dart';
+import 'package:injectable/injectable.dart';
 import 'package:skeleton/order/domain/entities/order_response.dart';
 
-class OrderState {
+enum OrderUiState { initial, loading, loaded, error }
+
+class OrderState extends Equatable {
   final String? customerName;
   final String? phoneNumber;
   final String? email;
@@ -16,7 +19,8 @@ class OrderState {
   final String? mimeType1;
   final String? image2;
   final String? mimeType2;
-  final OrderUiState? uiState;
+  final OrderUiState uiState;
+  final OrderResponse? orderResponse;
 
   OrderState(
       {this.customerName,
@@ -33,7 +37,8 @@ class OrderState {
       this.mimeType1,
       this.image2,
       this.mimeType2,
-      this.uiState});
+      this.uiState = OrderUiState.initial,
+      this.orderResponse});
 
   OrderState copyWith(
       {String? customerName,
@@ -50,7 +55,8 @@ class OrderState {
       String? mimeType1,
       String? image2,
       String? mimeType2,
-      OrderUiState? uiState}) {
+      OrderUiState? uiState,
+      OrderResponse? orderResponse}) {
     return OrderState(
         customerName: customerName ?? this.customerName,
         phoneNumber: phoneNumber ?? this.phoneNumber,
@@ -66,28 +72,16 @@ class OrderState {
         mimeType1: mimeType1 ?? this.mimeType1,
         image2: image2 ?? this.image2,
         mimeType2: mimeType2 ?? this.mimeType2,
-        uiState: uiState ?? this.uiState);
+        uiState: uiState ?? this.uiState,
+        orderResponse: orderResponse ?? this.orderResponse);
   }
-}
 
-abstract class OrderUiState extends Equatable {
   @override
-  List<Object?> get props => [];
-}
+  List<Object?> get props =>
+      [customerName, shippingAddress, uiState, orderResponse];
 
-class OrderUiInitialState extends OrderUiState {}
-
-class OrderUiLoadingState extends OrderUiState {}
-
-class OrderUiErrorState extends OrderUiState {
-  final String? status;
-  final String? message;
-
-  OrderUiErrorState({this.status, this.message});
-}
-
-class OrderUiLoadedState extends OrderUiState {
-  final OrderResponse? response;
-
-  OrderUiLoadedState({this.response});
+  @override
+  String toString() {
+    return 'OrderState{customerName: $customerName, phoneNumber: $phoneNumber, email: $email, shippingAddress: $shippingAddress, location: $location, product: $product, productDescription: $productDescription, dueDate: $dueDate, orderDate: $orderDate, progressStatus: $progressStatus, image1: $image1, mimeType1: $mimeType1, image2: $image2, mimeType2: $mimeType2, uiState: $uiState}';
+  }
 }

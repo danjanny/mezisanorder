@@ -6,23 +6,26 @@ import 'package:skeleton/order/domain/use_cases/submit_order_use_case.dart';
 import 'package:skeleton/order/presentation/manager/order_state.dart';
 
 @injectable
-class OrderCubit extends HydratedCubit<OrderState> {
+class OrderCubit extends HydratedCubit<OrderState?> {
   final SubmitOrderUseCase _orderUseCase;
 
-  OrderCubit(this._orderUseCase)
-      : super(OrderState(uiState: OrderUiInitialState()));
+  OrderCubit(this._orderUseCase) : super(OrderState());
+
+  // Method to reset the state
+  Future<void> resetUiState() async {
+    emit(state?.copyWith(
+        customerName: '', shippingAddress: '', uiState: OrderUiState.initial));
+  }
 
   Future<void> submitOrder(OrderRequestParam param) async {
+    // pls help me emit state for loading, loaded, and error here
+    emit(OrderState(uiState: OrderUiState.loading));
     try {
-      emit(OrderState(uiState: OrderUiLoadingState()));
       final orderResponse = await _orderUseCase.call(param);
-      emit(OrderState(uiState: OrderUiLoadedState(response: orderResponse)));
-    } on HttpResponseException catch (e) {
       emit(OrderState(
-          uiState: OrderUiErrorState(
-        status: e.status,
-        message: e.message,
-      )));
+          orderResponse: orderResponse, uiState: OrderUiState.loaded));
+    } on HttpResponseException catch (e) {
+      emit(OrderState(uiState: OrderUiState.error));
     }
   }
 
@@ -43,7 +46,7 @@ class OrderCubit extends HydratedCubit<OrderState> {
     String? mimeType2,
     OrderUiState? uiState,
   }) async {
-    emit(state.copyWith(
+    emit(state?.copyWith(
       customerName: customerName,
       phoneNumber: phoneNumber,
       email: email,
@@ -83,22 +86,22 @@ class OrderCubit extends HydratedCubit<OrderState> {
   }
 
   @override
-  Map<String, dynamic>? toJson(OrderState state) {
+  Map<String, dynamic>? toJson(OrderState? state) {
     return {
-      'customerName': state.customerName,
-      'phoneNumber': state.phoneNumber,
-      'email': state.email,
-      'shippingAddress': state.shippingAddress,
-      'location': state.location,
-      'product': state.product,
-      'productDescription': state.productDescription,
-      'dueDate': state.dueDate,
-      'orderDate': state.orderDate,
-      'progressStatus': state.progressStatus,
-      'image1': state.image1,
-      'mimeType1': state.mimeType1,
-      'image2': state.image2,
-      'mimeType2': state.mimeType2,
+      'customerName': state?.customerName,
+      'phoneNumber': state?.phoneNumber,
+      'email': state?.email,
+      'shippingAddress': state?.shippingAddress,
+      'location': state?.location,
+      'product': state?.product,
+      'productDescription': state?.productDescription,
+      'dueDate': state?.dueDate,
+      'orderDate': state?.orderDate,
+      'progressStatus': state?.progressStatus,
+      'image1': state?.image1,
+      'mimeType1': state?.mimeType1,
+      'image2': state?.image2,
+      'mimeType2': state?.mimeType2,
     };
   }
 }
